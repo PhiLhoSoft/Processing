@@ -7,31 +7,42 @@ int[] maskArray;
 static final int blendFactor = 85;
 PImage previousFrame;
 
+static final boolean bUseBlend = true;
+
 void setup()
 {
   size(800, 800);
 //  frameRate(10);
+  noFill();
+  noStroke();
 
-  maskArray = new int[width * height];
-  Arrays.fill(maskArray, blendFactor);
+  if (bUseBlend)
+  {
+    maskArray = new int[width * height];
+    Arrays.fill(maskArray, blendFactor);
+  }
 }
 
 void draw()
 {
-  previousFrame = get();
-  previousFrame.mask(maskArray);
+  if (bUseBlend)
+  {
+    previousFrame = get();
+    previousFrame.mask(maskArray);
+  }
 
   background(#AAEEFF);
-  noFill();
-  noStroke();
   DrawCircles();
 
-  blend(previousFrame, 0, 0, width, height, 0, 0, width, height, BLEND);
+  if (bUseBlend)
+  {
+    blend(previousFrame, 0, 0, width, height, 0, 0, width, height, BLEND);
+  }
 }
 
 void DrawCircles()
 {
-  float step = (PI / 30) * frameCount;
+  float step = (PI / (bUseBlend ? 30 : 180)) * frameCount;
   float radius = (MAX_RADIUS - MIN_RADIUS) * (1.0 + sin(step)) + MIN_RADIUS;
   float angle = 0;
   for (int i = 0; i < DISK_NB; i++)

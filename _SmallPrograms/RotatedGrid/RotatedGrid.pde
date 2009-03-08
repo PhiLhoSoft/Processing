@@ -1,3 +1,6 @@
+import java.awt.geom.AffineTransform;
+import java.awt.geom.NoninvertibleTransformException;
+
 final static int GRID_ROWS = 4;
 final static int GRID_COLS = 6;
 final static int GRID_CELL_SIZE = 50;
@@ -5,8 +8,9 @@ final static int GRID_CELL_SIZE = 50;
 final static int GRID_WIDTH = GRID_CELL_SIZE * GRID_COLS;
 final static int GRID_HEIGHT = GRID_CELL_SIZE * GRID_ROWS;
 
-final static color COLOR_DEFAULT = #2244FF;
-final static color COLOR_OVER    = #FF4422;
+final static color COLOR_DEFAULT  = #2244FF;
+final static color COLOR_ALL_OVER = #FF4422;
+final static color COLOR_OVER     = #44FF22;
 color cellColor;
 
 float angle;
@@ -14,9 +18,15 @@ float noiseScale = 0.01;
 float noiseX, noiseY;
 
 float origX, origY;
-float scrX0, scrY0;
-float scrX, scrY;
+float gxl;
+float gxr;
+float gyt;
+float gyb;
 PVector transform;
+
+// Matrix inverse of the current transform
+double[] inverse = new double[6];
+
 
 void setup()
 {
@@ -24,6 +34,12 @@ void setup()
   smooth();
   origX = width / 2;
   origY = height / 2;
+
+  gxl = 0;
+  gxr = GRID_WIDTH;
+  gyt = 0;
+  gyb = GRID_HEIGHT;
+
   noiseX = mouseX; noiseY = mouseY;
   cellColor = COLOR_DEFAULT;
 }
@@ -37,53 +53,55 @@ void draw()
 
   angle = noiseVal * TWO_PI;
 
-pushMatrix();
+  ApplyTransform();
+  DrawGrid();
+}
+
+void ApplyTransform()
+{
   translate(origX, origY);
   rotate(angle);
   translate(-GRID_WIDTH/2, -GRID_HEIGHT/2);
-  // Take coordinates of top-left corner on screen
-  scrX = screenX(0, 0);
-  scrY = screenY(0, 0);
-  scrX0 = screenX(GRID_WIDTH/2, GRID_HEIGHT/2);
-  scrY0 = screenY(GRID_WIDTH/2, GRID_HEIGHT/2);
-  transform = new PVector(scrX, scrY);
-  DrawGrid();
-popMatrix();
+  DrawPoint(gxl, gyt);
+  DrawPoint(gxl, gyb);
+  DrawPoint(gxr, gyt);
+  DrawPoint(gxr, gyb);
 
-  // Try and highlight grid's corners
-  PVector tl = new PVector(scrX, scrY);
-//  tl.add(transform);
-  DrawPoint(tl);
-  DrawPoint2(new PVector(scrX, scrY));
-  DrawPoint2(new PVector(scrX0, scrY0));
-/*
-  PVector bl = new PVector(origX, origY + GRID_HEIGHT);
-  bl.add(transform);
-  DrawPoint(bl);
-  PVector tr = new PVector(origX + GRID_WIDTH, origY);
-  tr.add(transform);
-  DrawPoint(tr);
-  PVector br = new PVector(origX + GRID_WIDTH, origY + GRID_HEIGHT);
-  br.add(transform);
-  DrawPoint(br);
-
-  tl = new PVector(origX, origY);
-  tl.sub(transform);
-  DrawPoint2(tl);
-  bl = new PVector(origX, origY + GRID_HEIGHT);
-  bl.sub(transform);
-  DrawPoint2(bl);
-  tr = new PVector(origX + GRID_WIDTH, origY);
-  tr.sub(transform);
-  DrawPoint2(tr);
-  br = new PVector(origX + GRID_WIDTH, origY + GRID_HEIGHT);
-  br.sub(transform);
-  DrawPoint2(br);
-*/
+  Graphics2D g2 = ((PGraphicsJava2D) g).g2;
+  AffineTransform at = g2.getTransform();
+  AffineTransform iat = null;
+  try
+  {
+    iat = at.createInverse();
+  }
+  catch (NoninvertibleTransformException e)
+  {
+    println("Ouch!");
+    exit();
+  }
+  iat.getMatrix(inverse);
+}
+float GetTransformedMouseX()
+{
+  return (float) inverse[0] * mouseX + (float) inverse[2] * mouseY + (float) inverse[4];
+}
+float GetTransformedMouseY()
+{
+  return (float) inverse[1] * mouseX + (float) inverse[3] * mouseY + (float) inverse[5];
 }
 
 void mouseMoved()
 {
+  float mx = GetTransformedMouseX();
+  float my = GetTransformedMouseY();
+  if (mx > gxl && mx < gxr && my > gyt && my < gyb)
+  {
+    cellColor = COLOR_ALL_OVER;
+  }
+  else
+  {
+    cellColor = COLOR_DEFAULT;
+  }
 }
 void mousePressed()
 {
@@ -101,22 +119,23 @@ void keyReleased()
 
 void DrawGrid()
 {
-/*
-  stroke(#00FF00);
-  for (int r = -height/2; r < height/2; r += GRID_CELL_SIZE)
-  {
-    for (int c = -width/2; c < width/2; c += GRID_CELL_SIZE)
-    {
-      line(c, -height/2, c, height/2); line(-width/2, r, width/2, r);
-    }
-  }
-*/
-  fill(cellColor);
+  float mx = GetTransformedMouseX();
+  float my = GetTransformedMouseY();
+
   stroke(0);
   for (int r = 0; r < GRID_ROWS; r++)
   {
     for (int c = 0; c < GRID_COLS; c++)
     {
+      if (mx > gxl + c * GRID_CELL_SIZE && mx < gxl + (c + 1) * GRID_CELL_SIZE &&
+          my > gyt + r * GRID_CELL_SIZE && my < gyt + (r + 1) * GRID_CELL_SIZE)
+      {
+        fill(COLOR_OVER);
+      }
+      else
+      {
+        fill(cellColor);
+      }
       rect(0, 0, GRID_CELL_SIZE, GRID_CELL_SIZE);
       translate(GRID_CELL_SIZE, 0);
     }
@@ -124,25 +143,17 @@ void DrawGrid()
   }
 }
 
-void DrawPoint(PVector pt)
+void DrawPoint(float x, float y)
 {
   fill(#FF0000);
   noStroke();
-  ellipse(pt.x, pt.y, 5, 5);
+  ellipse(x, y, 5, 5);
 }
 
-void DrawPoint2(PVector pt)
+void DrawPoint2(float x, float y)
 {
   fill(#FFFF00);
   noStroke();
-  rect(pt.x, pt.y, 5, 5);
+  rect(x, y, 5, 5);
 }
 
-/*
-void Null()
-{
-  PVector mouse = new PVector(mouseX, mouseY);
-  // Apply transform
-  mouse = mouse.add(transform);
-}
-*/

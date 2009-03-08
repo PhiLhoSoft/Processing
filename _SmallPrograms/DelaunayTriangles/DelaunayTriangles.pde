@@ -1,27 +1,44 @@
-import megamu.mesh.Voronoi;
 import megamu.mesh.Delaunay;
-import megamu.mesh.Hull;
 
 ArrayList meshPoints;
 Delaunay delaunay;
 Triangle[] triangles;
 
+float[][] vertices;
+int[][] faces;
+
+int highlighted = 0;
+color highlightColor = color(255, 128, 64, 20);
+
 void setup()
 {
   size(800, 500);
+  PFont font= loadFont("AmericanTypewriter-24.vlw");
+  textFont(font, 12);
 
   meshPoints = new ArrayList();
 }
 
 void draw()
 {
-  background(#CCFFEE);
+  background(255);
 
   if (triangles != null)
   {
+    if (frameCount % 24 == 0)
+    {
+      highlighted = ++highlighted % triangles.length;
+    }
     for (int i = 0; i < triangles.length; i++)
     {
-      triangles[i].Display();
+      if (i == highlighted)
+      {
+        triangles[i].Display(highlightColor);
+      }
+      else
+      {
+        triangles[i].Display();
+      }
     }
   }
   if (delaunay != null)
@@ -32,53 +49,23 @@ void draw()
   {
     ((MeshPoint) meshPoints.get(i)).Display();
   }
+  if (vertices != null)
+  {
+    noStroke();
+    for (int i = 0; i < vertices.length; i++)
+    {
+      fill(#00FF00);
+      ellipse(vertices[i][0], vertices[i][1], 5, 5);
+      fill(200);
+      text("" + i, vertices[i][0] + 5, vertices[i][1]);
+    }
+  }
 }
 
 void mousePressed()
 {
   MeshPoint pt = new MeshPoint(mouseX, mouseY);
   meshPoints.add(pt);
-}
-
-class MeshPoint
-{
-  float x, y;
-  float linkCount;
-
-  // Radius
-  int r = 5;
-  // Point color
-  color c = #FF0000;
-
-  MeshPoint(float px, float py)
-  {
-    x = px;
-    y = py;
-  }
-
-  float GetX() { return x; }
-  float GetY() { return y; }
-
-  void Display()
-  {
-    fill(c);
-    noStroke();
-    ellipse(x, y, r, r);
-  }
-}
-
-class Triangle
-{
-  float x1, y1;
-  float x2, y2;
-  float x3, y3;
-
-  void Display()
-  {
-    fill(c);
-    noStroke();
-    ellipse(x, y, r, r);
-  }
 }
 
 void keyPressed()
@@ -90,12 +77,15 @@ void keyPressed()
   }
   else if (key == 'd')
   {
+    FindFaces();
     ComputeDelaunay();
   }
+  /*
   else if (key == 't')
   {
     FindDelaunayTriangles();
   }
+  */
 }
 
 void ComputeDelaunay()
@@ -127,8 +117,46 @@ void DisplayDelaunay()
   }
 }
 
-void FindDelaunayTriangles()
+void FindFaces()
 {
+  QH3DWrapper hull = new QH3DWrapper(meshPoints);
+  // Get that for experimentation, but doesn't use it actually:
+  // we have sometime less vertices than mesh points!
+  vertices = hull.GetVertices();
 
+  faces = hull.GetFaces();
+  triangles = new Triangle[vertices.length];
+  for (int vi = 0; vi < vertices.length; vi++)
+  {
+    Triangle t = new Triangle();
+    for (int fi = 0; fi < faces[vi].length; fi++)
+    {
+      int idx = faces[vi][fi];
+      if (idx >= vertices.length)
+      {
+        print("!" + idx + "! ");
+      }
+      else
+      {
+        print(idx + " ");
+        t.SetPoint(fi, vertices[idx][0], vertices[idx][1]);
+      }
+    }
+    t.SetColor(color(0, 255, 255, 10));
+    println("=> " + vi);
+    triangles[vi] = t;
+  }
+}
+
+void DisplayVertices()
+{
+  for (int i = 0; i < vertices.length; i++)
+  {
+    float x = vertices[i][0];
+    float y = vertices[i][1];
+    fill(#000088);
+    noStroke();
+    ellipse(x, y, 2, 2);
+  }
 }
 
