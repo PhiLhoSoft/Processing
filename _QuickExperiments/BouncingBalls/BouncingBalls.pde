@@ -1,80 +1,58 @@
-int radius1 = 23, radius2 = 31;
-int speedX1 = -5, speedX2 = 7, speedY1 = 8, speedY2 = -3;
-int posX1 = 20, posX2 = 120, posY1 = 50, posY2 = 150;
-
-int collisionDist = radius1 + radius2;
+Ball ball1, ball2;
 
 void setup()
 {
   size(600, 400);
   smooth();
   noStroke();
+
+  ball1 = new Ball(20, 50, -5, 8, 23, #002277);
+  ball2 = new Ball(120, 150, 7, -3, 31, #007722);
 }
 
 void draw()
 {
   background(#AAFFEE);
-  MoveBall1();
-  MoveBall2();
-  float d = dist(posX1, posY1, posX2, posY2);
-  if (d < collisionDist)
-  {
-    speedX1 = -speedX1;
-    posX1 += speedX1;
-    speedY1 = -speedY1;
-    posY1 += speedY1;
-    speedX2 = -speedX2;
-    posX2 += speedX2;
-    speedY2 = -speedY2;
-    posY2 += speedY2;
-  }
-  DrawBall1();
-  DrawBall2();
+  ball1.Move();
+  ball2.Move();
+  ball1.Display();
+  ball2.Display();
 }
 
-void MoveBall1()
+
+class Ball
 {
-  posX1 += speedX1;
-  if (posX1 < radius1 || posX1 > width - radius1)
+  float posX, posY; // Position
+  float speedX, speedY; // Movement (linear)
+  float radius;
+  color ballColor;
+
+  Ball(float px, float py, float sX, float sY, float r, color c)
   {
-    speedX1 = -speedX1;
-    posX1 += speedX1;
+    posX = px; posY = py;
+    speedX = sX; speedY = sY;
+    radius = r; ballColor = c;
   }
-  posY1 += speedY1;
-  if (posY1 < radius1 || posY1 > height - radius1)
+
+  void Move()
   {
-    speedY1 = -speedY1;
-    posY1 += speedY1;
+    posX += speedX;
+    if (posX < radius || posX > width - radius)
+    {
+      speedX = -speedX;
+      posX += speedX;
+    }
+    posY += speedY;
+    if (posY < radius || posY > height - radius)
+    {
+      speedY = -speedY;
+      posY += speedY;
+    }
+  }
+
+  void Display()
+  {
+    fill(ballColor);
+    ellipse(posX, posY, radius * 2, radius * 2);
   }
 }
-
-void MoveBall2()
-{
-  posX2 += speedX2;
-  if (posX2 < radius2 || posX2 > width - radius2)
-  {
-    speedX2 = -speedX2;
-    posX2 += speedX2;
-  }
-  posY2 += speedY2;
-  if (posY2 < radius2 || posY2 > height - radius2)
-  {
-    speedY2 = -speedY2;
-    posY2 += speedY2;
-  }
-}
-
-void DrawBall1()
-{
-  fill(#007722);
-  ellipse(posX1, posY1, radius1 * 2, radius1 * 2);
-}
-
-void DrawBall2()
-{
-  fill(#002277);
-  ellipse(posX2, posY2, radius2 * 2, radius2 * 2);
-}
-
-
-
