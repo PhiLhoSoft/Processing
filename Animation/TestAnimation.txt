@@ -1,0 +1,11 @@
+# Crude simple demo animation
+
+# Define stage
+s 800 500
+# define objects
+# ellipse
+d head e 400 250 20 30
+# rect
+d body r 400 300 40 90
+# line
+d armL l

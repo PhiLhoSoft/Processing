@@ -1,0 +1,28 @@
+http://en.wikipedia.org/wiki/B%C3%A9zier_curve
+
+http://newsgroups.derkeiler.com/Archive/Comp/comp.graphics.algorithms/2005-07/msg00334.html
+
+Cubic Bézier curve, defined by 4 control points:
+(x1, y1) (x2, y2) (x3, y3) (x4, y4)
+
+Taken as Bernstein basis coefficints, this is equivalent to these:
+x(t) = x1 * (1 - t)^3 + x2 * (3 * t *  (1 - t)^2) + x3 * (3 * t^2 *  (1 - t)) + x4 * (t^3)
+y(t) = y1 * (1 - t)^3 + y2 * (3 * t *  (1 - t)^2) + y3 * (3 * t^2 *  (1 - t)) + y4 * (t^3)
+
+We have to find the derivative, for this, we can use the curve defined by difference of successive control points:
+(x_1, y_1) (x_2, y_2) (x_3, y_3)
+where
+x_1 = x2 - x1, x_2 = x3 - x2, x_3 = x4 - x3
+y_1 = y2 - y1, y_2 = y3 - y2, y_3 = y4 - y3
+
+This defines a cubic Bézier curve:
+x_(t) = 3 * (x_1 * (1 - t)^2 + x_2 * (2 * t * (1 - t)) + x_3 * t^2)
+y_(t) = 3 * (y_1 * (1 - t)^2 + y_2 * (2 * t * (1 - t)) + y_3 * t^2)
+
+We then find for which values of t these functions are zero, for x and for y.
+
+We will find t2 and t3 for x, t4 and t5 for y. We discard negative values. We add t0 = 0 and t1 = 1, the extremities.
+Now we evaluate the curve at these t values and take the bounds (max and min of x and y).
+
+Example:
+

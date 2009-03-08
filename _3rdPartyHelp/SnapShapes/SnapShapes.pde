@@ -1,6 +1,7 @@
+// Lists' objects interaction mess <http://processing.org/discourse/yabb_beta/YaBB.cgi?board=Syntax;action=display;num=1230492855>
+
 BoxList boxes;
 CircleList circles;
-Box boxx; Circle circle;
 
 void setup() {
   noStroke();
@@ -14,16 +15,10 @@ void setup() {
 }
 
 void draw() {
-  background(100, 100, 100);
+  background(222);
   // Boxes
   boxes.display();
   circles.display();
-
-  // Pick latest box
-  if (boxes.size() > 0)
-    boxx = boxes.get(boxes.size() - 1);
-  if (circles.size() > 0)
-    circle = circles.get(circles.size() - 1);
 }
 
 void mousePressed() {
@@ -40,11 +35,23 @@ void mouseReleased() {
 }
 
 void keyReleased() {
-  if (keyCode == 'B') {
-    boxes.add(new Box(100, 100));
-  }
-  if (keyCode == 'C') {
-    circles.add(new Circle(100, 100));
+  switch (keyCode) {
+    case 'B':
+      boxes.add(new Box(100, 100));
+      break;
+    case 'C':
+      circles.add(new Circle(100, 100));
+      break;
+    case 'D': // Debug...
+      for (int i = 0; i < boxes.size(); i++) {
+        Box box = (Box) boxes.get(i);
+        println("B" + i + ": " + box.posX + " " + box.posY);
+      }
+      for (int i = 0; i < circles.size(); i++) {
+        Circle circle = (Circle) circles.get(i);
+        println("C" + i + ": " + circle.posX + " " + circle.posY);
+      }
+      break;
   }
 }
 
@@ -54,8 +61,8 @@ public abstract class Shape {
   float posX;
   float posY;
 
-  protected float sWidth = 100;
-  protected float sHeight = 100;
+  protected float sWidth;
+  protected float sHeight;
 
   private boolean isOver;
   private boolean isLocked;
@@ -69,9 +76,11 @@ public abstract class Shape {
   // Color of this instance
   color sColor = baseColor;
 
-  Shape(float xxx, float yyy) {
-    posX = xxx;
-    posY = yyy;
+  Shape(float w, float h) {
+    posX = mouseX;
+    posY = mouseY;
+    sWidth = w;
+    sHeight = h;
   }
 
   void display() {
@@ -88,6 +97,9 @@ public abstract class Shape {
     // Picking
     return mouseX > posX - sWidth/2 && mouseX < posX + sWidth/2 &&
         mouseY > posY - sHeight/2 && mouseY < posY + sHeight/2;
+  }
+  public boolean isLocked() {
+    return isLocked;
   }
 
   protected void onMousePressed() {
@@ -118,43 +130,44 @@ public abstract class Shape {
 }
 
 public class Box extends Shape {
-  Box(float xxx, float yyy) {
-    super(xxx, yyy);
+  Box(float w, float h) {
+    super(w, h);
   }
 
   void showShape() {
-    strokeWeight(1);
+    strokeWeight(2);
+    stroke(128);
     rect(0, 0, sWidth, sHeight);
   }
 }
 
 class Circle extends Shape {
-  boolean spaceoverbottom = false;
-  boolean locktobottom = true;
+  boolean locked;
 
-  Circle(float xxx, float yyy) {
-    super(xxx, yyy);
+  Circle(float w, float h) {
+    super(w, h);
   }
 
   void showShape() {
-    noStroke();
+    strokeWeight(1);
+    stroke(128);
     ellipse(0, 0, sWidth, sHeight);
   }
 
   protected void onMouseReleased() {
     super.onMouseReleased();
-    if (locktobottom && circle != null && boxx != null) {
-      if (circle.posY+100 >= boxx.posY+150 && circle.posY-300 <= boxx.posY-50 &&
-          circle.posX >= boxx.posY-200 && circle.posX <= boxx.posX+150)
-      {
-        spaceoverbottom = true;
-      } else {
-        spaceoverbottom = false;
-      }
-    }
-    if (spaceoverbottom) {
-      posX = boxx.posX;
-      posY = boxx.posY + 100;
+    for (int i = 0; i < boxes.size(); i++) {
+      Box box = (Box) boxes.get(i);
+      if (posX >= box.posX - 2 * box.sWidth &&
+          posX <= box.posX + 2 * box.sWidth &&
+          posY >= box.posY + box.sHeight / 2 &&
+          posY <= box.posY + box.sHeight * 2) {
+        locked = true;
+        // Reposition the circle
+        posX = box.posX;
+        posY = box.posY + box.sHeight;
+        break;
+       }
     }
   }
 }
@@ -176,6 +189,11 @@ abstract class ShapeList extends ArrayList {
   void onMouseDragged() {
     for (int i = 0; i < size(); i++) {
       get(i).onMouseDragged();
+      if (keyPressed && key == CODED && keyCode == SHIFT && get(i).isLocked()) {
+        // Shift drag, we drag only the first shape found under the cursor
+        // Helps when two circles snap to the same location...
+        break;
+      }
     }
   }
   void onMouseReleased() {
