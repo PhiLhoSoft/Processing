@@ -1,0 +1,18 @@
+Il y a quelques mois, j'ai découvert <a href="http://processing.org/">Processing</a>, un système pour créer des graphiques de façon algorithmique.
+En clair, c'est à la fois un langage de programmation (en fait Java légèrement simplifié), une librairie/<abbrev title="Application Programming Interface">API</abbrev> orientée graphiques, et un environement de développement.
+
+Bien que connaissant Java et donc théoriquement capable de faire la même chose dans ce langage, j'ai été séduit par Processing (aussi appelé Proce55ing, voire P5, ou Processing.org, parce que le nom est trop générique pour donner de bons résultats en recherche Web...).
+En effet, on obtient des résultats séduisants en peu de lignes de code, sans avoir à gérer des détails (gestion de double buffering, de timing, etc.).
+
+Comme j'ai écrit, c'est en fait du Java, mais on peut écrire par exemple le proverbial&nbsp;:
+
+<code>println("Hello, world!");</code>
+
+dans l'environement de développement (<abbrev title="Processing Development Environment">PDE</abbrev>) et clique sur l'icône Run (tout est en anglais, désolé) pour voir le résultat&nbsp;: pas besoin de sauver un fichier, de le compiler, ça marche tout de suite.
+
+En fait, à notre insu, le PDE a entouré le code d'une déclaration de classe affublée d'une methode main et d'une fonction dans laquelle le code tapé est placé. Il a sauvé un fichier Java ce code ainsi traité et l'a compilé. Enfin il l'a lancé. Mais c'est invisible (si ce n'est par le délai de démarrage) pour l'utilisateur moyen.
+
+Mine de rien, en pratiquant Processing, j'ai amélioré ma connaissance des graphiques et de Java. Des professeurs l'utilisent pour enseigner des concepts de géométrie (étude des droites, des angles, etc.). Des artistes l'utilisent pour faire des vidéos temps réel, intégrant 3D (Processing supporte OpenGL), musique (il a des librairies pour jouer et analyser le son), vidéo (de même des librairies gèrent vidéo en entrée et sortie), effets divers (gestion de périphériques électroniques), Web, etc.
+
+Un bien bel outil, flexible et puissant. Petite cerise sur la gâteau&nbsp;: il peut aussi exporter les programmes (appelés sketch, croquis) sous forme d'applet (visible, donc, sur une page Web) ou d'application autonome (pour Windows, Linux et Mac).
+

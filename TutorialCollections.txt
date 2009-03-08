@@ -1,0 +1,1 @@
+I will assume here you already know arrays, how to declare and use them.

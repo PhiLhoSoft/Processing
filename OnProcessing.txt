@@ -1,0 +1,282 @@
+### INIT
+
+void init()
+{
+  // Do stuff
+  // ...
+  super.init();
+}
+
+Called before setup()!
+
+### STOP
+
+void stop()
+{
+  // Do stuff
+  // ...
+  super.stop();
+}
+
+Called when closing the sketch.
+
+### Titleless sketch window
+
+[url=http://processing.org/discourse/yabb_beta/YaBB.cgi?board=Programs;action=display;num=1228323183;start=1#1]Re: hiding windows controls[/url]
+
+// Avoids java.awt.IllegalComponentStateException: The frame is displayable.
+// Can put this code in init()
+frame.removeNotify();
+frame.setUndecorated(true);
+frame.addNotify();
+
+frame.isUndecorated();
+
+### Window always on top
+
+frame.setAlwaysOnTop(true);
+
+### Resize sketch window
+
+// Any time
+frame.setSize(w, h);
+setSize(w, h); // Optional? Or not?
+
+Or, to allow users to resize:
+
+frame.setResizable(true); // in setup()
+
+### Resize OpenGL canvas
+
+[url=http://processing.org/discourse/yabb_beta/YaBB.cgi?board=Integrate;action=display;num=1227629232;start=4#4]Re: OpenGL canvas does not resize when embeded[/url]
+
+pgl = (PGraphicsOpenGL) g;
+gl = pgl.beginGL();
+gl.glViewport(0, 0, width, height);
+pgl.endGL();
+
+### Resize canvas to given size
+
+[url=http://processing.org/discourse/yabb_beta/YaBB.cgi?board=Programs;action=display;num=1217592683]Re: problem resizing a window on the fly[/url]
+
+int w = 200;
+final static int INCR = 50;
+Insets insets;
+
+void setup()
+{
+  size(200, 400);
+  background(100);
+  frame.pack();  // Get insets. Get more!
+  insets = frame.getInsets();
+}
+
+void draw()
+{
+  background(100);
+  line(0, 0, width, height);
+  line(0, height, width, 0);
+  fill(#55AAFF);
+  for (int i = 0; i < width; i += INCR)
+  {
+    ellipse(i + INCR/2, height/2, INCR, INCR);
+  }
+}
+
+void mousePressed()
+{
+  w = w + INCR;
+  // Change internal canvas size
+  setSize(w, height);
+  // width variable isn't updated yet, will be on draw()
+  println("Press: " + w + " => " + width);
+
+  int windowW = Math.max(w, MIN_WINDOW_WIDTH) +
+      insets.left + insets.right;
+  int windowH = Math.max(height, MIN_WINDOW_HEIGHT) +
+      insets.top + insets.bottom;
+
+  // Change frame size, taking in account the insets (borders, title bar)
+  frame.setSize(windowW, windowH);
+}
+
+### Sketch (frame) location
+
+frame.getLocation();
+frame.getLocationOnScreen(); // Identical result!
+
+// In OpenGL mode put in the setup(), in normal mode put in the draw(). (?)
+frame.setLocation(0, 0);
+
+### Java syntax
+
+If the code is in a .pde file, you must use untyped Collections:
+Processing uses Java 1.6 but is currently (1.0) stuck on 1.4 syntax. The 1.6 syntax is only usable within .java files in the sketch.
+
+### Get a BI from a PImage:
+
+BufferedImage bufimg = new BufferedImage(
+      smallImage.width, smallImage.height,
+      smallImage.format == ARGB ?
+          BufferedImage.TYPE_INT_ARGB :
+          BufferedImage.TYPE_INT_RGB);
+bufimg.setRGB(0, 0, smallImage.width, smallImage.height,
+      smallImage.pixels, 0, smallImage.width);
+
+Or just use PImage.getImage()...
+
+### Create image from byte array
+http://processing.org/discourse/yabb_beta/YaBB.cgi?board=Syntax;action=display;num=1215762729;start=3#3
+
+import java.awt.Toolkit;
+
+Image GetFromJPEG(byte[] jpegBytes)
+{
+  Image jpegImage = null;
+  println("Jpeg data length: " + jpegBytes.length);
+
+  try
+  {
+    jpegImage = Toolkit.getDefaultToolkit().createImage(jpegBytes);
+  }
+  catch (Exception e)
+  {
+    println("Problem creating image: " + e.toString() + ": " + e.getMessage());
+  }
+  // Image isn't loaded yet, we have to wait for end of processing of the data
+  // Stupid way, I suppose I should use an ImageObserver...
+  float waitTime = 0;
+  while (jpegImage.getHeight(null) == -1)
+  {
+    delay(25); // Don't hog CPU!
+    waitTime += 0.025;
+  }
+  println("After " + int(waitTime) + "s, I get an image of width " +
+ jpegImage.getWidth(null) + " and height " + jpegImage.getHeight(null));
+
+  return jpegImage;
+}
+
+byte[] bytes = null;
+Image img = null;
+
+void setup()
+{
+  noLoop();
+  try
+  {
+    InputStream in = new FileInputStream("D:/_PhiLhoSoft/Processing/Johnson.jpg");
+    int l = in.available();
+    println("L: " + l);
+    bytes = new byte[l];
+    in.read(bytes);
+  }
+  catch (Exception e)
+  {
+    println("Problem reading image: " + e.toString() + ": " + e.getMessage());
+  }
+  // Initial load
+  img = GetFromJPEG(bytes);
+  println(img.getClass().toString());
+//  sun.awt.image.ToolkitImage tki = (sun.awt.image.ToolkitImage) img;
+//  BufferedImage bi = tki.getBufferedImage();
+//  println(bi.getClass().toString());
+  size(img.getWidth(null), img.getHeight(null));
+}
+
+void draw() // In noLoop mode!
+{
+  PImage pimg = new PImage(img);
+  image(pimg, 0, 0);
+}
+
+### Drag'n'drop from a file explorer to an applet window
+
+[url=http://processing.org/discourse/yabb_beta/YaBB.cgi?board=Integrate;action=display;num=1147684168;start=5#5]Re: tomc filechooser in a class[/url]
+
+import java.awt.dnd.*;
+import java.awt.datatransfer.*;
+
+DropTarget dt = new DropTarget(this, new DnDListener());
+
+class DnDListener implements DropTargetListener
+{
+  public void dragEnter(DropTargetDragEvent event)
+  {
+    //System.out.println("dragEnter " + event);
+    event.acceptDrag(DnDConstants.ACTION_COPY);
+  }
+
+  public void dragExit(DropTargetEvent event)
+  {
+    //System.out.println("dragExit " + event);
+  }
+
+  public void dragOver(DropTargetDragEvent event)
+  {
+    //System.out.println("dragOver " + event);
+    event.acceptDrag(DnDConstants.ACTION_COPY);
+  }
+
+  public void dropActionChanged(DropTargetDragEvent event)
+  {
+    //System.out.println("dropActionChanged " + event);
+  }
+
+  public void drop(DropTargetDropEvent event)
+  {
+    //System.out.println("drop " + event);
+    event.acceptDrop(DnDConstants.ACTION_COPY);
+
+    Transferable transferable = event.getTransferable();
+    DataFlavor flavors[] = transferable.getTransferDataFlavors();
+    int successful = 0;
+
+    for (int i = 0; i < flavors.length; i++)
+    {
+      try
+      {
+        Object stuff = transferable.getTransferData(flavors[i]);
+        if (!(stuff instanceof java.util.List)) continue;
+        java.util.List list = (java.util.List) stuff;
+
+        for (int j = 0; j < list.size(); j++)
+        {
+          Object item = list.get(j);
+          if (item instanceof File)
+          {
+            File file = (File) item;
+
+            String filename = file.getPath();
+            if (filename.lastIndexOf(".jp") != -1)
+            {
+              img = loadImage(filename);
+            }
+            else
+            {
+              println("Wrong filetype! Only jpg supported");
+            }
+          }
+        }
+      }
+      catch (Exception e)
+      {
+        e.printStackTrace();
+      }
+    }
+  }
+}
+
+### Image upload
+
+[url=http://processing.org/discourse/yabb_beta/YaBB.cgi?board=Syntax;action=display;num=1212658813;start=15#15]Re: save to web --- image export[/url]
+
+You can find the code in three parts:
+http://philho.pastebin.com/f68e779ad -- Upload.php
+http://philho.pastebin.com/f26b7f366 -- ImageUpload.pde
+http://philho.pastebin.com/f6783c437 -- DataUpload.java
+
+Obviously the Upload.php must be on the server, and you have to adjust some parameters, mostly the $destDir path (should be dedicated to uploads, because of the auto-deletion feature) and the $maxFiles parameter.
+
+ImageUpload is a sample / example Processing script using my image upload class, DataUpload.
+

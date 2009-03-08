@@ -1,0 +1,39 @@
+In some cases, classes can be overkill, but yet they remain a nice way to structure things and might help keeping a reasoning clean...
+I used classes (a generic one, "abstract" and some concrete ones derivated from the first) in a fern drawing sketch I made.
+I planned to release it formally, and somehow to use this code to introduce some concepts of usage of classes (and interfaces), but I haven't written anything yet, nor finalized my code.
+If you are curious, you can take a look at the current code at http://www.autohotkey.net/~PhiLho/Transferts/Ferns.7z (link can broke without notice!).
+
+At the simplest state, you can think of a class as a way to make a data structure, to hold together related variables. It corresponds to C's struct construct.
+Example:
+[code]class GeomVector
+{
+  float x, y; // Coordinates of base of vector
+  float ang;    // Angle of vector with base (X) axis
+  float len;  // Length of vector
+}[/code]
+You can use it this way:
+[code]GeomVector v = new GeomVector();[/code]
+After the new keyword, you have a call to the constructor of the vector. Here, it is the default constructor provided by the compiler, doing nothing.
+Your vector has no data, you have to fill its fields:
+[code]v.x = 10.0; v.y = 5.0; v.ang = PI/4; v.len = 20.0;[/code]
+You can then pass the vector as function parameter, return it, store it in an array, etc.
+
+Now, usually you add methods to a class, which are functions related to the data stored in the class. Or just related to the purpose of the class.
+The first one is usually a constructor, providing a convenient way of filling the data:
+[code]class GeomVector
+{
+  float x, y; // Coordinates of base of vector
+  float ang;    // Angle of vector with base (X) axis
+  float len;  // Length of vector
+
+  GeomVector(float _x, float _y, float _ang, float _len)
+  {
+    x = _x; y  = _y; ang = _ang; len = _len;
+  }
+}
+
+// Now created with:
+GeomVector v = new GeomVector(10.0, 5.0, PI/4, 20.0);[/code]
+Note that the constructor has the same name as the class and no return value. I prefer to distinguish the parameters from the class fields, but they can have the same name. In this case, the init looks like: this.x = x; etc.
+You can add convenience functions to the class. A usual idiom, sometime overkill in Processing, is to declare the class fields as private (no direct access) and create accessors, ie. getters and setters, methods allowing to set and read the values in the class.
+Other possible methods for this class could be a translation method (pass a vector as parameter, move (recomputer) x and y along this vector) and a rotation one (pass an angle, change vector's angle accordingly), etc.
