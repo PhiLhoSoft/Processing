@@ -1,6 +1,3 @@
-import java.awt.geom.AffineTransform;
-import java.awt.geom.NoninvertibleTransformException;
-
 final static int GRID_ROWS = 4;
 final static int GRID_COLS = 6;
 final static int GRID_CELL_SIZE = 50;
@@ -25,7 +22,7 @@ float gyb;
 PVector transform;
 
 // Matrix inverse of the current transform
-double[] inverse = new double[6];
+PMatrix2D inverse = new PMatrix2D();
 
 
 void setup()
@@ -67,33 +64,14 @@ void ApplyTransform()
   DrawPoint(gxr, gyt);
   DrawPoint(gxr, gyb);
 
-  Graphics2D g2 = ((PGraphicsJava2D) g).g2;
-  AffineTransform at = g2.getTransform();
-  AffineTransform iat = null;
-  try
-  {
-    iat = at.createInverse();
-  }
-  catch (NoninvertibleTransformException e)
-  {
-    println("Ouch!");
-    exit();
-  }
-  iat.getMatrix(inverse);
-}
-float GetTransformedMouseX()
-{
-  return (float) inverse[0] * mouseX + (float) inverse[2] * mouseY + (float) inverse[4];
-}
-float GetTransformedMouseY()
-{
-  return (float) inverse[1] * mouseX + (float) inverse[3] * mouseY + (float) inverse[5];
+  getMatrix(inverse);
+  inverse.invert();
 }
 
 void mouseMoved()
 {
-  float mx = GetTransformedMouseX();
-  float my = GetTransformedMouseY();
+  float mx = inverse.multX(mouseX, mouseY);
+  float my = inverse.multY(mouseX, mouseY);
   if (mx > gxl && mx < gxr && my > gyt && my < gyb)
   {
     cellColor = COLOR_ALL_OVER;
@@ -119,8 +97,8 @@ void keyReleased()
 
 void DrawGrid()
 {
-  float mx = GetTransformedMouseX();
-  float my = GetTransformedMouseY();
+  float mx = inverse.multX(mouseX, mouseY);
+  float my = inverse.multY(mouseX, mouseY);
 
   stroke(0);
   for (int r = 0; r < GRID_ROWS; r++)
@@ -139,7 +117,7 @@ void DrawGrid()
       rect(0, 0, GRID_CELL_SIZE, GRID_CELL_SIZE);
       translate(GRID_CELL_SIZE, 0);
     }
-    translate(-GRID_CELL_SIZE * (GRID_ROWS + 2), GRID_CELL_SIZE);
+    translate(-GRID_CELL_SIZE * GRID_COLS, GRID_CELL_SIZE);
   }
 }
 

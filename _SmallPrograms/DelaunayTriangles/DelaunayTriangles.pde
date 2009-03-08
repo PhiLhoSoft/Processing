@@ -31,6 +31,7 @@ void draw()
     }
     for (int i = 0; i < triangles.length; i++)
     {
+      if (triangles[i] == null) continue;
       if (i == highlighted)
       {
         triangles[i].Display(highlightColor);
@@ -119,32 +120,45 @@ void DisplayDelaunay()
 
 void FindFaces()
 {
+  int pointNb = meshPoints.size();
   QH3DWrapper hull = new QH3DWrapper(meshPoints);
-  // Get that for experimentation, but doesn't use it actually:
+
+  // Get that for experimentation, but don't use it actually:
   // we have sometime less vertices than mesh points!
   vertices = hull.GetVertices();
+  if (vertices.length < pointNb)
+  {
+    println("Trying alternative");
+    hull = new QH3DWrapper(meshPoints, true);
+    vertices = hull.GetVertices();
+  }
 
   faces = hull.GetFaces();
-  triangles = new Triangle[vertices.length];
-  for (int vi = 0; vi < vertices.length; vi++)
+  triangles = new Triangle[pointNb];
+  for (int pi = 0; pi < pointNb; pi++)
   {
     Triangle t = new Triangle();
-    for (int fi = 0; fi < faces[vi].length; fi++)
+    for (int fi = 0; fi < faces[pi].length; fi++)
     {
-      int idx = faces[vi][fi];
-      if (idx >= vertices.length)
+      int idx = faces[pi][fi];
+      if (idx >= pointNb)
       {
         print("!" + idx + "! ");
+        t = null;
       }
-      else
+      else if (t != null)
       {
         print(idx + " ");
-        t.SetPoint(fi, vertices[idx][0], vertices[idx][1]);
+        MeshPoint mp = (MeshPoint) meshPoints.get(idx);
+        t.SetPoint(fi, mp.x, mp.y);
       }
     }
-    t.SetColor(color(0, 255, 255, 10));
-    println("=> " + vi);
-    triangles[vi] = t;
+    if (t != null)
+    {
+      t.SetColor(color(0, 255, 255, 10));
+      println("=> " + pi);
+      triangles[pi] = t;
+    }
   }
 }
 

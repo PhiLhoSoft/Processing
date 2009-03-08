@@ -2,6 +2,8 @@ int radius1 = 23, radius2 = 31;
 int speedX1 = -5, speedX2 = 7, speedY1 = 8, speedY2 = -3;
 int posX1 = 20, posX2 = 120, posY1 = 50, posY2 = 150;
 
+int collisionDist = radius1 + radius2;
+
 void setup()
 {
   size(600, 400);
@@ -14,6 +16,18 @@ void draw()
   background(#AAFFEE);
   MoveBall1();
   MoveBall2();
+  float d = dist(posX1, posY1, posX2, posY2);
+  if (d < collisionDist)
+  {
+    speedX1 = -speedX1;
+    posX1 += speedX1;
+    speedY1 = -speedY1;
+    posY1 += speedY1;
+    speedX2 = -speedX2;
+    posX2 += speedX2;
+    speedY2 = -speedY2;
+    posY2 += speedY2;
+  }
   DrawBall1();
   DrawBall2();
 }
