@@ -49,26 +49,40 @@ class Handle
 		m_colorHover = colorHover;
 	}
 
+	/**
+	 * Updates the state of the handle.
+	 * @param bAlreadyDragging   if true, a dragging is already in effect
+	 */
+	void Update(boolean bAlreadyDragging)
+	{
+      // Check if mouse is over the handle
+		m_bIsHovered = dist(mouseX, mouseY, m_x, m_y) <= m_size / 2;
+      // If we are not already dragging and left mouse is pressed over the handle
+		if (!bAlreadyDragging && mousePressed && mouseButton == LEFT && m_bIsHovered)
+		{
+         // We record the state
+			m_bDragged = true;
+         // And memorize the offset of the mouse position from the center of the handle
+			m_clickDX = mouseX - m_x;
+			m_clickDY = mouseY - m_y;
+		}
+      // If mouse isn't pressed
+		if (!mousePressed)
+		{
+         // Any possible dragging is stopped
+			m_bDragged = false;
+		}
+	}
+
 	boolean IsDragged()
 	{
 		return m_bDragged;
 	}
 
-	void Update(boolean bAlreadyDragging)
-	{
-		m_bIsHovered = dist(mouseX, mouseY, m_x, m_y) <= m_size / 2;
-		if (!bAlreadyDragging && mousePressed && mouseButton == LEFT && m_bIsHovered)
-		{
-			m_bDragged = true;
-			m_clickDX = mouseX - m_x;
-			m_clickDY = mouseY - m_y;
-		}
-		if (!mousePressed)
-		{
-			m_bDragged = false;
-		}
-	}
-
+   /**
+    * If the handle is dragged, the new position is computed with mouse position,
+    * taking in account the offset of mouse with center of handle.
+    */
 	void Move()
 	{
 		if (m_bDragged)
@@ -78,6 +92,9 @@ class Handle
 		}
 	}
 
+   /**
+    * Just draw the handle at current posiiton, with color depending if it is dragged or not.
+    */
 	void Draw()
 	{
 		strokeWeight(m_lineWidth);

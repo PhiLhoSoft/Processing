@@ -1,4 +1,6 @@
-boolean going = false, ready = false;
+import netscape.javascript.*;
+
+
 int timer = 0;
 
 // I like to use variables, make easier to change / adapt
@@ -10,77 +12,54 @@ int diskH = 50;
 float ratioV = 0.3;
 float offset = ratioV * diskH;
 
-// Location of moving circle to start with (stationary)
-float shapeX = centerX;
-float shapeY = centerY - offset;
-
-float pos = -HALF_PI;
-float speed = 0.07;
-color SHAPE_COLOR = #7ADE21;
-float SHAPE_WIDTH_MIN = 10;
-float SHAPE_WIDTH_MAX = 25;
-float SHAPE_HEIGHT_MIN = 3;
-float SHAPE_HEIGHT_MAX = 6;
-float shapeWidth = SHAPE_WIDTH_MIN;
-float shapeHeight = SHAPE_HEIGHT_MIN;
+MovingShape ms;
 
 void setup() {
   size(600, 600);
   smooth();
+
+//~   ms = new MovingEllipse();
+  ms = new MovingIcon();
 }
 
 void draw() {
+  ms.move();
+
   drawBackground();
-  drawMovingShape();
-  drawUpperDivider();
-
-  // Only move the circle when "going" is true
-  if (going) {
-    pos += speed;
-    shapeX = centerX - 0.4 * diskW * cos(pos);
-    shapeY = centerY + offset * sin(pos);
-    if (pos >= HALF_PI) {
-      going = false;
-      ready = true;
-      timer = millis();
-    }
-    if (pos <= -HALF_PI) {
-      going = false;
-      speed = -speed;
-    }
-    float amount = (HALF_PI + pos) / PI;
-    shapeWidth = lerp(SHAPE_WIDTH_MIN, SHAPE_WIDTH_MAX, amount);
-    shapeHeight = lerp(SHAPE_HEIGHT_MIN, SHAPE_HEIGHT_MAX, amount);
+  if (ms.afterMiddleOfMove())
+  {
+    drawUpperDivider();
+    ms.draw();
   }
-
-  if (ready) { // Wait for user input
-    if (millis() - timer > 2000 && !IsMouseInDisk()) {
-      ready = false;
-      speed = -speed;
-      going = true;
-    }
+  else
+  {
+    ms.draw();
+    drawUpperDivider();
   }
 }
 
 void mousePressed() {
-  if (ready && IsMouseInDisk()) {
-    link("http://Processing.org");
+  if (ms.isReady() && isMouseInDisk()) {
+    JSObject win = (JSObject) JSObject.getWindow(this);
+    String[] arguments = { "Hello World!" };
+    win.call("DumbTest", arguments);
+//    link("http://Processing.org");
   }
 }
 
 void mouseMoved() {
   cursor(ARROW);
-  if (IsMouseInDisk()) {
-    if (ready) {
+  if (isMouseInDisk()) {
+    if (ms.isReady()) {
       cursor(HAND);
     } else {
-      going = true;
+      ms.setGoing(true);
     }
   } else {
-    if (ready) {
-      ready = false;
-      speed = -speed;
-      going = true;
+    if (ms.isReady()) {
+      ms.setReady(false);
+      ms.setGoing(true);
+      ms.invertSpeed();
     }
   }
 }
@@ -112,22 +91,15 @@ void drawUpperDivider() {
 
   // Little dot
   fill(0);
-  ellipse(centerX, centerY - offset, SHAPE_WIDTH_MIN, SHAPE_HEIGHT_MIN);
+  ellipse(centerX, centerY - offset, 10, 10);
 }
 
-void drawMovingShape() {
-  // Moving circle shape size and colour details
-  stroke(0);
-  fill(SHAPE_COLOR);
-  ellipse(shapeX, shapeY, shapeWidth, shapeHeight);
-}
-
-boolean IsMouseInDisk() {
-  return IsPointInEllipse(mouseX, mouseY,
+boolean isMouseInDisk() {
+  return isPointInEllipse(mouseX, mouseY,
       centerX, centerY, diskW, diskH);
 }
 
-boolean IsPointInEllipse(int x, int y,
+boolean isPointInEllipse(int x, int y,
     int ellipseX, int ellipseY, int ellipseW, int ellipseH) {
   // Compute position of focal points
   float c = sqrt(ellipseW * ellipseW - ellipseH * ellipseH) / 2.0;
@@ -141,5 +113,148 @@ boolean IsPointInEllipse(int x, int y,
   return d1 + d2 <= ellipseW;
 }
 
+abstract class MovingShape
+{
+  // Constants to be set in sub-class
+  float SHAPE_WIDTH_MIN;
+  float SHAPE_WIDTH_MAX;
+  float SHAPE_HEIGHT_MIN;
+  float SHAPE_HEIGHT_MAX;
+
+  float shapeX = centerX;
+  float shapeY = centerY - offset;
+
+  float shapeWidth = SHAPE_WIDTH_MIN;
+  float shapeHeight = SHAPE_HEIGHT_MIN;
+
+  float pos = -HALF_PI;
+  float speed = 0.07;
+
+  boolean ready;
+  boolean going;
+
+  MovingShape()
+  {
+  }
+
+  void move()
+  {
+    if (going) {
+      pos += speed;
+      shapeX = centerX - 0.4 * diskW * cos(pos);
+      shapeY = centerY + offset * sin(pos);
+      if (pos >= HALF_PI) {
+        going = false;
+        ready = true;
+        timer = millis();
+      }
+      if (pos <= -HALF_PI) {
+        going = false;
+        speed = -speed;
+      }
+      recomputeShapeSize();
+    }
+
+    if (ready) { // Wait for user input
+      if (millis() - timer > 2000 && !isMouseInDisk()) {
+        ready = false;
+        speed = -speed;
+        going = true;
+      }
+    }
+  }
+
+  void recomputeShapeSize()
+  {
+    float amount = (HALF_PI + pos) / PI;
+    shapeWidth = lerp(SHAPE_WIDTH_MIN, SHAPE_WIDTH_MAX, amount);
+    shapeHeight = lerp(SHAPE_HEIGHT_MIN, SHAPE_HEIGHT_MAX, amount);
+  }
+
+  // To be overridden
+  void draw()
+  {
+  }
+
+  void invertSpeed()
+  {
+    speed = -speed;
+  }
+
+  boolean isReady()
+  {
+    return ready;
+  }
+  void setReady(boolean r)
+  {
+    ready = r;
+  }
+
+  boolean isGoing()
+  {
+    return going;
+  }
+  void setGoing(boolean g)
+  {
+    going = g;
+  }
+  
+  boolean afterMiddleOfMove()
+  {
+    return pos > 0;
+  }
+}
+
+class MovingEllipse extends MovingShape
+{
+  // Constants
+  static final color SHAPE_COLOR = #7ADE21;
+  {
+    SHAPE_WIDTH_MIN = 10;
+    SHAPE_WIDTH_MAX = 25;
+    SHAPE_HEIGHT_MIN = 3;
+    SHAPE_HEIGHT_MAX = 6;
+  }
+
+  MovingEllipse()
+  {
+    super();
+  }
+
+  void draw()
+  {
+    // Moving circle shape size and colour details
+    stroke(0);
+    fill(SHAPE_COLOR);
+    ellipse(shapeX, shapeY, shapeWidth, shapeHeight);
+  }
+}
+
+class MovingIcon extends MovingShape
+{
+  // Constants
+  {
+    SHAPE_WIDTH_MIN = 7;
+    SHAPE_WIDTH_MAX = 72;
+    SHAPE_HEIGHT_MIN = 7;
+    SHAPE_HEIGHT_MAX = 71;
+  }
+
+  PImage icon;
+
+  MovingIcon()
+  {
+    super();
+
+    icon = loadImage("icon.png");
+  }
+
+  void draw()
+  {
+    image(icon,
+        shapeX - shapeWidth/2, shapeY - shapeHeight/2,
+        shapeWidth, shapeHeight);
+  }
+}
 
 
