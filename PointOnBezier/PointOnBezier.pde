@@ -4,7 +4,7 @@ See if mouse cursor is over a Bézier curve.
 by Philippe Lhoste <PhiLho(a)GMX.net> http://Phi.Lho.free.fr & http://PhiLho.deviantART.com
 */
 /* File/Project history:
- 1.01.000 -- 2008/09/03 (PL) -- Fixing some corner cases.
+ 1.01.000 -- 2008/09/03 (PL) -- Bad algo in some corner cases. Using awt.geom instead!
  1.00.000 -- 2008/08/27 (PL) -- Creation.
 */
 /* Copyright notice: For details, see the following file:
@@ -25,17 +25,21 @@ BezierCurve[] curves = new BezierCurve[CURVE_NB];
 
 void setup()
 {
-  size(400, 400);
+  size(700, 700);
 
   if (RANDOM_CURVES)
   {
     for (int i = 0; i < CURVE_NB; i++)
     {
       curves[i] = new BezierCurve(
-          new Point2D.Float(random(margin1, width - margin1), random(margin1, height - margin1)),
-          new Point2D.Float(random(width), random(height)),
-          new Point2D.Float(random(width), random(height)),
-          new Point2D.Float(random(margin1, width - margin1), random(margin1, height - margin1))
+          // Start point
+          random(margin1, width - margin1), random(margin1, height - margin1),
+          // First control point
+          random(width), random(height),
+          // Second control point
+          random(width), random(height),
+          // End point
+          random(margin1, width - margin1), random(margin1, height - margin1)
       );
     }
   }
@@ -43,52 +47,52 @@ void setup()
   {
     int i = 0;
     curves[i++] = new BezierCurve(
-        new Point2D.Float(width / 2 - margin1, height - margin1),
-        new Point2D.Float(margin1, 2 * margin2),
-        new Point2D.Float(width - margin1, 2 * margin2),
-        new Point2D.Float(width / 2 + margin1, height - margin1)
+        width / 2 - margin1, height - margin1,
+        margin1, 2 * margin2,
+        width - margin1, 2 * margin2,
+        width / 2 + margin1, height - margin1
     );
 
     curves[i++] = new BezierCurve(
-        new Point2D.Float(width / 3, margin1),
-        new Point2D.Float(margin1, 2 * margin2),
-        new Point2D.Float(width - margin1, 2 * margin2),
-        new Point2D.Float(2 * width / 3, margin1)
+        width / 3, margin1,
+        margin1, 2 * margin2,
+        width - margin1, 2 * margin2,
+        2 * width / 3, margin1
     );
 
     curves[i++] = new BezierCurve(
-        new Point2D.Float(margin1, height - margin1),
-        new Point2D.Float(margin1, margin2),
-        new Point2D.Float(width - margin1, margin2),
-        new Point2D.Float(width - margin1, height - margin1)
+        margin1, height - margin1,
+        margin1, margin2,
+        width - margin1, margin2,
+        width - margin1, height - margin1
     );
 
     curves[i++] = new BezierCurve(
-        new Point2D.Float(margin1, height - margin1),
-        new Point2D.Float(width - margin2, height - margin1),
-        new Point2D.Float(margin1, margin1),
-        new Point2D.Float(width - margin1, margin1)
+        margin1, height - margin1,
+        width - margin2, height - margin1,
+        margin1, margin1,
+        width - margin1, margin1
     );
 
     curves[i++] = new BezierCurve(
-        new Point2D.Float(width - margin1, margin1),
-        new Point2D.Float(width - margin2, height - margin1),
-        new Point2D.Float(margin1, margin1),
-        new Point2D.Float(margin1, height - margin1)
+        width - margin1, margin1,
+        width - margin2, height - margin1,
+        margin1, margin1,
+        margin1, height - margin1
     );
 
     curves[i++] = new BezierCurve(
-        new Point2D.Float(margin1, margin1),
-        new Point2D.Float(width - margin2, margin1),
-        new Point2D.Float(margin1, height - margin1),
-        new Point2D.Float(width - margin1, height - margin1)
+        margin1, margin1,
+        width - margin2, margin1,
+        margin1, height - margin1,
+        width - margin1, height - margin1
     );
 
     curves[i++] = new BezierCurve(
-        new Point2D.Float(width - margin1, height - margin1),
-        new Point2D.Float(width - margin2, margin1),
-        new Point2D.Float(margin1, height - margin1),
-        new Point2D.Float(margin1, margin1)
+        width - margin1, height - margin1,
+        width - margin2, margin1,
+        margin1, height - margin1,
+        margin1, margin1
     );
   }
 }
@@ -97,42 +101,31 @@ void setup()
 /**
  * Cubic Bézier curve, defined by two end points and two control points.
  */
-class BezierCurve
+// I started as making an independent class, then I discovered that Sun has made already most of the work,
+// so I just extend Sun's class to avoid re-inventing the wheel in an inefficient way! :-)
+class BezierCurve extends CubicCurve2D.Float // float is good enough for most Processing sketches...
 {
-  // No getter/setter, if you need them, just access them! :-)
-  Point2D.Float m_startPoint, m_endPoint;
-  Point2D.Float m_startControlPoint, m_endControlPoint;
+  protected static final int CONTROL_POINT_SIZE = 4;
+  protected static final int CONTROL_LINE_WIDTH = 1;
+  protected static final int CONTROL_COLOR = #FF8000;
 
-  // Bounding box
-  private Rectangle2D.Float m_boundingBox;
+  protected static final int INTERNAL_POINT_SIZE = 3;
+  protected static final int TANGENT_WIDTH = 1;
+  protected static final int INTERNAL_POINT_COLOR = #FF0000;
 
   // This one must be computed first (and each time)
   private Closest closest;
-//boolean bDump = true;
 
-  BezierCurve(
-      Point2D.Float startPoint, Point2D.Float startControlPoint,
-      Point2D.Float endControlPoint, Point2D.Float endPoint)
+  /**
+   * Need a further call to setCurve() later, to be useful...
+   */
+  BezierCurve()
   {
-    m_startPoint = startPoint;
-    m_endPoint = endPoint;
-    m_startControlPoint = startControlPoint;
-    m_endControlPoint = endControlPoint;
+    super();
   }
-
-  Rectangle2D GetBoundingBox()
+  BezierCurve(float x1, float y1, float ctrlx1, float ctrly1, float ctrlx2, float ctrly2, float x2, float y2)
   {
-    if (m_boundingBox == null)
-    {
-      float leftmost, topmost, rightmost, bottommost;
-      leftmost = min(min(m_startPoint.x, m_endPoint.x), min(m_startControlPoint.x, m_endControlPoint.x));
-      rightmost = max(max(m_startPoint.x, m_endPoint.x), max(m_startControlPoint.x, m_endControlPoint.x));
-      topmost = min(min(m_startPoint.y, m_endPoint.y), min(m_startControlPoint.y, m_endControlPoint.y));
-      bottommost = max(max(m_startPoint.y, m_endPoint.y), max(m_startControlPoint.y, m_endControlPoint.y));
-      m_boundingBox = new Rectangle2D.Float(leftmost, topmost,
-          rightmost - leftmost, bottommost - topmost);
-    }
-    return m_boundingBox;
+    super(x1,  y1,  ctrlx1,  ctrly1,  ctrlx2,  ctrly2,  x2,  y2);
   }
 
   /**
@@ -141,36 +134,34 @@ class BezierCurve
    */
   Point2D.Float GetPoint(float pos)
   {
-    float x = bezierPoint(m_startPoint.x, m_startControlPoint.x,
-        m_endControlPoint.x, m_endPoint.x,
-        pos);
-    float y = bezierPoint(m_startPoint.y, m_startControlPoint.y,
-        m_endControlPoint.y, m_endPoint.y,
-        pos);
-    return new Point2D.Float(x, y);
+    float rem = 1.0F - pos; // Remainder of distance (or distance to end point)
+    double f1 =     rem * rem * rem;
+    double f2 = 3 * pos * rem * rem;
+    double f3 = 3 * pos * pos * rem;
+    double f4 =     pos * pos * pos;
+    double x = f1 * x1 + f2 * ctrlx1 + f3 * ctrlx2 + f4 * x2;
+    double y = f1 * y1 + f2 * ctrly1 + f3 * ctrly2 + f4 * y2;
+    return new Point2D.Float((float) x, (float) y);
   }
 
   /**
-   * Gets the tangent of a point (see GetPoint) on the Bézier curve, as an angle with positive x axis.
-   * Uses Processing's bezierTangent, which is broken in 0135, and is fixed in 0136 and higher.
+   * Gets the tangent of a point (see GetPoint) on the Bézier curve,
+   * as an angle with the positive x axis.
    */
   float GetTangent(float pos)
   {
-    float x = bezierTangent(m_startPoint.x, m_startControlPoint.x,
-        m_endControlPoint.x, m_endPoint.x,
-        pos);
-    float y = bezierTangent(m_startPoint.y, m_startControlPoint.y,
-        m_endControlPoint.y, m_endPoint.y,
-        pos);
-    return atan2(y, x);
+    double x = 3 * pos * pos * (-x1 + 3 * ctrlx1 - 3 * ctrlx2 + x2) +
+        6 * pos * (x1 - 2 * ctrlx1 + ctrlx2) +
+        3 * (-x1 + ctrlx1);
+    double y = 3 * pos * pos * (-y1 + 3 * ctrly1 - 3 * ctrly2 + y2) +
+        6 * pos * (y1 - 2 * ctrly1 + ctrly2) +
+        3 * (-y1 + ctrly1);
+    return (float) Math.atan2(y, x);
   }
 
   void Draw()
   {
-    bezier(m_startPoint.x, m_startPoint.y,
-        m_startControlPoint.x, m_startControlPoint.y,
-        m_endControlPoint.x, m_endControlPoint.y,
-        m_endPoint.x, m_endPoint.y);
+    bezier(x1, y1, ctrlx1, ctrly1, ctrlx2, ctrly2, x2, y2);
   }
 
   /**
@@ -179,21 +170,24 @@ class BezierCurve
   void DrawControls()
   {
     noFill();
-    stroke(#FF8000);
-    strokeWeight(1);
+    stroke(CONTROL_COLOR);
+    strokeWeight(CONTROL_LINE_WIDTH);
 
-    line(m_startPoint.x, m_startPoint.y, m_startControlPoint.x, m_startControlPoint.y);
-    ellipse(m_startControlPoint.x, m_startControlPoint.y, 4, 4);
+    line(x1, y1, ctrlx1, ctrly1);
+    ellipse(ctrlx1, ctrly1, CONTROL_POINT_SIZE, CONTROL_POINT_SIZE);
 
-    line(m_endPoint.x, m_endPoint.y, m_endControlPoint.x, m_endControlPoint.y);
-    ellipse(m_endControlPoint.x, m_endControlPoint.y, 4, 4);
+    line(x2, y2, ctrlx2, ctrly2);
+    ellipse(ctrlx2, ctrly2, CONTROL_POINT_SIZE, CONTROL_POINT_SIZE);
   }
 
+  /**
+   * Draw points on curve and tangents on these points.
+   */
   void DrawDetails(int pointNb, float tanLength)
   {
     if (pointNb <= 1) pointNb = 2;
-    stroke(#FF0000);
-    strokeWeight(1);
+    stroke(INTERNAL_POINT_COLOR);
+    strokeWeight(TANGENT_WIDTH);
 
     for (int i = 0; i < pointNb; i++)
     {
@@ -203,10 +197,11 @@ class BezierCurve
       float x = pt.x, y = pt.y;
       float a = GetTangent(pos);
 
-      line(x, y, cos(a) * tanLength + x, sin(a) * tanLength + y);
-      ellipse(x, y, 3, 3);
-
-      ellipse(x, y, 3, 3);
+      if (tanLength > 0.0)
+      {
+        line(x, y, cos(a) * tanLength + x, sin(a) * tanLength + y);
+      }
+      ellipse(x, y, INTERNAL_POINT_SIZE, INTERNAL_POINT_SIZE);
     }
   }
 
@@ -220,18 +215,18 @@ class BezierCurve
     ellipse(p.x, p.y, 4, 4);
   }
 
-  boolean IsPointOnCurve(Point2D.Float p)
+  boolean IsPointOnCurve(float x, float y)
   {
     // If point is out of bounding box of the Bézier curve, no point to check more
     // We start at each extremity of the curve
-    closest = GetClosest(p, 0.0, 1.0);
+    closest = GetClosest(x, y, 0.0, 1.0);
     do
     {
       // Exit
       if (closest.IsFound())
         return closest.IsOnCurve();
       // Iterate on the closest range
-      closest = GetClosest(p, closest.GetStart(), closest.GetEnd());
+      closest = GetClosest(x, y, closest.GetStart(), closest.GetEnd());
     } while (true); // Rely on internal exits
   }
 
@@ -269,11 +264,12 @@ class BezierCurve
    * which point of the two extremities are closest of the target. The new range is the
    * middle point and the closest point.
    */
-  private Closest GetClosest(Point2D.Float p, float r1, float r2)
+  private Closest GetClosest(float x, float y, float r1, float r2)
   {
     // Compute middle of the range
     float mr = (r1 + r2) / 2;
-    Point2D.Float p1, mp, p2; float d1, md, d2;
+    Point2D.Float p, p1, mp, p2; float d1, md, d2;
+    p = new Point2D.Float(x, y);
     // Compute the points at each extremity of the range and in the middle
     p1 = GetPoint(r1); mp = GetPoint(mr); p2 = GetPoint(r2);
     // Compute the distances between these points and the target point
@@ -305,7 +301,7 @@ class BezierCurve
 
 void draw()
 {
-  background(#AAAAAA);
+  background(255);
 
   for (int i = 0; i < CURVE_NB; i++)
   {
@@ -313,13 +309,14 @@ void draw()
 
     // Show Bézier curve
     noFill();
-    if (curves[i].IsPointOnCurve(new Point2D.Float(mouseX, mouseY)))
+    if (curves[i].IsPointOnCurve(mouseX, mouseY))
     {
-      stroke(#FF80FF);
+      stroke(#FF8080);
     }
     else
     {
-      stroke(#8080FF);
+      color c = lerpColor(#0080FF, #FF00FF, (float) i / CURVE_NB);
+      stroke(c);
     }
     strokeWeight(3);
     curves[i].Draw();
@@ -328,3 +325,21 @@ void draw()
 //    curves[i].DrawDetails(10, 30);
   }
 }
+
+/*
+http://www.erichaines.com/ptinpoly/
+http://alienryderflex.com/polygon/
+http://local.wasp.uwa.edu.au/~pbourke/geometry/lineline2d/
+http://www.blackpawn.com/texts/pointinpoly/default.html
+
+
+Samsung SGH-E950
+http://developers.samsungmobile.com/Developer/index.jsp
+http://attackgames.game-host.org/ (Wap)
+http://www.dbarnes.com/midlet/
+http://www.j2mepolish.org/cms/
+http://code.google.com/p/j4me/
+http://www.developpez.net/forums/d490372/java/general-java/java-me/tutos-programmation-cdc/
+http://www.placeoweb.com/dotclear/index.php/2006/10/11/28-j2me
+
+*/

@@ -13,12 +13,14 @@
 *.session
 
 *.pde+
+*.pde-[0-9]
+*.pde-
 
-_History/
 libraries/
 tools/
 Test/
 Java/
 _QuickExperiments/Test/
 
-/applet/
+applet/
+data/
