@@ -7,14 +7,19 @@ void setup()
   size(700, 700);
   frameRate(40);
   lines = new ArrayDeque();
+  noFill();
+  ellipseMode(CENTER);
 }
 
 void draw()
 {
   background(255);
 
-  PVector p = new PVector(mouseX, mouseY);
-  lines.addFirst(p);
+  if (mouseX != pmouseX || mouseY != pmouseY)
+  {
+    PVector p = new PVector(mouseX, mouseY);
+    lines.addFirst(p);
+  }
   if (lines.size() > queueSize)
   {
     lines.removeLast();
@@ -27,7 +32,12 @@ void draw()
     PVector cp = (PVector) it.next();
     if (pp != null)
     {
+      stroke(14, 7, 42);
+      strokeWeight(1);
       line(pp.x, pp.y, cp.x, cp.y);
+      stroke(214, 7, 142);
+      strokeWeight(5);
+      ellipse(cp.x, cp.y, 21, 21); 
     }
     pp = cp;
   }
