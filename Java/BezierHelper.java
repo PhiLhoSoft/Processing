@@ -29,6 +29,8 @@ class BezierHelper
 		fill(#FFFF00, 200);
 		ellipse(x, y, 5, 5);
 		popStyle();
+
+		vertex(x, y);
 	}
 
 	// Simple version: no look parameters
@@ -59,5 +61,7 @@ class BezierHelper
 		noStroke();
 		ellipse(cx2, cy2, 3, 3);
 		popStyle();
+
+		bezierVertex(cx1, cy1, cx2, cy2, x, y);
 	}
 }
