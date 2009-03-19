@@ -1,6 +1,6 @@
 // Just reusing two old sketches
 
-class FillWithCircles extends Imager
+class FillWithCircles extends DefaultDrawer
 {
   int MIN_RAD = 10;
   int MAX_RAD = 100;
@@ -37,7 +37,7 @@ class FillWithCircles extends Imager
   }
 }
 
-class PulsatingCircles extends Imager
+class PulsatingCircles extends DefaultDrawer
 {
   int rMove = +5;
   int slowDown = 1;

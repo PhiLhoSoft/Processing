@@ -11,9 +11,9 @@ interface Drawer
   public void SetDuration(int d);
 }
 
-abstract class Imager implements Drawer
+abstract class DefaultDrawer implements Drawer
 {
-  private int m_duration = 10;
+  protected int m_duration = 10;
 
   public abstract void Draw();
   //@Override
@@ -28,9 +28,8 @@ abstract class Imager implements Drawer
   }
 }
 
-class Texter implements Drawer
+class Texter extends DefaultDrawer
 {
-  private int m_duration;
   private String m_message;
   private int m_color;
 
@@ -41,16 +40,6 @@ class Texter implements Drawer
     m_color = c;
   }
 
-  //@Override
-  public int GetDuration()
-  {
-    return m_duration;
-  }
-  //@Override
-  public void SetDuration(int d)
-  {
-    m_duration = d;
-  }
   //@Override
   public void Draw()
   {
