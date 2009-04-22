@@ -12,10 +12,33 @@ void setup()
   background(#AAFFEE);
 
 //  PFont f = loadFont("Silkscreen-8.vlw");
-  PFont f = loadFont("Arial-Black-12.vlw");
-  textFont(f);
+  PFont fa = loadFont("Arial-Black-12.vlw");
+  textFont(fa);
   textAlign(CENTER);
 
   fill(#000055);
   text(textToDisplay, 10, 10, width - 10, height - 10);
+  
+  textAlign(LEFT);
+//  textMode(MODEL);
+  String msg = "Processing is awesome!";
+  int ml = msg.length();
+  PFont fi = loadFont("Impact-48.vlw");
+  textFont(fi);
+  char[] msgChars = new char[ml];
+  msg.getChars(0, ml, msgChars, 0);
+  float pos1 = 10, pos2 = 10;
+  for (int i = 0; i < ml; i++)
+  {
+    char c = msgChars[i];
+    fill(60, 90, map(i, 0, ml, 0, 255));
+    text(c, 10 + 18 * i, 400);
+    
+    text(c, pos1, 480);
+    pos1 += fi.width[c];
+    text(c, pos2, 520);
+    pos2 += textWidth(c);
+    println(c + " " + textWidth(c) + " " + fi.width[c]);
+  }
 }
+

@@ -180,7 +180,7 @@ String FormatHour(Timestamp ts)
 
 String FormatTimestamp(Timestamp ts)
 {
-  DateFormat formatter = new SimpleDateFormat("yyy-MM-dd HH:mm:ss");
+  DateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
   return formatter.format(ts);
 }
 

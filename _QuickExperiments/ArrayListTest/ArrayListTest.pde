@@ -15,3 +15,6 @@ while (it.hasNext())
   println(i + " " + s);
 }
 
+SomeTestClass ta = new SomeTestClass();
+ta.Print();
+
