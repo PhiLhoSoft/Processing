@@ -16,6 +16,8 @@
 *.pde+
 *.pde-[0-9]
 *.pde-
+*.java+
+*.java-
 
 libraries/
 tools/
