@@ -1,15 +1,9 @@
-int DISPLAY_TIME = 120;
+int DISPLAY_TIME = 60;
 color BACK_COLOR = color(200);
 
 int currentSentenceIdx;
 int startFrameCount;
 int currentFrameCount;
-Drawer defaultDrawer = new PlainColor(#7F7F7F);
-
-interface Drawer
-{
-  void Draw(String message, int x, int y, int frame);
-}
 
 class WordAndDrawer
 {
@@ -23,49 +17,18 @@ class WordAndDrawer
   }
 }
 
-class PlainColor implements Drawer
-{
-  color col;
-
-  PlainColor(color c)
-  {
-    col = c;
-  }
-  void Draw(String message, int x, int y, int frame)
-  {
-    fill(col);
-    text(message, x, y);
-    // I don't use frame here
-  }
-}
-
-class Fade implements Drawer
-{
-  color col1, col2;
-
-  Fade(color c1, color c2)
-  {
-    col1 = c1;
-    col2 = c2;
-  }
-  void Draw(String message, int x, int y, int frame)
-  {
-    fill(lerpColor(col1, col2, frame / (float) DISPLAY_TIME));
-    text(message, x, y);
-  }
-}
-
 WordAndDrawer[] triggers =
 {
-  new WordAndDrawer("fade", new Fade(BACK_COLOR, #000000)),
-  new WordAndDrawer("blue", new PlainColor(#0000FF)),
-  new WordAndDrawer("green", new PlainColor(#00FF00)),
-  new WordAndDrawer("red", new PlainColor(#FF0000)),
-  new WordAndDrawer("cyan", new PlainColor(#00FFFF)),
-  new WordAndDrawer("magenta", new PlainColor(#FF00FF)),
-  new WordAndDrawer("yellow", new PlainColor(#FFFF00)),
-  new WordAndDrawer("black", new PlainColor(#000000)),
-  new WordAndDrawer("white", new PlainColor(#FFFFFF))
+  new WordAndDrawer("fade.*black", new Fade(BACK_COLOR, #000000)),
+  new WordAndDrawer("fade.*gr[ea]y", new Fade(BACK_COLOR, #7F7F7F)),
+  new WordAndDrawer(".*blue.*", new PlainColor(#0000FF)),
+  new WordAndDrawer(".*green.*", new PlainColor(#00FF00)),
+  new WordAndDrawer(".*red.*", new PlainColor(#FF0000)),
+  new WordAndDrawer(".*cyan.*", new PlainColor(#00FFFF)),
+  new WordAndDrawer(".*magenta.*", new PlainColor(#FF00FF)),
+  new WordAndDrawer(".*yellow.*", new PlainColor(#FFFF00)),
+  new WordAndDrawer("black.*", new PlainColor(#000000)), // Only if at start of sentence!
+  new WordAndDrawer(".*white.*", new PlainColor(#FFFFFF))
 };
 
 String[] sentences =
@@ -76,8 +39,8 @@ String[] sentences =
   "Yellow Submarine",
   "White Christmas",
   "Cyanide and Hapiness",
-  "Brown Sugar",
-  "Black Belt Ninja",
+  "Brown Sugar", // Voluntarily not matching
+  "The Black Belt Ninja", // Voluntarily doesn't match
   "The Yellow Brick Road",
   "The Blues Brothers",
   "Greensleeves",
@@ -101,7 +64,7 @@ void draw()
   Drawer currentDrawer = defaultDrawer;
   for (int t = 0; t < triggers.length; t++)
   {
-    if (sentence.toLowerCase().contains(triggers[t].word))
+    if (sentence.toLowerCase().matches(triggers[t].word))
     {
       currentDrawer = triggers[t].drawer;
       break;
