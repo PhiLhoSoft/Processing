@@ -62,6 +62,7 @@ void draw()
     displayer.Draw();
     if (displayer.HasEnded())
     {
+      println("Time to update " + i);
       // Animation for this message has ended, replace it with another message
       // from the queue
       UpdateMessageList(i);
@@ -76,20 +77,30 @@ void UpdateMessageList(int i)
 
   // Sentence to display
   String sentence = message.m_message;
-//~   println(sentence);
-  // If we don't find a drawer, use this one
-  Drawer drawer = defaultDrawer;
-  for (int t = 0; t < triggers.length; t++)
-  {
-    // Check if matching
-    if (triggers[t].matcher.IsMatching(sentence))
-    {
-      // Yeah, we will draw with this one!
-      drawer = triggers[t].drawer;
-      // And search no other (several matchers could match...)
-      break;
-    }
-  }
-  MessageDisplayer displayer = new MessageDisplayer(sentence, drawer);
+  MessageDisplayer displayer = GetDisplayer(sentence);
   displayedMessages[i] = displayer;
+}
+
+MessageDisplayer GetDisplayer(String sentence)
+{
+  Drawer drawer = null;
+  String lowS = sentence.toLowerCase();
+  if (lowS.indexOf("hide") >= 0)
+  {
+    drawer = new Shrinker(sentence, #2288FF);
+  }
+  else if (lowS.indexOf("free") >= 0)
+  {
+    drawer = new Grower(sentence, #992200);
+  }
+  else if (lowS.indexOf("yellow") >= 0 || lowS.indexOf("tang") >= 0)
+  {
+    drawer = new ColorMove(sentence, #FFFF55, #99FF22, BASE_MESSAGE_DISPLAY_TIME * random(0.5, 1.5));
+  }
+  else // Default
+  {
+    drawer = new ColorMove(sentence, #FFFFFF, #000000, BASE_MESSAGE_DISPLAY_TIME * random(1.0, 2.0));
+  }
+  
+  return new MessageDisplayer(drawer);
 }

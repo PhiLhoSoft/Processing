@@ -1,23 +1,27 @@
-class MessageDisplayer
+public interface Drawer
 {
-  String m_sentence;
-  Drawer m_drawer;
-  int m_startFrame;
-  int m_endFrame;
+  public void Draw(int frame);
+  public float GetDuration();
+}
 
-  MessageDisplayer(String sentence, Drawer drawer)
+public class MessageDisplayer
+{
+  private Drawer m_drawer;
+  private int m_startFrame;
+  private int m_endFrame;
+
+  public MessageDisplayer(Drawer drawer)
   {
-    m_sentence = sentence;
     m_drawer = drawer;
     m_startFrame = frameCount;
-    m_endFrame = m_startFrame + drawer.GetDuration();
+    m_endFrame = m_startFrame + int(drawer.GetDuration() * frameRate);
   }
-  void Draw()
+  public void Draw()
   {
-    m_drawer.Draw(m_sentence, 10, 10, frameCount - m_startFrame);
+    m_drawer.Draw(frameCount - m_startFrame);
   }
-  boolean HasEnded()
+  public boolean HasEnded()
   {
-    return m_startFrame >= m_endFrame;
+    return m_startFrame + frameCount >= m_endFrame;
   }
 }

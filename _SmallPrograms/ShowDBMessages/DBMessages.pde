@@ -19,11 +19,11 @@ public class DBMessages
 {
   private MySQLLayer database;
 
-  static final long DB_CHECK_INTERVAL = 5; // seconds
+  static final long DB_CHECK_INTERVAL = 2; // seconds
   private long lastCheck = - DB_CHECK_INTERVAL - 1;
   private Timestamp lastTimestamp = new Timestamp(0L);
 
-  private ArrayDeque   messageList = new ArrayDeque();
+  private ArrayList messageList = new ArrayList();
 
   public DBMessages(PApplet pa)
   {
@@ -44,12 +44,17 @@ public class DBMessages
   public Message GetMessage()
   {
     UpdateData();
-    Message message = (Message) messageList.removeFirst();
-    if (message == null)
+    Message message;
+    if (messageList.size() == 0)
     {
       // Empty queue, get a random message
       message = database.GetRandomMessage();
     }
+    else
+    {
+      message = (Message) messageList.remove(0);
+    }
+    println(message.m_author);
     return message;
   }
 
@@ -67,7 +72,7 @@ public class DBMessages
       for (int i = 0; i < newMessages.size(); i++)
       {
         Message message = (Message) newMessages.get(i);
-        messageList.addLast(message);
+        messageList.add(message);
         lastTimestamp = message.m_date;
       }
     }
