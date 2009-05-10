@@ -14,10 +14,12 @@ class ColorMove implements Drawer
   void Draw(int frame)
   {
     float a = frame / (GetDuration() * frameRate);
+    pushStyle();
     fill(lerpColor(col1, col2, a));
     float posX = lerp(width - textWidth(message), 0, a);
     float posY = lerp(height - BASE_DISPLAY_FONT_SIZE, 0, a);
     text(message, posX, posY);
+    popStyle();
   }
   float GetDuration()
   {

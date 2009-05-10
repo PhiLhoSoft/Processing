@@ -101,6 +101,9 @@ MessageDisplayer GetDisplayer(String sentence)
   {
     drawer = new ColorMove(sentence, #FFFFFF, #000000, BASE_MESSAGE_DISPLAY_TIME * random(1.0, 2.0));
   }
+  println("Using " + drawer + " with " + sentence.substring(0, min(sentence.length(), 20)));
   
   return new MessageDisplayer(drawer);
 }
+
+

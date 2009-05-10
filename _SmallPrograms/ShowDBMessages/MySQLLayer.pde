@@ -60,6 +60,7 @@ public class MySQLLayer
       Message msg = new Message(a, m, d);
       newMessageList.add(msg);
     }
+    println("Read " + newMessageList.size() + " messages");
     return newMessageList;
   }
 
@@ -84,6 +85,7 @@ public class MySQLLayer
     String a = m_mySQL.getString(1);
     String m = m_mySQL.getString(2);
     Timestamp d = m_mySQL.getTimestamp(3);
+    println("Read a random message");
     return new Message(a, m, d);
   }
 

@@ -8,13 +8,15 @@ public class MessageDisplayer
 {
   private Drawer m_drawer;
   private int m_startFrame;
-  private int m_endFrame;
+  private long m_startTime;
+  private long m_endTime;
 
   public MessageDisplayer(Drawer drawer)
   {
     m_drawer = drawer;
     m_startFrame = frameCount;
-    m_endFrame = m_startFrame + int(drawer.GetDuration() * frameRate);
+    m_startTime = millis();
+    m_endTime = m_startTime + int(drawer.GetDuration() * 1000);
   }
   public void Draw()
   {
@@ -22,6 +24,8 @@ public class MessageDisplayer
   }
   public boolean HasEnded()
   {
-    return m_startFrame + frameCount >= m_endFrame;
+    return millis() >= m_endTime;
   }
 }
+
+

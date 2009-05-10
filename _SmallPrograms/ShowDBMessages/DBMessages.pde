@@ -64,7 +64,7 @@ public class DBMessages
    */
   protected void UpdateData()
   {
-    long time = System.currentTimeMillis() / 1000;
+    long time = millis() / 1000;
     if (time - lastCheck > DB_CHECK_INTERVAL)
     {
       lastCheck = time;
