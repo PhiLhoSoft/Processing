@@ -15,15 +15,20 @@ Copyright (c) 2009 Philippe Lhoste / PhiLhoSoft
 import de.bezier.data.sql.*;
 import java.sql.Timestamp;
 
-static final String TABLE_NAME = "p5_messages";
-
 public class MySQLLayer
 {
   private MySQL m_mySQL;
 
+  // Database parameters
+  private static final String SERVER_NAME = "localhost";
+  private static final String BASE_NAME = "testdb";
+  private static final String TABLE_NAME = "p5_messages";
+  private static final String USER_NAME = "PhiLho";
+  private static final String PASSWORD = "Foo#Bar";
+
   public MySQLLayer(PApplet pa)
   {
-    m_mySQL = new MySQL(pa, "localhost", "tests", "PhiLho", "Foo#Bar");
+    m_mySQL = new MySQL(pa, SERVER_NAME, BASE_NAME, USER_NAME, PASSWORD);
     if (!m_mySQL.connect())
     {
       System.err.println("Cannot connect to database!");

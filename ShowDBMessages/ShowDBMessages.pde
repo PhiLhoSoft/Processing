@@ -78,15 +78,15 @@ MessageDisplayer GetDisplayer(String sentence)
 {
   Drawer drawer = null;
   String lowS = sentence.toLowerCase();
-  if (lowS.indexOf("hide") >= 0)
+  if (ContainsWord(lowS, "hide") || ContainsWord(lowS, "shrink"))
   {
     drawer = new Shrinker(sentence, #2288FF);
   }
-  else if (lowS.indexOf("free") >= 0)
+  else if (ContainsWord(lowS, "free") || ContainsWord(lowS, "big"))
   {
     drawer = new Grower(sentence, #992200);
   }
-  else if (lowS.indexOf("yellow") >= 0 || lowS.indexOf("tang") >= 0)
+  else if (ContainsWord(lowS, "yellow") || ContainsWord(lowS, "tang"))
   {
     drawer = new ColorRandomPlace(sentence, #FFFF55, #99FF22, BASE_MESSAGE_DISPLAY_TIME * random(0.5, 1.5));
   }
@@ -97,6 +97,11 @@ MessageDisplayer GetDisplayer(String sentence)
   println("Using " + drawer + " with " + sentence.substring(0, min(sentence.length(), 20)));
 
   return new MessageDisplayer(drawer);
+}
+
+boolean ContainsWord(String sentence, String word)
+{
+  return sentence.indexOf(word) >= 0;
 }
 
 
