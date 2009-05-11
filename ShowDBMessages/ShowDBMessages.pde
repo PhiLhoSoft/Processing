@@ -20,13 +20,6 @@ final color BACK_COLOR = color(200);
 final int BASE_DISPLAY_FONT_SIZE = 50;
 final int BASE_MESSAGE_DISPLAY_TIME = 4; // in seconds
 final int MESSAGE_DISPLAY_NB = 5; // How many sentences are displayed simultaneously
-final int DB_CHECK_INTERVAL = 5; // in seconds
-int lastCheck = - DB_CHECK_INTERVAL - 1;
-
-int startFrameCount;
-int currentFrameCount;
-String sentence;
-Drawer drawer;
 
 DBMessages dbMessageList;
 MessageDisplayer[] displayedMessages = new MessageDisplayer[MESSAGE_DISPLAY_NB];
@@ -95,14 +88,14 @@ MessageDisplayer GetDisplayer(String sentence)
   }
   else if (lowS.indexOf("yellow") >= 0 || lowS.indexOf("tang") >= 0)
   {
-    drawer = new ColorMove(sentence, #FFFF55, #99FF22, BASE_MESSAGE_DISPLAY_TIME * random(0.5, 1.5));
+    drawer = new ColorRandomPlace(sentence, #FFFF55, #99FF22, BASE_MESSAGE_DISPLAY_TIME * random(0.5, 1.5));
   }
   else // Default
   {
     drawer = new ColorMove(sentence, #FFFFFF, #000000, BASE_MESSAGE_DISPLAY_TIME * random(1.0, 2.0));
   }
   println("Using " + drawer + " with " + sentence.substring(0, min(sentence.length(), 20)));
-  
+
   return new MessageDisplayer(drawer);
 }
 
