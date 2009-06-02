@@ -40,7 +40,7 @@ class Grower implements Drawer
     float a = frame / (float) (GetDuration() * frameRate);
     pushStyle();
     fill(col);
-    textSize(lerp(0, BASE_DISPLAY_FONT_SIZE, frame / (float) BASE_MESSAGE_DISPLAY_TIME * 2));
+    textSize(lerp(0, BASE_DISPLAY_FONT_SIZE, a));
     float posX = lerp(width - textWidth(message), 0, a);
     float posY = lerp(height - BASE_DISPLAY_FONT_SIZE, 0, a);
     text(message, posX, posY);
