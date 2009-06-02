@@ -5,7 +5,7 @@ http://newsgroups.derkeiler.com/Archive/Comp/comp.graphics.algorithms/2005-07/ms
 Cubic Bézier curve, defined by 4 control points:
 (x1, y1) (x2, y2) (x3, y3) (x4, y4)
 
-Taken as Bernstein basis coefficints, this is equivalent to these:
+Taken as Bernstein basis coefficients, this is equivalent to these:
 x(t) = x1 * (1 - t)^3 + x2 * (3 * t *  (1 - t)^2) + x3 * (3 * t^2 *  (1 - t)) + x4 * (t^3)
 y(t) = y1 * (1 - t)^3 + y2 * (3 * t *  (1 - t)^2) + y3 * (3 * t^2 *  (1 - t)) + y4 * (t^3)
 
