@@ -1,52 +1,66 @@
 PImage img;
 int radius;
-int dir = 2;
-int MAX_RADIUS = 60;
-int CIRCLE_NB = 25;
+int speed = 2;
+int maxRadius;
+int MIN_RADIUS = 4;
+int MAX_RADIUS = 32;
+int CIRCLE_NB = 16;
 PVector[] toGrow = new PVector[CIRCLE_NB];
+boolean bRandom = false;
 
 void setup()
 {
   size(400, 400);
-  img = loadImage("E:/Dev/PhiLhoSoft/Processing/SqMe.png");
-  println(img);
+  img = loadImage("D:/_PhiLhoSoft/Processing/SqMe.png");
   noStroke();
   smooth();
+  background(255);
   for (int i = 0; i < CIRCLE_NB; i++)
   {
     toGrow[i] = new PVector();
+  }
+  if (!bRandom)
+  {
+    maxRadius = MAX_RADIUS * 2;
   }
 }
 
 void draw()
 { 
-  image(img, 0, 0);
-  radius += dir;
-  if (radius == 0)
-  {
-    GetPoints();
-    dir = -dir;
-  }
-  else if (radius == MAX_RADIUS)
-  {
-    dir = -dir;
-  }
+//  image(img, 0, 0);
+  radius += speed;
   for (int i = 0; i < CIRCLE_NB; i++)
   {
     PVector v = toGrow[i];
     color pix = img.get(int(v.x), int(v.y));
-    fill(pix, 127);
+    fill(pix);
     ellipse(v.x, v.y, radius / 2, radius / 2);
+  }
+  if (radius >= maxRadius)
+  {
+    GetPoints();
+    radius = 0;
   }
 } 
 
 void GetPoints()
 {
+  if (bRandom)
+  {
+    maxRadius = int(MIN_RADIUS + random(MAX_RADIUS - MIN_RADIUS));
+  }
+  else
+  {
+    if (maxRadius > MIN_RADIUS / 2)
+    {
+      maxRadius--;
+    }
+  }
   for (int i = 0; i < CIRCLE_NB; i++)
   {
     PVector v = toGrow[i];
-    v.x = MAX_RADIUS / 2 + int(random(img.width - MAX_RADIUS));
-    v.y = MAX_RADIUS / 2 + int(random(img.height - MAX_RADIUS));
+    v.x = maxRadius / 4 + int(random(img.width - maxRadius / 2));
+    v.y = maxRadius / 4 + int(random(img.height - maxRadius / 2));
   }
 }
 
