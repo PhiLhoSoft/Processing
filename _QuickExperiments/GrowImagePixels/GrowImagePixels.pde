@@ -11,7 +11,7 @@ boolean bRandom = false;
 void setup()
 {
   size(400, 400);
-  img = loadImage("D:/_PhiLhoSoft/Processing/SqMe.png");
+  img = loadImage("E:/Dev/PhiLhoSoft/Processing/SqMe.png");
   noStroke();
   smooth();
   background(255);
@@ -47,7 +47,7 @@ void GetPoints()
 {
   if (bRandom)
   {
-    maxRadius = int(MIN_RADIUS + random(MAX_RADIUS - MIN_RADIUS));
+    maxRadius = int(random(MIN_RADIUS, MAX_RADIUS - MIN_RADIUS));
   }
   else
   {
@@ -59,8 +59,8 @@ void GetPoints()
   for (int i = 0; i < CIRCLE_NB; i++)
   {
     PVector v = toGrow[i];
-    v.x = maxRadius / 4 + int(random(img.width - maxRadius / 2));
-    v.y = maxRadius / 4 + int(random(img.height - maxRadius / 2));
+    v.x = random(maxRadius / 4, img.width - maxRadius / 2);
+    v.y = random(maxRadius / 4, img.height - maxRadius / 2);
   }
 }
 
