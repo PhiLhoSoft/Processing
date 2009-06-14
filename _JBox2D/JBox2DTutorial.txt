@@ -1,0 +1,79 @@
+JBox2D Tutorial
+
+Note: this thread is intended to be a monologue / tutorial, hopefully a reference. To keep information relevant, I suggest to post your (welcomed) remarks in a separate thread which I will create soon.
+
+Some months ago I saw a Flash program showing some uses of a physics engine (solid objects) and I was seducted. I searched some Java engines and didn't found many. Later, ewjordan shown [url=http://www.jbox2d.org]JBox2D[/url], his port of [url=http://www.box2d.org]Box2D[/url] (a C++ library) to Java and its Processing wrapper, [url=http://processing.org/discourse/yabb2/YaBB.pl?num=1213404906]BoxWrap2d[/url].
+
+Somehow I postponed discovering of the library, fearing it was complex and time consuming to learn.
+But more recently I played some nice Flash games using physics engines (most of them derivated from Box2D...) on Kongregate, and I saw renewed interest on the library in Discourse.
+
+I saw that as a good opportunity to jump. And found out it wasn't so hard. Somehow, it is even simpler than doing a simple, typical "ball hitting walls and other balls" sketch in Processing!
+
+At time of starting to write this tutorial, I am hardly more knowledgeable than you... I played a bit with the BoxWrap2d demo, with the shown [url=http://processing.org/discourse/yabb2/YaBB.pl?num=1230505307]custom rendering methods[/url], and I read the tutorial for Box2D. It looks manageable so I though I should share my first steps in the hope it will jump start other persons.
+I pondered a bit if I should start directly with JBox2D (as I want to use it in other environments) or walk before running and use BoxWrap2d. I chose the latter, partly because of this tutorial...
+
+Enough meta discussion, let's begin!
+We first set the scene, making a kind of template we will use everytime.
+
+[code]// Import everything exposed by JBox2D (except the testbed stuff)
+import org.jbox2d.common.*;
+import org.jbox2d.collision.*;
+import org.jbox2d.dynamics.*;
+import org.jbox2d.dynamics.joints.*;
+import org.jbox2d.dynamics.contacts.*;
+import org.jbox2d.util.blob.*;
+// BoxWrap2d
+import org.jbox2d.p5.*;
+
+// A reference to the physics engine
+Physics physics;
+
+void setup()
+{
+  // Medium sized scene
+  size(640, 480);
+  // Physics is computed 60 times per second, so let's draw at same rate
+  frameRate(60);
+  // Nicer graphisc
+  smooth();
+  // Set up everything physics
+  InitScene();
+}
+
+void draw()
+{
+  // Not much to do here, most drawing is handled by BoxWrap2d
+  background(255);
+}
+
+void mousePressed()
+{
+	// Do something interactive, like creating new objects
+}
+
+void keyPressed()
+{
+	// Can be used to reset the sketch, for example
+    physics.destroy();
+    physics = null;
+    InitScene();
+}
+
+void InitScene()
+{
+  // Set up the engine with the sketch's dimensions
+  physics = new Physics(this, width, height);
+}
+[/code]
+
+If we try and run this sketch... it works! (if you installed correctly the library.) But it is quite boring, there is almost nothing to see... Just a static border around the sketch.
+
+What is it doing? Actually quite a number of things. It defines a camera position (used for zooms or pans),  defines the limits of the simulation and the world where the objects will live, define defaults settings for new objects: density (weight per volume, or rather surface here), restitution (if objects are elastic or not), friction (are they smooth or rough) and some other parameters.
+And lastly, it creates a big hollow box around the sketch, to avoid loosing the falling objects.
+
+Let's add some objects there.
+
+
+
+[code][/code]
+
