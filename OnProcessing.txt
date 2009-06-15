@@ -108,6 +108,20 @@ frame.getLocationOnScreen(); // Identical result!
 // In OpenGL mode put in the setup(), in normal mode put in the draw(). (?)
 frame.setLocation(0, 0);
 
+### Rotate a shape around a given point
+
+// Where we want the shape drawn, depending on its mode: that's where the 0, 0 drawing will occur
+translate(600, 400);
+// Move the center by offset
+translate(-OFFSET, 0);
+// Do the rotation
+rotate(angle);
+// Restore the center where it was
+translate(OFFSET, 0);
+// Draw the shape
+fill(202);
+ellipse(0, 0, ELLIPSE_WIDTH, 180);
+
 ### Java syntax
 
 If the code is in a .pde file, you must use untyped Collections:

@@ -5,15 +5,23 @@ int pageCount = 10;
 int prevX;
 PGraphics pdf;
 
-void setup() {
+void setup() 
+{
   size(400, 400);
   f = createFont("Arial", 72);
   prevX = width/2;
   pdf = createGraphics(400, 400, PDF, "multipage.pdf");
   pdf.beginDraw();
+  
+  String[] fonts = ((PGraphicsPDF) pdf).listFonts();
+  for (int i = 0; i < fonts.length; i++)
+  {
+    println(fonts[i]);
+  }
 }
 
-void draw() {
+void draw() 
+{
   println("Making page " + frameCount);
   pdf.background(255);
   pdf.fill(#005500);
@@ -27,12 +35,15 @@ void draw() {
   pdf.text("Page " + frameCount, 100, 200);
 
   // When finished drawing, quit and save the file
-  if (frameCount >= 10) {
+  if (frameCount >= 10) 
+  {
     println("Done");
     pdf.dispose();
     pdf.endDraw();
     exit();
-  } else {
+  } 
+  else 
+  {
     PGraphicsPDF pdfg = (PGraphicsPDF) pdf;  // Get the renderer
     pdfg.nextPage();  // Tell it to go to the next page
   }
