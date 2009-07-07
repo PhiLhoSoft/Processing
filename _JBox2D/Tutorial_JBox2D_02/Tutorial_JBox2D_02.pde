@@ -7,11 +7,13 @@ import org.jbox2d.collision.*;
 import org.jbox2d.dynamics.*;
 import org.jbox2d.dynamics.joints.*;
 import org.jbox2d.dynamics.contacts.*;
+//import org.jbox2d.util.blob.*;
 // BoxWrap2D
 import org.jbox2d.p5.*;
 
 // A reference to the physics engine
 Physics physics;
+Body circle, ground;
 
 void setup()
 {
@@ -21,6 +23,9 @@ void setup()
   frameRate(60);
   // Nicer graphisc
   smooth();
+
+  PFont f = loadFont("Verdana-12.vlw");
+  textFont(f);
 
   // Set up everything physics
   InitScene();
@@ -32,6 +37,19 @@ void draw()
 {
   // Not much to do here, most drawing is handled by BoxWrap2D
   background(255);
+  // Show position of circle
+  Vec2 posW = circle.getPosition();
+  Vec2 posS = physics.worldToScreen(posW);
+  String position = String.format("Pos: %.2f, %.2f", posS.x, posS.y);
+  text(position, 10, 20);
+}
+
+void mousePressed()
+{
+  // Do something interactive, like creating new objects
+  Body randomBody = physics.createCircle(mouseX, mouseY, random(5.0f,15f));
+  Vec2 vel = new Vec2(random(-30.0f,30.0f),random(-30.0f,30.0f));
+  randomBody.setLinearVelocity(vel);
 }
 
 void keyPressed()
@@ -46,6 +64,12 @@ void InitScene()
 {
   // Set up the engine with the sketch's dimensions
   physics = new Physics(this, width, height);
+  // Add a ground above default ground
+  // It is fixed because it is defined before the density setting
+  ground = physics.createRect(
+      20, height - 40,
+      width - 20, height - 20
+  );
   physics.setDensity(1.0);
 }
 
@@ -56,7 +80,7 @@ void CreateObjects()
   float hh = height / 2.0;
 
   // A round object in the middle of the scene (center coordinates, radius)
-  physics.createCircle(hw, hh, 50.0);
+  circle = physics.createCircle(hw, hh, 50.0);
   // And two rectangles not far (coordinates of top-left, and bottom-right corners)
   physics.createRect(
       hw - 150, hh - 50,

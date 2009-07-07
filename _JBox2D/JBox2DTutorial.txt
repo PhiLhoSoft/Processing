@@ -2,15 +2,15 @@ JBox2D Tutorial
 
 Note: this thread is intended to be a monologue / tutorial, hopefully a reference. To keep information relevant, I suggest to post your (welcomed) remarks in a separate thread which I will create soon.
 
-Some months ago I saw a Flash program showing some uses of a physics engine (solid objects) and I was seducted. I searched some Java engines and didn't found many. Later, ewjordan shown [url=http://www.jbox2d.org]JBox2D[/url], his port of [url=http://www.box2d.org]Box2D[/url] (a C++ library) to Java and its Processing wrapper, [url=http://processing.org/discourse/yabb2/YaBB.pl?num=1213404906]BoxWrap2d[/url].
+Some months ago I saw a Flash program showing some uses of a physics engine (solid objects) and I was seducted. I searched some Java engines and didn't found many. Later, ewjordan shown [url=http://www.jbox2d.org]JBox2D[/url], his port of [url=http://www.box2d.org]Box2D[/url] (a C++ library) to Java and its Processing wrapper, [url=http://processing.org/discourse/yabb2/YaBB.pl?num=1213404906]BoxWrap2D[/url].
 
 Somehow I postponed discovering of the library, fearing it was complex and time consuming to learn.
 But more recently I played some nice Flash games using physics engines (most of them derivated from Box2D...) on Kongregate, and I saw renewed interest on the library in Discourse.
 
 I saw that as a good opportunity to jump. And found out it wasn't so hard. Somehow, it is even simpler than doing a simple, typical "ball hitting walls and other balls" sketch in Processing!
 
-At time of starting to write this tutorial, I am hardly more knowledgeable than you... I played a bit with the BoxWrap2d demo, with the shown [url=http://processing.org/discourse/yabb2/YaBB.pl?num=1230505307]custom rendering methods[/url], and I read the tutorial for Box2D. It looks manageable so I though I should share my first steps in the hope it will jump start other persons.
-I pondered a bit if I should start directly with JBox2D (as I want to use it in other environments) or walk before running and use BoxWrap2d. I chose the latter, partly because of this tutorial...
+At time of starting to write this tutorial, I am hardly more knowledgeable than you... I played a bit with the BoxWrap2D demo, with the shown [url=http://processing.org/discourse/yabb2/YaBB.pl?num=1230505307]custom rendering methods[/url], and I read the tutorial for Box2D. It looks manageable so I though I should share my first steps in the hope it will jump start other persons.
+I pondered a bit if I should start directly with JBox2D (as I want to use it in other environments) or walk before running and use BoxWrap2D. I chose the latter, partly because of this tutorial...
 
 Enough meta discussion, let's begin!
 We first set the scene, making a kind of template we will use everytime.
@@ -22,7 +22,7 @@ import org.jbox2d.dynamics.*;
 import org.jbox2d.dynamics.joints.*;
 import org.jbox2d.dynamics.contacts.*;
 import org.jbox2d.util.blob.*;
-// BoxWrap2d
+// BoxWrap2D
 import org.jbox2d.p5.*;
 
 // A reference to the physics engine
@@ -42,18 +42,18 @@ void setup()
 
 void draw()
 {
-  // Not much to do here, most drawing is handled by BoxWrap2d
+  // Not much to do here, most drawing is handled by BoxWrap2D
   background(255);
 }
 
 void mousePressed()
 {
-	// Do something interactive, like creating new objects
+  // Do something interactive, like creating new objects
 }
 
 void keyPressed()
 {
-	// Can be used to reset the sketch, for example
+  // Can be used to reset the sketch, for example
     physics.destroy();
     physics = null;
     InitScene();
@@ -71,9 +71,48 @@ If we try and run this sketch... it works! (if you installed correctly the libra
 What is it doing? Actually quite a number of things. It defines a camera position (used for zooms or pans),  defines the limits of the simulation and the world where the objects will live, define defaults settings for new objects: density (weight per volume, or rather surface here), restitution (if objects are elastic or not), friction (are they smooth or rough) and some other parameters.
 And lastly, it creates a big hollow box around the sketch, to avoid loosing the falling objects.
 
-Let's add some objects there.
+So let's add some objects there, to see them falling on the ground.
 
+I add a [tt]CreateObjects();[/tt] call at the end of [tt]setup()[/tt] and create this function:
+[code]void CreateObjects()
+{
+  // A round object in the middle of the scene (center coordinates, radius)
+  physics.createCircle(width / 2.0, height / 2.0, 50.0);
+  // And two rectangles not far (coordinates of top-left, and bottom-right corners)
+  physics.createRect(
+      width / 2.0 - 150, height / 2.0 - 50,
+      width / 2.0 - 75, height / 2.0 + 50
+  );
+  physics.createRect(
+      width / 2.0 + 75, height / 2.0 - 40,
+      width / 2.0 + 175, height / 2.0 + 40
+  );
+}
+[/code]
 
+Ah, I see the objects, but they don't fall... At least, we can see how circles are done (by default): as a polygon.
+OK, actually, the objects were created without density, they weight nothing so they can't fall!
+Such weightless object are drawn in green.
+I will just add [tt]physics.setDensity(1.0);[/tt] after the physics creation in [tt]InitScene()[/tt], so that all objects created later will get this value.
+
+Cool, they fall to the ground. They are gray and change color (violet) when they find a stable position (no more updates to position).
+Let's add a polygon object, that's the third (and last) kind of object we can create with BoxWrap2D.
+
+[tt]  physics.createPolygon(
+      hw - 150, hh - 100,
+      hw, hh - 150,
+      hw + 150, hh - 100
+  );[/tt]
+
+Mmm, the triangle doesn't move and is green. I see: "[i]Ordered clockwise in screen coordinates (which becomes counterclockwise in world coordinates).[/i]" and "[i]if your objects are showing up as static objects instead of dynamic ones, and are not colliding correctly, you have probably not met the clockwise ordering requirement[/i]". OK, but it [i]is[/i] defined clockwise. Just try the reverse sense:
+
+[tt]  physics.createPolygon(
+      hw + 150, hh - 100,
+      hw, hh - 150,
+      hw - 150, hh - 100
+  );[/tt]
+
+It works nicely. Looks like the information is wrong there, unless I miss something.
 
 [code][/code]
 
