@@ -1,3 +1,5 @@
+import processing.opengl.*;
+
 //~ import org.jbox2d.testbed.tests.*;
 //~ import org.jbox2d.testbed.*;
 //~ import org.jbox2d.testbed.timingTests.*;
@@ -14,14 +16,15 @@ import org.jbox2d.p5.*;
 // A reference to the physics engine
 Physics physics;
 Body circle;
+boolean bShown; long timeStart;
 
 void setup()
 {
   // Medium sized scene
-  size(640, 480);
+  size(640, 480, OPENGL);
   // Physics is computed 60 times per second, so let's draw at same rate
   frameRate(60);
-  // Nicer graphisc
+  // Nicer graphics
   smooth();
 
   PFont f = loadFont("Verdana-12.vlw");
@@ -42,6 +45,11 @@ void draw()
   Vec2 posS = physics.worldToScreen(posW);
   String position = String.format("Pos: %.2f, %.2f", posS.x, posS.y);
   text(position, 10, 20);
+  if (circle.isSleeping() && !bShown)
+  {
+    println(millis() - timeStart + " " + frameCount); 
+    bShown = true;
+  }
 }
 
 void mousePressed()
@@ -87,6 +95,9 @@ void CreateObjects()
   circle = physics.createCircle(hw, hh, 50.0);
   // Make it rotating (value in radian/second)
   circle.setAngularVelocity(3.0);
+  Vec2 vc = new Vec2(-30.0, 0.0); // To the left
+  circle.setLinearVelocity(vc);
+
   // And two rectangles not far (coordinates of top-left, and bottom-right corners)
   Body rect1 = physics.createRect(
       hw - 150, hh - 50,
@@ -112,5 +123,7 @@ void CreateObjects()
   );
   Vec2 v3 = new Vec2(5.0, 30.0); // Go a little high
   triangle.setLinearVelocity(v3);
+
+  timeStart = millis(); bShown = false; 
 }
 
