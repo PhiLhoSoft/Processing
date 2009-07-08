@@ -17,6 +17,7 @@ Physics physics;
 World m_world;
 // Some elements we need
 MouseJoint m_mouseJoint;
+Body movedBody;
 Body circle, ground;
 
 void setup()
@@ -42,8 +43,16 @@ void draw()
 {
   // Not much to do here, most drawing is handled by BoxWrap2D
   background(255);
-  // Show position of circle
-  Vec2 posW = circle.getPosition();
+  // Show position of latest moved body
+  Vec2 posW;
+  if (movedBody == null)
+  {
+    posW = circle.getPosition();
+  }
+  else
+  {
+    posW = movedBody.getPosition();
+  }
   Vec2 posS = physics.worldToScreen(posW);
   String position = String.format("Pos: %.2f, %.2f", posS.x, posS.y);
   text(position, 10, 20);
@@ -53,11 +62,10 @@ void mousePressed()
 {
   if (m_mouseJoint == null)
   {
-    Body b = GetBodyAtMouse();
-    if (b != null)
+    movedBody = GetBodyAtMouse();
+    if (movedBody != null)
     {
-      println(b);
-      m_mouseJoint = createMouseJoint(b, mouseX, mouseY);
+      m_mouseJoint = createMouseJoint(movedBody, mouseX, mouseY);
     }
   }
 }
@@ -130,7 +138,7 @@ MouseJoint createMouseJoint(Body body, float x, float y)
 {
   Vec2 v = physics.screenToWorld(x, y);
   MouseJointDef mjd = new MouseJointDef();
-  mjd.body1 = ground; // Not used, avoid a NPE
+  mjd.body1 = body; // Not used, avoid a NPE
   mjd.body2 = body;
   mjd.target = v;
   mjd.maxForce = 3000.0 * body.m_mass;
@@ -159,4 +167,3 @@ Body GetBodyAtMouse()
   }
   return null;
 }
-

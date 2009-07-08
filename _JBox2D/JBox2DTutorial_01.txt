@@ -1,19 +1,20 @@
-JBox2D Tutorial
+JBox2D with BoxWrap2D Tutorial
+[url=http://processing.org/discourse/yabb2/YaBB.pl?num=1247034244]JBox2D with BoxWrap2D Tutorial[/url]
 
-Note: this thread is intended to be a monologue / tutorial, hopefully a reference. To keep information relevant, I suggest to post your (welcomed) remarks in a separate thread which I will create soon.
+Note: this thread is intended to be a monologue / tutorial, hopefully a kind of reference. To keep information relevant, I suggest to post your (welcomed) remarks in a separate thread: [url=http://processing.org/discourse/yabb2/YaBB.pl?num=1247034454]Discussion on the JBox2D with BoxWrap2D Tutorial[/url]
 
-Some months ago I saw a Flash program showing some uses of a physics engine (solid objects) and I was seducted. I searched some Java engines and didn't found many. Later, ewjordan shown [url=http://www.jbox2d.org]JBox2D[/url], his port of [url=http://www.box2d.org]Box2D[/url] (a C++ library) to Java and its Processing wrapper, [url=http://processing.org/discourse/yabb2/YaBB.pl?num=1213404906]BoxWrap2D[/url].
+Some months ago I saw a Flash program showing some uses of a 2D physics engine (solid objects) and I was seduced. I searched some Java engines and didn't found many. Later, ewjordan shown [url=http://www.jbox2d.org]JBox2D[/url], his port of [url=http://www.box2d.org]Box2D[/url] (a C++ library) to Java and its Processing wrapper, [url=http://processing.org/discourse/yabb2/YaBB.pl?num=1213404906]BoxWrap2D[/url].
 
 Somehow I postponed discovering of the library, fearing it was complex and time consuming to learn.
-But more recently I played some nice Flash games using physics engines (most of them derivated from Box2D...) on Kongregate, and I saw renewed interest on the library in Discourse.
 
+But more recently I played some nice Flash games using physics engines (most of them derived from Box2D...) on Kongregate, and I saw renewed interest on the library in Discourse.
 I saw that as a good opportunity to jump. And found out it wasn't so hard. Somehow, it is even simpler than doing a simple, typical "ball hitting walls and other balls" sketch in Processing!
 
 At time of starting to write this tutorial, I am hardly more knowledgeable than you... I played a bit with the BoxWrap2D demo, with the shown [url=http://processing.org/discourse/yabb2/YaBB.pl?num=1230505307]custom rendering methods[/url], and I read the tutorial for Box2D. It looks manageable so I though I should share my first steps in the hope it will jump start other persons.
-I pondered a bit if I should start directly with JBox2D (as I want to use it in other environments) or walk before running and use BoxWrap2D. I chose the latter, partly because of this tutorial...
+I pondered a bit if I should start directly with JBox2D (as I want to use it in other environments) or walk before running and use BoxWrap2D. I chose the latter, partly because of this tutorial... And looking how BoxWrap2D is done is a good learning experience as well.
 
 Enough meta discussion, let's begin!
-We first set the scene, making a kind of template we will use everytime.
+We first set the scene, making a kind of template we will use every time.
 
 [code]// Import everything exposed by JBox2D (except the testbed stuff)
 import org.jbox2d.common.*;
@@ -21,7 +22,6 @@ import org.jbox2d.collision.*;
 import org.jbox2d.dynamics.*;
 import org.jbox2d.dynamics.joints.*;
 import org.jbox2d.dynamics.contacts.*;
-import org.jbox2d.util.blob.*;
 // BoxWrap2D
 import org.jbox2d.p5.*;
 
@@ -54,9 +54,9 @@ void mousePressed()
 void keyPressed()
 {
   // Can be used to reset the sketch, for example
-    physics.destroy();
-    physics = null;
-    InitScene();
+  physics.destroy();
+  physics = null;
+  InitScene();
 }
 
 void InitScene()
@@ -68,7 +68,7 @@ void InitScene()
 
 If we try and run this sketch... it works! (if you installed correctly the library.) But it is quite boring, there is almost nothing to see... Just a static border around the sketch.
 
-What is it doing? Actually quite a number of things. It defines a camera position (used for zooms or pans),  defines the limits of the simulation and the world where the objects will live, define defaults settings for new objects: density (weight per volume, or rather surface here), restitution (if objects are elastic or not), friction (are they smooth or rough) and some other parameters.
+What is it doing? Actually quite a number of things. It defines a camera position (used for zooms or pans), defines the limits of the simulation and the world where the objects will live, define defaults settings for new objects: density (weight per volume, or rather surface here), restitution (if objects are elastic or not), friction (are they smooth or rough) and some other parameters like gravity (close of Earth's one).
 And lastly, it creates a big hollow box around the sketch, to avoid loosing the falling objects.
 
 So let's add some objects there, to see them falling on the ground.
@@ -90,7 +90,7 @@ I add a [tt]CreateObjects();[/tt] call at the end of [tt]setup()[/tt] and create
 }
 [/code]
 
-Ah, I see the objects, but they don't fall... At least, we can see how circles are done (by default): as a polygon.
+Ah, I see the objects, but they don't fall... At least, we can see how circles are done (by default): as a polygon, with a line to see them rolling.
 OK, actually, the objects were created without density, they weight nothing so they can't fall!
 Such weightless object are drawn in green.
 I will just add [tt]physics.setDensity(1.0);[/tt] after the physics creation in [tt]InitScene()[/tt], so that all objects created later will get this value.
@@ -104,7 +104,8 @@ Let's add a polygon object, that's the third (and last) kind of object we can cr
       hw + 150, hh - 100
   );[/tt]
 
-Mmm, the triangle doesn't move and is green. I see: "[i]Ordered clockwise in screen coordinates (which becomes counterclockwise in world coordinates).[/i]" and "[i]if your objects are showing up as static objects instead of dynamic ones, and are not colliding correctly, you have probably not met the clockwise ordering requirement[/i]". OK, but it [i]is[/i] defined clockwise. Just try the reverse sense:
+(I defined hw and hh as half width and half height, faster to type and more readable.)
+Mmm, the triangle doesn't move and is green. I see: "[i]Ordered clockwise in screen coordinates (which becomes counterclockwise in world coordinates).[/i]" and "[i]if your objects are showing up as static objects instead of dynamic ones, and are not colliding correctly, you have probably not met the clockwise ordering requirement[/i]". OK, but it [i]is[/i] defined clockwise (unless I got my mental model wrong...). Just try the reverse order:
 
 [tt]  physics.createPolygon(
       hw + 150, hh - 100,
@@ -114,5 +115,4 @@ Mmm, the triangle doesn't move and is green. I see: "[i]Ordered clockwise in scr
 
 It works nicely. Looks like the information is wrong there, unless I miss something.
 
-[code][/code]
-
+That's all for the first lesson, we will make our objects more dynamic in the next one!
