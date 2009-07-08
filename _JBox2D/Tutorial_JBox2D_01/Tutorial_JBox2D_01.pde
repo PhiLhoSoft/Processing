@@ -40,6 +40,7 @@ void keyPressed()
   physics.destroy();
   physics = null;
   InitScene();
+  CreateObjects();
 }
 
 void InitScene()

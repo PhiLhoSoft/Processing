@@ -13,7 +13,7 @@ import org.jbox2d.p5.*;
 
 // A reference to the physics engine
 Physics physics;
-Body circle, ground;
+Body circle;
 
 void setup()
 {
@@ -47,9 +47,12 @@ void draw()
 void mousePressed()
 {
   // Do something interactive, like creating new objects
-  Body randomBody = physics.createCircle(mouseX, mouseY, random(5.0f,15f));
-  Vec2 vel = new Vec2(random(-30.0f,30.0f),random(-30.0f,30.0f));
+  float r = physics.getRestitution();
+  physics.setRestitution(0.9); // Make them super-rebunding
+  Body randomBody = physics.createCircle(mouseX, mouseY, random(5.0, 15.0));
+  Vec2 vel = new Vec2(random(-30.0, 30.0), random(-30.0, 30.0));
   randomBody.setLinearVelocity(vel);
+  physics.setRestitution(r); // Restore
 }
 
 void keyPressed()
@@ -58,18 +61,19 @@ void keyPressed()
   physics.destroy();
   physics = null;
   InitScene();
+  CreateObjects();
 }
 
 void InitScene()
 {
   // Set up the engine with the sketch's dimensions
   physics = new Physics(this, width, height);
-  // Add a ground above default ground
-  // It is fixed because it is defined before the density setting
-  ground = physics.createRect(
-      20, height - 40,
-      width - 20, height - 20
-  );
+  // Add fixed obstacles, of density 0.0
+  physics.createCircle(width / 5, height / 5, 10.0);
+  physics.createCircle(4 * width / 5, height / 5, 10.0);
+  physics.createCircle(width / 5, 4 * height / 5, 10.0);
+  physics.createCircle(4 * width / 5, 4 * height / 5, 10.0);
+  // And set the density for the other objects
   physics.setDensity(1.0);
 }
 
@@ -81,19 +85,32 @@ void CreateObjects()
 
   // A round object in the middle of the scene (center coordinates, radius)
   circle = physics.createCircle(hw, hh, 50.0);
+  // Make it rotating (value in radian/second)
+  circle.setAngularVelocity(3.0);
   // And two rectangles not far (coordinates of top-left, and bottom-right corners)
-  physics.createRect(
+  Body rect1 = physics.createRect(
       hw - 150, hh - 50,
       hw - 75, hh + 50
   );
-  physics.createRect(
+  // Small vector: slow
+  Vec2 v1 = new Vec2(-10.0, 0.0); // To the left
+  rect1.setLinearVelocity(v1);
+  
+  Body rect2 = physics.createRect(
       hw + 75, hh - 40,
       hw + 175, hh + 40
   );
+  // Bigger: fast
+  Vec2 v2 = new Vec2(20.0, 50.0); // Toward top-right
+  rect2.setLinearVelocity(v2);
+  
   // A polygon, defined by a list of vertices
-  physics.createPolygon(
+  Body triangle = physics.createPolygon(
       hw + 150, hh - 100,
       hw, hh - 150,
       hw - 150, hh - 100
   );
+  Vec2 v3 = new Vec2(5.0, 30.0); // Go a little high
+  triangle.setLinearVelocity(v3);
 }
+

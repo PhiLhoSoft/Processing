@@ -1,0 +1,174 @@
+JBox2D with BoxWrap2D Tutorial - Part 2
+[url=http://processing.org/discourse/yabb2/YaBB.pl?num=1247034244]JBox2D with BoxWrap2D Tutorial[/url]
+
+In the previous lesson, we made some objects and saw them falling.
+Nice, but quickly boring... :-)
+Let see where we stopped, so we can make the sketch to evolve to something more dynamic.
+
+[code]// Import everything exposed by JBox2D (except the testbed stuff)
+import org.jbox2d.common.*;
+import org.jbox2d.collision.*;
+import org.jbox2d.dynamics.*;
+import org.jbox2d.dynamics.joints.*;
+import org.jbox2d.dynamics.contacts.*;
+// BoxWrap2D
+import org.jbox2d.p5.*;
+
+// A reference to the physics engine
+Physics physics;
+
+void setup()
+{
+  // Medium sized scene
+  size(640, 480);
+  // Physics is computed 60 times per second, so let's draw at same rate
+  frameRate(60);
+  // Nicer graphisc
+  smooth();
+
+  // Set up everything physics
+  InitScene();
+  // And add object to the scene
+  CreateObjects();
+}
+
+void draw()
+{
+  // Not much to do here, most drawing is handled by BoxWrap2D
+  background(255);
+}
+
+void keyPressed()
+{
+  // Can be used to reset the sketch, for example
+  physics.destroy();
+  physics = null;
+  InitScene();
+  CreateObjects();
+}
+
+void InitScene()
+{
+  // Set up the engine with the sketch's dimensions
+  physics = new Physics(this, width, height);
+  physics.setDensity(1.0);
+}
+
+void CreateObjects()
+{
+  // Middle of the world
+  float hw = width / 2.0;
+  float hh = height / 2.0;
+
+  // A round object in the middle of the scene (center coordinates, radius)
+  physics.createCircle(hw, hh, 50.0);
+  // And two rectangles not far (coordinates of top-left, and bottom-right corners)
+  physics.createRect(
+      hw - 150, hh - 50,
+      hw - 75, hh + 50
+  );
+  physics.createRect(
+      hw + 75, hh - 40,
+      hw + 175, hh + 40
+  );
+  // A polygon, defined by a list of vertices
+  physics.createPolygon(
+      hw + 150, hh - 100,
+      hw, hh - 150,
+      hw - 150, hh - 100
+  );
+}[/code]
+
+We can add fixed obstacles: as we saw, they just need to have a density of 0, eg. by defining them before the setDensity, or by changing it on the fly:
+
+[code]void InitScene()
+{
+  // Set up the engine with the sketch's dimensions
+  physics = new Physics(this, width, height);
+  // Add fixed obstacles, of density 0.0
+  physics.createCircle(width / 5, height / 5, 10.0);
+  physics.createCircle(4 * width / 5, height / 5, 10.0);
+  physics.createCircle(width / 5, 4 * height / 5, 10.0);
+  physics.createCircle(4 * width / 5, 4 * height / 5, 10.0);
+  // And set the density for the other objects
+  physics.setDensity(1.0);
+}[/code]
+
+Now, we can give an initial velocity (speed) to the objects, to make them flying across the scene...
+We need to get the result of the createXxx methods, and change their settings.
+Beware! The velocity vector is expressed as a point relative to the center of mass of the object. [i]But[/i], like most methods not wrapped by BoxWrap2D, the coordinates are expressed in [i]world[/i] units, where the origin is at the bottom-left of the scene (y is upward, which makes sense for a physics simulation).
+
+[code]void CreateObjects()
+{
+  // Middle of the world
+  float hw = width / 2.0;
+  float hh = height / 2.0;
+
+  // A round object in the middle of the scene (center coordinates, radius)
+  Body circle = physics.createCircle(hw, hh, 50.0);
+  // Make it rotating (value in radian/second)
+  circle.setAngularVelocity(3.0);
+  // And two rectangles not far (coordinates of top-left, and bottom-right corners)
+  Body rect1 = physics.createRect(
+      hw - 150, hh - 50,
+      hw - 75, hh + 50
+  );
+  // Small vector: slow
+  Vec2 v1 = new Vec2(-10.0, 0.0); // To the left
+  rect1.setLinearVelocity(v1);
+
+  Body rect2 = physics.createRect(
+      hw + 75, hh - 40,
+      hw + 175, hh + 40
+  );
+  // Bigger: fast
+  Vec2 v2 = new Vec2(20.0, 50.0); // Toward top-right
+  rect2.setLinearVelocity(v2);
+
+  // A polygon, defined by a list of vertices
+  Body triangle = physics.createPolygon(
+      hw + 150, hh - 100,
+      hw, hh - 150,
+      hw - 150, hh - 100
+  );
+  Vec2 v3 = new Vec2(5.0, 30.0); // Go a little high
+  triangle.setLinearVelocity(v3);
+}[/code]
+
+Yeah, that's more lively! :-) Hit a key to see the scene again.
+
+Now, let's do something interactively. Like in the BoxWrap2D demo, we will create a random moving circle on mouse click. I spice it a bit by making these "balls" super-rebounding.
+
+[code]void mousePressed()
+{
+  // Do something interactive, like creating new objects
+  float r = physics.getRestitution();
+  physics.setRestitution(0.9); // Make them super-rebounding
+  Body randomBody = physics.createCircle(mouseX, mouseY, random(5.0, 15.0));
+  Vec2 vel = new Vec2(random(-30.0, 30.0), random(-30.0, 30.0));
+  randomBody.setLinearVelocity(vel);
+  physics.setRestitution(r); // Restore
+}[/code]
+
+Lastly, I will display the position of the circle, as an example of on-screen display and position tracking. The trick here is also to transform the position we get from the body, which is in world units, to screen units.
+
+I declare:
+[tt]Body circle;[/tt] (and of course remove the Body declaration from CreateObjects)
+I add:
+[tt]  PFont f = loadFont("Verdana-12.vlw");
+  textFont(f);[/tt]
+to setup.
+And I change draw():
+[code]void draw()
+{
+  // Not much to do here, most drawing is handled by BoxWrap2D
+  background(255);
+  // Show position of circle
+  Vec2 posW = circle.getPosition();
+  Vec2 posS = physics.worldToScreen(posW);
+  String position = String.format("Pos: %.2f, %.2f", posS.x, posS.y);
+  text(position, 10, 20);
+}
+[/code]
+
+That's all. Next time, we will make more complex compound shapes with joints.
