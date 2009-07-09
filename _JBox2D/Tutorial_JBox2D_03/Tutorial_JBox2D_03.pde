@@ -1,10 +1,10 @@
 /*
  * A tutorial on JBox2D, using BoxWrap2D for Processing.
  * http://processing.org/discourse/yabb2/YaBB.pl?num=1247034244
- * Part x: implementing and using MouseJoint
+ * Part 3: compound shapes and impulsions
  */
 /* File history:
- *  1.00.000 -- 2009/07/08 (PL) -- Creation
+ *  1.00.000 -- 2009/07/09 (PL) -- Creation
  */
 /*
 Author: Philippe Lhoste <PhiLho(a)GMX.net> http://Phi.Lho.free.fr
@@ -14,7 +14,9 @@ This program is distributed under the zlib/libpng license.
 Copyright (c) 2009 Philippe Lhoste / PhiLhoSoft
 */
 
-// Import everything exposed by JBox2D (except the testbed stuff)
+import processing.opengl.*;
+
+// Import everything exposed by JBox2D
 import org.jbox2d.common.*;
 import org.jbox2d.collision.*;
 import org.jbox2d.dynamics.*;
@@ -27,18 +29,21 @@ import org.jbox2d.p5.*;
 Physics physics;
 // Reference to the world as we need it for more advanced stuff...
 World world;
-// Some elements we need
-MouseJoint m_mouseJoint;
+// Latest touched object
 Body movedBody;
-Body circle, ground;
+
+// Code of interaction to apply
+char interactionKind = 'T';
+// Information on interaction
+String information = "";
 
 void setup()
 {
   // Medium sized scene
-  size(640, 480);
+  size(640, 480, OPENGL);
   // Physics is computed 60 times per second, so let's draw at same rate
   frameRate(60);
-  // Nicer graphisc
+  // Nicer graphics
   smooth();
 
   PFont f = loadFont("Verdana-12.vlw");
@@ -46,7 +51,6 @@ void setup()
 
   // Set up everything physics
   InitScene();
-//~   physics.setCustomRenderingMethod(this, "CustomWorld");
   // And add object to the scene
   CreateObjects();
 }
@@ -55,59 +59,64 @@ void draw()
 {
   // Not much to do here, most drawing is handled by BoxWrap2D
   background(255);
-  // Show position of latest moved body
-  Vec2 posW;
-  if (movedBody == null)
+  // Show position of latest touched object
+  if (movedBody != null)
   {
-    posW = circle.getPosition();
-  }
-  else
-  {
-    posW = movedBody.getPosition();
-  }
-  Vec2 posS = physics.worldToScreen(posW);
-  String position = String.format("Pos: %.2f, %.2f", posS.x, posS.y);
-  text(position, 10, 20);
+    Vec2 posW = movedBody.getPosition();
+    Vec2 posS = physics.worldToScreen(posW);
+    String position = String.format("Pos: %.2f, %.2f - %s", posS.x, posS.y, information);
+    text(position, 10, 20);  }
+
 }
 
 void mousePressed()
 {
-  if (m_mouseJoint == null)
+  movedBody = GetBodyAtMouse();
+  if (movedBody != null)
   {
-    movedBody = GetBodyAtMouse();
-    if (movedBody != null)
+    switch (interactionKind)
     {
-      m_mouseJoint = createMouseJoint(movedBody, mouseX, mouseY);
+    case 'T':
+      float torque = random(-20000, 20000);
+      information = String.format("Torque: %.0f", torque);
+      movedBody.applyTorque(torque * movedBody.m_mass);
+      break;
+    case 'F':
+//      movedBody.applyForce(Vec2force, Vec2point);
+      break;
+    case 'I':
+//      movedBody.applyImpulse(Vec2impulse, Vec2point);
+      break;
     }
-  }
-}
-
-void mouseReleased()
-{
-  if (m_mouseJoint != null)
-  {
-    world.destroyJoint(m_mouseJoint);
-    m_mouseJoint = null;
-  }
-}
-
-void mouseDragged()
-{
-  if (m_mouseJoint != null)
-  {
-    Vec2 v = physics.screenToWorld(mouseX, mouseY);
-    m_mouseJoint.setTarget(v);
   }
 }
 
 void keyPressed()
 {
-//~   physics.unsetCustomRenderingMethod();
-
-  // Can be used to reset the sketch, for example
-  physics.destroy();
-  physics = null;
-  InitScene();
+  switch (key)
+  {
+  case 'r':
+  case 'R':
+    // Reset the sketch
+    physics.destroy();
+    physics = null;
+    InitScene();
+    CreateObjects();
+    break;
+  case 't':
+  case 'T':
+    interactionKind = 'T';
+    break;
+  case 'f':
+  case 'F':
+    interactionKind = 'F';
+    break;
+  case 'i':
+  case 'I':
+    interactionKind = 'I';
+    break;
+  default: // Ignore...
+  }
 }
 
 void InitScene()
@@ -115,10 +124,14 @@ void InitScene()
   // Set up the engine with the sketch's dimensions
   physics = new Physics(this, width, height);
   world = physics.getWorld();
-  ground = physics.createRect(
-      20, height - 40,
-      width - 20, height - 20
-  );
+  // Add some fixed obstacles, of density 0.0
+  for (int ic = 0, margin = 50; ic < 10; ic++)
+  {
+    physics.createCircle(
+        random(margin, width - margin),
+        random(margin, height - margin), 10.0);
+  }
+  // And set the density for the other objects
   physics.setDensity(1.0);
 }
 
@@ -127,34 +140,24 @@ void CreateObjects()
   // Middle of the world
   float hw = width / 2.0;
   float hh = height / 2.0;
-  // A round object in the middle of the scene (center coordinates, radius)
-  circle = physics.createCircle(hw, hh, 50.0);
-  // And two rectangles not far (coordinates of top-left, and bottom-right corners)
-  physics.createRect(
-      hw - 150, hh - 50,
-      hw - 75, hh + 50
-  );
-  physics.createRect(
-      hw + 75, hh - 40,
-      hw + 175, hh + 40
-  );
-  // A polygon, defined by a list of vertices
+
+  physics.createCircle(hw, hh, 50.0);
+  physics.createRect(hw - 150, hh - 50, hw - 75, hh + 50);
+  physics.createRect(hw + 75, hh - 40, hw + 175, hh + 40);
   physics.createPolygon(
+      hw + 120, hh - 80,
       hw + 150, hh - 100,
       hw, hh - 150,
-      hw - 150, hh - 100
+      hw - 150, hh - 100,
+      hw - 120, hh - 80
   );
-}
-
-MouseJoint createMouseJoint(Body body, float x, float y)
-{
-  Vec2 v = physics.screenToWorld(x, y);
-  MouseJointDef mjd = new MouseJointDef();
-  mjd.body1 = body; // Not used, avoid a NPE
-  mjd.body2 = body;
-  mjd.target = v;
-  mjd.maxForce = 3000.0 * body.m_mass;
-  return (MouseJoint) world.createJoint(mjd);
+  // Some smaller, more rebunding objects
+  physics.setRestitution(0.9);
+  physics.createCircle(hw - 75, hh - 75, 20.0);
+  physics.createRect(50, 50, 100, 100);
+  physics.setRestitution(0.7);
+  physics.createCircle(hw + 75, hh + 75, 20.0);
+  physics.createRect(width - 50, 50, width - 100, 100);
 }
 
 // Idea taken from source seen at The Stem > Box2D Joints #2 - Revolute Joints <http://blog.thestem.ca/archives/102>

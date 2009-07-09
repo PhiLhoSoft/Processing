@@ -1,3 +1,19 @@
+/*
+ * A tutorial on JBox2D, using BoxWrap2D for Processing.
+ * http://processing.org/discourse/yabb2/YaBB.pl?num=1247034244
+ * Part 1: simple objects
+ */
+/* File history:
+ *  1.00.000 -- 2009/07/08 (PL) -- Creation
+ */
+/*
+Author: Philippe Lhoste <PhiLho(a)GMX.net> http://Phi.Lho.free.fr
+Copyright notice: For details, see the following file:
+http://Phi.Lho.free.fr/softwares/PhiLhoSoft/PhiLhoSoftLicence.txt
+This program is distributed under the zlib/libpng license.
+Copyright (c) 2009 Philippe Lhoste / PhiLhoSoft
+*/
+
 //~ import org.jbox2d.testbed.tests.*;
 //~ import org.jbox2d.testbed.*;
 //~ import org.jbox2d.testbed.timingTests.*;

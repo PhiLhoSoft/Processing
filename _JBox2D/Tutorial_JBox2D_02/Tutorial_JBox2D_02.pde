@@ -1,15 +1,27 @@
+/*
+ * A tutorial on JBox2D, using BoxWrap2D for Processing.
+ * http://processing.org/discourse/yabb2/YaBB.pl?num=1247034244
+ * Part 2: a bit of movement, interaction and feedback
+ */
+/* File history:
+ *  1.00.000 -- 2009/07/08 (PL) -- Creation
+ */
+/*
+Author: Philippe Lhoste <PhiLho(a)GMX.net> http://Phi.Lho.free.fr
+Copyright notice: For details, see the following file:
+http://Phi.Lho.free.fr/softwares/PhiLhoSoft/PhiLhoSoftLicence.txt
+This program is distributed under the zlib/libpng license.
+Copyright (c) 2009 Philippe Lhoste / PhiLhoSoft
+*/
+
 import processing.opengl.*;
 
-//~ import org.jbox2d.testbed.tests.*;
-//~ import org.jbox2d.testbed.*;
-//~ import org.jbox2d.testbed.timingTests.*;
-// Import everything exposed by JBox2D (except the testbed stuff)
+// Import everything exposed by JBox2D
 import org.jbox2d.common.*;
 import org.jbox2d.collision.*;
 import org.jbox2d.dynamics.*;
 import org.jbox2d.dynamics.joints.*;
 import org.jbox2d.dynamics.contacts.*;
-//import org.jbox2d.util.blob.*;
 // BoxWrap2D
 import org.jbox2d.p5.*;
 
@@ -47,7 +59,7 @@ void draw()
   text(position, 10, 20);
   if (circle.isSleeping() && !bShown)
   {
-    println(millis() - timeStart + " " + frameCount); 
+    println(millis() - timeStart + " " + frameCount);
     bShown = true;
   }
 }
@@ -106,7 +118,7 @@ void CreateObjects()
   // Small vector: slow
   Vec2 v1 = new Vec2(-10.0, 0.0); // To the left
   rect1.setLinearVelocity(v1);
-  
+
   Body rect2 = physics.createRect(
       hw + 75, hh - 40,
       hw + 175, hh + 40
@@ -114,7 +126,7 @@ void CreateObjects()
   // Bigger: fast
   Vec2 v2 = new Vec2(20.0, 50.0); // Toward top-right
   rect2.setLinearVelocity(v2);
-  
+
   // A polygon, defined by a list of vertices
   Body triangle = physics.createPolygon(
       hw + 150, hh - 100,
@@ -124,6 +136,6 @@ void CreateObjects()
   Vec2 v3 = new Vec2(5.0, 30.0); // Go a little high
   triangle.setLinearVelocity(v3);
 
-  timeStart = millis(); bShown = false; 
+  timeStart = millis(); bShown = false;
 }
 
