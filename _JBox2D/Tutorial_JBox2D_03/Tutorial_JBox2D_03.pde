@@ -65,30 +65,52 @@ void draw()
     Vec2 posW = movedBody.getPosition();
     Vec2 posS = physics.worldToScreen(posW);
     String position = String.format("Pos: %.2f, %.2f - %s", posS.x, posS.y, information);
-    text(position, 10, 20);  }
-
+    text(position, 10, 20);
+  }
+  if (pressMouseX >= 0)
+  {
+    stroke(#FF8800);
+    line(pressMouseX, pressMouseY, mouseX, mouseY);
+  }
 }
 
+float pressMouseX = -1, pressMouseY = -1;
 void mousePressed()
 {
-  movedBody = GetBodyAtMouse();
+  pressMouseX = mouseX;
+  pressMouseY = mouseY;
+}
+
+void mouseReleased()
+{
+  movedBody = GetBodyAtPoint(mouseX, mouseY);
   if (movedBody != null)
   {
+    // We apply force or impulse where we click
+    Vec2 point = new Vec2(mouseX, mouseY);
+    float mass = movedBody.m_mass;
+    float dX = mouseX - pressMouseX;
+    float dY = mouseY - pressMouseY;
     switch (interactionKind)
     {
     case 'T':
-      float torque = random(-20000, 20000);
-      information = String.format("Torque: %.0f", torque);
-      movedBody.applyTorque(torque * movedBody.m_mass);
+      float torque = (dX * dX + dY * dY) * (dX < 0 ? 1 : -1);
+      information = String.format("Torque: %.0f * %.1f", torque, mass);
+      movedBody.applyTorque(torque * mass);
       break;
     case 'F':
-//      movedBody.applyForce(Vec2force, Vec2point);
+      Vec2 force = new Vec2(dX / 10, dY / 10);
+      information = String.format("Force: %s * %.1f", force, mass);
+      movedBody.applyForce(force.mul(mass), point);
       break;
     case 'I':
-//      movedBody.applyImpulse(Vec2impulse, Vec2point);
+      Vec2 impulse = new Vec2(dX / 100, dY / 100);
+      information = String.format("Impulse: %s * %.1f", impulse, mass);
+      movedBody.applyImpulse(impulse.mul(mass), point);
       break;
     }
   }
+  pressMouseX = pressMouseY = -1;
 }
 
 void keyPressed()
@@ -161,10 +183,10 @@ void CreateObjects()
 }
 
 // Idea taken from source seen at The Stem > Box2D Joints #2 - Revolute Joints <http://blog.thestem.ca/archives/102>
-Body GetBodyAtMouse()
+Body GetBodyAtPoint(float x, float y)
 {
   // Create a small box at mouse point
-  Vec2 v = physics.screenToWorld(mouseX, mouseY);
+  Vec2 v = physics.screenToWorld(x, y);
   AABB aabb = new AABB(new Vec2(v.x - 0.001, v.y - 0.001), new Vec2(v.x + 0.001, v.y + 0.001));
   // Look at the shapes intersecting this box (max.: 10)
   org.jbox2d.collision.Shape[] shapes = world.query(aabb, 10);
