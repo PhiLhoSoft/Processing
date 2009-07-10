@@ -1,7 +1,7 @@
 /*
  * A tutorial on JBox2D, using BoxWrap2D for Processing.
  * http://processing.org/discourse/yabb2/YaBB.pl?num=1247034244
- * Part 3: compound shapes and impulsions
+ * Part 3: applying torques, forces and impulsions
  */
 /* File history:
  *  1.00.000 -- 2009/07/09 (PL) -- Creation
@@ -40,7 +40,7 @@ String information = "";
 void setup()
 {
   // Medium sized scene
-  size(640, 480, OPENGL);
+  size(640, 480);
   // Physics is computed 60 times per second, so let's draw at same rate
   frameRate(60);
   // Nicer graphics
@@ -57,7 +57,6 @@ void setup()
 
 void draw()
 {
-  // Not much to do here, most drawing is handled by BoxWrap2D
   background(255);
   // Show position of latest touched object
   if (movedBody != null)
@@ -67,6 +66,7 @@ void draw()
     String position = String.format("Pos: %.2f, %.2f - %s", posS.x, posS.y, information);
     text(position, 10, 20);
   }
+  // We visualize the drag scope
   if (pressMouseX >= 0)
   {
     stroke(#FF8800);
@@ -74,6 +74,7 @@ void draw()
   }
 }
 
+// Get the position where the mouse is pressed
 float pressMouseX = -1, pressMouseY = -1;
 void mousePressed()
 {
@@ -81,6 +82,8 @@ void mousePressed()
   pressMouseY = mouseY;
 }
 
+// When released, we see if it is on a non-static body
+// and if so, we apply the currently chosen action
 void mouseReleased()
 {
   movedBody = GetBodyAtPoint(mouseX, mouseY);
@@ -162,6 +165,11 @@ void CreateObjects()
   // Middle of the world
   float hw = width / 2.0;
   float hh = height / 2.0;
+
+  for (int p = 20; p < width - 20; p += 7)
+  {
+    physics.createRect(p, 25, p + 5, 30);
+  }
 
   physics.createCircle(hw, hh, 50.0);
   physics.createRect(hw - 150, hh - 50, hw - 75, hh + 50);

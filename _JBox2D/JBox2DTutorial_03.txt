@@ -1,0 +1,198 @@
+JBox2D with BoxWrap2D Tutorial - Part 3
+[url=http://processing.org/discourse/yabb2/YaBB.pl?num=1247034244]JBox2D with BoxWrap2D Tutorial[/url]
+
+I will report joint study to next lesson...
+I saw an advice to avoid using setXxxVelocity on bodies, as this is quite artificial, not fitting in a physics world (although it has its uses and well, it is useful for a quick demo...).
+Why? Because you set the speed out of the blues, without taking in account inertia and such.
+And there are three functions to do that in a more physics way, applying torque (for rotation), impulse (a sudden strike) or force (more designed for continuous or relatively long period application).
+
+At the same time, I show how to pick a shape with mouse, how to draw custom decoration over the scene, and how to use these forces, of course.
+
+We will start with the same base than the second lesson, with usual imports and a setup() loading a font. Curiously, on another old computer I use, the text displayed in draw() is shown only in Java2D mode...
+
+We will start by creating the scene and the objects. To spice a bit the scene, I make a number of fixed plots:
+[code]// Reference to the world as we need it for more advanced stuff...
+World world;
+
+void InitScene()
+{
+  // Set up the engine with the sketch's dimensions
+  physics = new Physics(this, width, height);
+  world = physics.getWorld();
+  // Add some fixed obstacles, of density 0.0
+  for (int ic = 0, margin = 50; ic < 10; ic++)
+  {
+    physics.createCircle(
+        random(margin, width - margin),
+        random(margin, height - margin), 10.0);
+  }
+  // And set the density for the other objects
+  physics.setDensity(1.0);
+}[/code]
+
+And I add a bunch of small objects over the usual ones (and some others):
+[code]void CreateObjects()
+{
+  // Middle of the world
+  float hw = width / 2.0;
+  float hh = height / 2.0;
+
+  for (int p = 20; p < width - 20; p += 7)
+  {
+    physics.createRect(p, 25, p + 5, 30);
+  }
+
+  physics.createCircle(hw, hh, 50.0);
+  physics.createRect(hw - 150, hh - 50, hw - 75, hh + 50);
+  physics.createRect(hw + 75, hh - 40, hw + 175, hh + 40);
+  physics.createPolygon(
+      hw + 120, hh - 80,
+      hw + 150, hh - 100,
+      hw, hh - 150,
+      hw - 150, hh - 100,
+      hw - 120, hh - 80
+  );
+  // Some smaller, more rebunding objects
+  physics.setRestitution(0.9);
+  physics.createCircle(hw - 75, hh - 75, 20.0);
+  physics.createRect(50, 50, 100, 100);
+  physics.setRestitution(0.7);
+  physics.createCircle(hw + 75, hh + 75, 20.0);
+  physics.createRect(width - 50, 50, width - 100, 100);
+}[/code]
+
+To find which shape is under the mouse (or any given point), we use a trick: Box2D allows to check of a given bounding box (AABB = Axis Aligned Bounding Box) intersects a shape, so we make a very small box around the point of interest, and list all shapes intersecting it. If none is found, we are on the scene. If it is a shape belonging to a static body, we skip it (in general, we want to pick something else than the background).
+Otherwise, we double-check the shape encloses the point (in case we are not lucky and landed just on the edge) and if OK, we return the first found body (which should be the only one as the bodies rarely overlap).
+[code]// Idea taken from source seen at The Stem > Box2D Joints #2 - Revolute Joints <http://blog.thestem.ca/archives/102>
+Body GetBodyAtPoint(float x, float y)
+{
+  // Create a small box at mouse point
+  Vec2 v = physics.screenToWorld(x, y);
+  AABB aabb = new AABB(new Vec2(v.x - 0.001, v.y - 0.001), new Vec2(v.x + 0.001, v.y + 0.001));
+  // Look at the shapes intersecting this box (max.: 10)
+  org.jbox2d.collision.Shape[] shapes = world.query(aabb, 10);
+  if (shapes == null)
+    return null;  // No body there...
+  for (int is = 0; is < shapes.length; is++)
+  {
+    org.jbox2d.collision.Shape s = shapes[is];
+    if (!s.m_body.isStatic())  // Don't pick static shapes
+    {
+      // Ensure it is really at this point
+      if (s.testPoint(s.m_body.getXForm(), v))
+        return s.m_body; // Return the first body found
+    }
+  }
+  return null;
+}[/code]
+
+We capture the click in mouseReleased(), and exploit the information in draw():
+[code]// Latest touched object
+Body movedBody;
+// Get the position where the mouse is pressed
+float pressMouseX = -1, pressMouseY = -1;
+void mousePressed()
+{
+  pressMouseX = mouseX;
+  pressMouseY = mouseY;
+}
+
+// When released, we see if it is on a non-static body
+void mouseReleased()
+{
+  movedBody = GetBodyAtPoint(mouseX, mouseY);
+  pressMouseX = pressMouseY = -1;
+}
+
+// Information on interaction (used shown later)
+String information = "";
+
+void draw()
+{
+  background(255);
+  // Show position of latest touched object
+  if (movedBody != null)
+  {
+    Vec2 posW = movedBody.getPosition();
+    Vec2 posS = physics.worldToScreen(posW);
+    String position = String.format("Pos: %.2f, %.2f - %s", posS.x, posS.y, information);
+    text(position, 10, 20);
+  }
+  // We visualize the drag scope
+  if (pressMouseX >= 0)
+  {
+    stroke(#FF8800);
+    line(pressMouseX, pressMouseY, mouseX, mouseY);
+  }
+}[/code]
+
+Now, as promised, we can do three kinds of action, we chose it with a press of a key:
+[code]
+void keyPressed()
+{
+  switch (key)
+  {
+  case 'r':
+  case 'R':
+    // Reset the sketch
+    physics.destroy();
+    physics = null;
+    InitScene();
+    CreateObjects();
+    break;
+  case 't':
+  case 'T':
+    interactionKind = 'T';
+    break;
+  case 'f':
+  case 'F':
+    interactionKind = 'F';
+    break;
+  case 'i':
+  case 'I':
+    interactionKind = 'I';
+    break;
+  default: // Ignore...
+  }
+}
+[/code]
+
+And we apply the chosen action:
+[code]// Code of interaction to apply
+char interactionKind = 'T';
+
+// When released, we see if it is on a non-static body
+// and if so, we apply the currently chosen action
+void mouseReleased()
+{
+  movedBody = GetBodyAtPoint(mouseX, mouseY);
+  if (movedBody != null)
+  {
+    // We apply force or impulse where we click
+    Vec2 point = new Vec2(mouseX, mouseY);
+    float mass = movedBody.m_mass;
+    float dX = mouseX - pressMouseX;
+    float dY = mouseY - pressMouseY;
+    switch (interactionKind)
+    {
+    case 'T':
+      float torque = (dX * dX + dY * dY) * (dX < 0 ? 1 : -1);
+      information = String.format("Torque: %.0f * %.1f", torque, mass);
+      movedBody.applyTorque(torque * mass);
+      break;
+    case 'F':
+      Vec2 force = new Vec2(dX / 10, dY / 10);
+      information = String.format("Force: %s * %.1f", force, mass);
+      movedBody.applyForce(force.mul(mass), point);
+      break;
+    case 'I':
+      Vec2 impulse = new Vec2(dX / 100, dY / 100);
+      information = String.format("Impulse: %s * %.1f", impulse, mass);
+      movedBody.applyImpulse(impulse.mul(mass), point);
+      break;
+    }
+  }
+  pressMouseX = pressMouseY = -1;
+}[/code]
+
+Next time, I promise we will see compound shapes and joints.
