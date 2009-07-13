@@ -1,4 +1,4 @@
-JBox2D with BoxWrap2D Tutorial - Part 2
+JBox2D with BoxWrap2D Tutorial - Part 2 - A bit of movement, interaction and feedback
 [url=http://processing.org/discourse/yabb2/YaBB.pl?num=1247034244]JBox2D with BoxWrap2D Tutorial[/url]
 
 In the previous lesson, we made some objects and saw them falling.

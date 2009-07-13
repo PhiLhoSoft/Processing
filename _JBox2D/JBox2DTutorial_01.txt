@@ -1,4 +1,4 @@
-JBox2D with BoxWrap2D Tutorial
+JBox2D with BoxWrap2D Tutorial - Part 1 - Simple objects
 [url=http://processing.org/discourse/yabb2/YaBB.pl?num=1247034244]JBox2D with BoxWrap2D Tutorial[/url]
 
 Note: this thread is intended to be a monologue / tutorial, hopefully a kind of reference. To keep information relevant, I suggest to post your (welcomed) remarks in a separate thread: [url=http://processing.org/discourse/yabb2/YaBB.pl?num=1247034454]Discussion on the JBox2D with BoxWrap2D Tutorial[/url]

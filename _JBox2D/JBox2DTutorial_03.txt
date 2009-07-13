@@ -1,4 +1,4 @@
-JBox2D with BoxWrap2D Tutorial - Part 3
+JBox2D with BoxWrap2D Tutorial - Part 3 - Applying torques, forces and impulsions
 [url=http://processing.org/discourse/yabb2/YaBB.pl?num=1247034244]JBox2D with BoxWrap2D Tutorial[/url]
 
 I will report joint study to next lesson...
@@ -194,5 +194,10 @@ void mouseReleased()
   }
   pressMouseX = pressMouseY = -1;
 }[/code]
+
+We use the distance between the mouse press and the mouse release (displayed as a line when you drag the mouse), as a parameter to the action given on the object where we release the mouse (if any).
+[url=http://en.wikipedia.org/wiki/Torque]Torque[/url] is a torsion effort, it makes the object to rotate around its center of mass. It is expressed in N.m, Newton x meters, we make it proportional to the mass of the body to expect moving it effectively. It is not uncommon to have ranges in the thousands.
+[url=http://en.wikipedia.org/wiki/Force]Force[/url] is a linear effort, expressed in Newtons, also proportional to mass. The magnitude of the force is expressed as a vector, the longer, the stronger the force. It is applied on a point and thus can make the body to rotate.
+An impulse is actually just a strong force applied in a very short time (a Box2D time unit), making the body literaly to jump. The force is supposed to be used over several time units, eg. to make an object to float or to stick on a wall. The impulse is more to give a starting move to an object. More explanations on the difference can be found at the [url=http://www.box2d.org/forum/viewtopic.php?f=3&t=260]Box2D Forums: ApplyImpulse vs. ApplyForce[/url].
 
 Next time, I promise we will see compound shapes and joints.

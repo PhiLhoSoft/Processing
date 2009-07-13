@@ -1,0 +1,6 @@
+JBox2D with BoxWrap2D Tutorial - Part 4 - Using joints
+[url=http://processing.org/discourse/yabb2/YaBB.pl?num=1247034244]JBox2D with BoxWrap2D Tutorial[/url]
+
+OK, for this lesson, I take the source from the third one, as it offers a bit of interactive tools to play with.
+I just remove the random obstacles from InitScene, and rewrite CreateObjects.
+
