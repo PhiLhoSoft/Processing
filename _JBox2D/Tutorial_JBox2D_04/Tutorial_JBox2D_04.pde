@@ -147,21 +147,11 @@ void InitScene()
   physics.setDensity(1.0);
 }
 
-Body[] CreateBodies(int bodyNb, float xPos, float yPos, float halfSize)
-{
-  Body[] bodies = new Body[bodyNb];
-  float interval = width / (bodyNb + 0.75);
-  for (int i = 0; i < bodyNb; i++)
-  {
-    bodies[i] = physics.createRect(xPos + interval * i - halfSize, yPos - halfSize,
-        xPos + interval * i + halfSize, yPos + halfSize);
-  }
-  return bodies;
-}
-
-/// A distance joint constrains two points on two bodies
-/// to remain at a fixed distance from each other. You can view
-/// this as a massless, rigid rod.
+// A distance joint constrains two points on two bodies
+// to remain at a fixed distance from each other. You can view
+// this as a massless, rigid rod.
+// -> That's what is said in the JBox2D source but the distance might vary,
+// although there is a tendency to reach this defined distance.
 void CreateDistanceObjects()
 {
   // Set some fixed objects (handles)
@@ -209,31 +199,31 @@ void CreateDistanceObjects()
   dj[0].setFrequency(0.2);
   // A low damping ration makes the amplitude of the movement bigger
   dj[0].setDampingRatio(0.1);
-  
+
   // (No accessor) Gives some margin to extend
-  dj[1].m_length *= 2.0; 
+  dj[1].m_length *= 2.0;
   // Same parameters, for comparison
   dj[1].setFrequency(0.2);
   dj[1].setDampingRatio(0.1);
-  
+
   // High frequency
-  dj[2].m_length *= 2.0; 
+  dj[2].m_length *= 2.0;
   dj[2].setFrequency(1.0);
   dj[2].setDampingRatio(0.1);
-  
+
   // Stiffer
-  dj[3].m_length *= 2.0; 
+  dj[3].m_length *= 2.0;
   dj[3].setFrequency(0.2);
   dj[3].setDampingRatio(0.5);
-  
+
   // Very high frequency with low damping:
   // It moves a lot but stops occillating quickly
-  dj[4].m_length *= 2.0; 
+  dj[4].m_length *= 2.0;
   dj[4].setFrequency(10.0);
   dj[4].setDampingRatio(0.01);
 
   // Smaller extent
-  dj[5].m_length *= 0.7; 
+  dj[5].m_length *= 0.7;
   // Same parameters, for comparison
   dj[5].setFrequency(0.2);
   dj[5].setDampingRatio(0.1);
@@ -250,13 +240,13 @@ void CreateDistanceObjects()
   tb3 = physics.createRect(70.0, 260.0, 150.0, 300.0);
   JointUtils.createDistanceJoint(tb1, tb2);
   JointUtils.createDistanceJoint(tb2, tb3);
-  
+
   // Looser joints
   Body lb1, lb2;
   lb1 = physics.createRect(200.0, 300.0, 250.0, 350.0);
   lb2 = physics.createCircle(300.0, 350.0, 30.0);
   JointUtils.createDistanceJoint(lb1, lb2);
-  
+
   // Even looser joints!
   Body elb1, elb2;
   elb1 = physics.createRect(width - 70.0, 300.0, width - 20.0, 350.0);
@@ -266,6 +256,10 @@ void CreateDistanceObjects()
   ldj.setDampingRatio(0.1);
 }
 
+// A prismatic joint. This joint provides one degree of freedom: translation
+// along an axis fixed in body1. Relative rotation is prevented. You can
+// use a joint limit to restrict the range of motion and a joint motor to
+// drive the motion or to model joint friction.
 void CreatePrismaticObjects()
 {
   // Create a prismatic (piston) joint between two bodies that allows movement in the given direction
