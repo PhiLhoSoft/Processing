@@ -40,7 +40,7 @@ float HH;
 void setup()
 {
   // Medium sized scene
-  size(640, 480);
+  size(800, 500);
   // Middle of the world
   HW = width / 2.0;
   HH = height / 2.0;
@@ -147,53 +147,127 @@ void InitScene()
   physics.setDensity(1.0);
 }
 
-int BODY_NB = 7;
-Body[] anchors, swinging, upper, lower;
+Body[] CreateBodies(int bodyNb, float xPos, float yPos, float halfSize)
+{
+  Body[] bodies = new Body[bodyNb];
+  float interval = width / (bodyNb + 0.75);
+  for (int i = 0; i < bodyNb; i++)
+  {
+    bodies[i] = physics.createRect(xPos + interval * i - halfSize, yPos - halfSize,
+        xPos + interval * i + halfSize, yPos + halfSize);
+  }
+  return bodies;
+}
 
 /// A distance joint constrains two points on two bodies
 /// to remain at a fixed distance from each other. You can view
 /// this as a massless, rigid rod.
 void CreateDistanceObjects()
 {
+  // Set some fixed objects (handles)
   physics.setDensity(0.0);
-  anchors = CreateBodies(70.0, 50.0, 10.0);
+  Body hl = physics.createCircle(70.0, 50.0, 10.0);
+  Body hr = physics.createCircle(width - 70.0, 50.0, 10.0);
+
+  int C_NB = 7;
+  Body[] hc = new Body[C_NB];
+  for (int i = 0; i < C_NB; i++)
+  {
+    hc[i] = physics.createCircle(170 + 75.0 * i, 50.0, 10.0);
+  }
+
+  // And some moving ones
   physics.setDensity(1.0);
-  swinging = CreateBodies(50.0, 120.0, 20.0);
-  upper = CreateBodies(70.0, 200.0, 30.0);
-  lower = CreateBodies(50.0, 270.0, 20.0);
+  Body hangingL = physics.createRect(90.0, 150.0, 110.0, 200.0);
+  Body hangingR = physics.createRect(width - 50.0, 150.0, width - 30.0, 200.0);
+
+  Body[] hangC = new Body[C_NB];
+  for (int i = 0; i < C_NB; i++)
+  {
+    hangC[i] = physics.createRect(190 + 75.0 * i, 150.0, 210 + 75.0 * i, 200.0);
+  }
 
   // The "manual way", If you need to attach somewhere else than at the centers
   //  Create a distance (stick) joint between two bodies that holds the specified points at a constant distance
   // body1, body2, xa, ya, xb, yb
-//~   Body b1 = anchors[0], b2 = swinging[0];
-//~   Vec2 b1p = physics.worldToScreen(b1.getPosition());
-//~   Vec2 b2p = physics.worldToScreen(b2.getPosition());
-//~   DistanceJoint distance = physics.createDistanceJoint(b1, b2,
-//~        b1p.x, b1p.y, b2p.x, b2p.y);
-  // The BoxWrap2D way
-  // By default, it is stiff: frequency and damping ratio are zero
-  DistanceJoint distance1 = JointUtils.createDistanceJoint(anchors[0], swinging[0]);
-  DistanceJoint distance2 = JointUtils.createDistanceJoint(upper[0], lower[0]);
+  Vec2 hlp = physics.worldToScreen(hl.getPosition());
+  Vec2 hangingLp = physics.worldToScreen(hangingL.getPosition());
+  physics.createDistanceJoint(hl, hangingL,
+       hlp.x, hlp.y, hangingLp.x - 5.0, hangingLp.y - 20.0);
 
-  DistanceJoint distance3 = JointUtils.createDistanceJoint(anchors[1], swinging[1]);
-  // No visible change?
-  distance3.setFrequency(10.0);
-  distance3.setDampingRatio(0.9);
-  DistanceJoint distance4 = JointUtils.createDistanceJoint(upper[1], lower[1]);
-  // Here the distance between the bodies can be smaller
-  distance4.setFrequency(2.0);
-  distance4.setDampingRatio(0.5);
+  // A simpler way, joining the centers of mass of the bodies
+  // By default, it is stiff: frequency and damping ratio are zero
+  JointUtils.createDistanceJoint(hr, hangingR);
+
+  // Trying to do something more elastic
+  DistanceJoint[] dj = new DistanceJoint[C_NB];
+  for (int i = 0; i < C_NB; i++)
+  {
+    dj[i] = JointUtils.createDistanceJoint(hc[i], hangC[i]);
+  }
+  // A high frequence makes the hanging object to stabilize faster
+  dj[0].setFrequency(0.2);
+  // A low damping ration makes the amplitude of the movement bigger
+  dj[0].setDampingRatio(0.1);
+  
+  // (No accessor) Gives some margin to extend
+  dj[1].m_length *= 2.0; 
+  // Same parameters, for comparison
+  dj[1].setFrequency(0.2);
+  dj[1].setDampingRatio(0.1);
+  
+  // High frequency
+  dj[2].m_length *= 2.0; 
+  dj[2].setFrequency(1.0);
+  dj[2].setDampingRatio(0.1);
+  
+  // Stiffer
+  dj[3].m_length *= 2.0; 
+  dj[3].setFrequency(0.2);
+  dj[3].setDampingRatio(0.5);
+  
+  // Very high frequency with low damping:
+  // It moves a lot but stops occillating quickly
+  dj[4].m_length *= 2.0; 
+  dj[4].setFrequency(10.0);
+  dj[4].setDampingRatio(0.01);
+
+  // Smaller extent
+  dj[5].m_length *= 0.7; 
+  // Same parameters, for comparison
+  dj[5].setFrequency(0.2);
+  dj[5].setDampingRatio(0.1);
+
+  // With a very low frequency, it doesn't even have time to go up!
+  dj[6].setFrequency(0.08);
+  dj[6].setDampingRatio(0.1);
+
+  // Tight joints. With no room to extend, I supposed it would make
+  // a rigid body but the engine makes the shapes to overlap...
+  Body tb1, tb2, tb3;
+  tb1 = physics.createRect(20.0, 220.0, 100.0, 240.0);
+  tb2 = physics.createRect(50.0, 240.0, 70.0, 320.0);
+  tb3 = physics.createRect(70.0, 260.0, 150.0, 300.0);
+  JointUtils.createDistanceJoint(tb1, tb2);
+  JointUtils.createDistanceJoint(tb2, tb3);
+  
+  // Looser joints
+  Body lb1, lb2;
+  lb1 = physics.createRect(200.0, 300.0, 250.0, 350.0);
+  lb2 = physics.createCircle(300.0, 350.0, 30.0);
+  JointUtils.createDistanceJoint(lb1, lb2);
+  
+  // Even looser joints!
+  Body elb1, elb2;
+  elb1 = physics.createRect(width - 70.0, 300.0, width - 20.0, 350.0);
+  elb2 = physics.createCircle(width - 120.0, 250.0, 30.0);
+  DistanceJoint ldj = JointUtils.createDistanceJoint(elb1, elb2);
+  ldj.setFrequency(0.2);
+  ldj.setDampingRatio(0.1);
 }
 
 void CreatePrismaticObjects()
 {
-  physics.setDensity(0.0);
-  anchors = CreateBodies(70.0, 50.0, 10.0);
-  physics.setDensity(1.0);
-  swinging = CreateBodies(50.0, 120.0, 20.0);
-  upper = CreateBodies(70.0, 200.0, 30.0);
-  lower = CreateBodies(50.0, 270.0, 20.0);
-
   // Create a prismatic (piston) joint between two bodies that allows movement in the given direction
 //~   PrismaticJoint prismatic = physics.createPrismaticJoint(body2, body3, dirX, dirY);
 //~   pj.m_enableLimit = true;
@@ -202,39 +276,18 @@ void CreatePrismaticObjects()
 
 void CreateRevoluteObjects()
 {
-  physics.setDensity(0.0);
-  anchors = CreateBodies(70.0, 50.0, 10.0);
-  physics.setDensity(1.0);
-  swinging = CreateBodies(50.0, 120.0, 20.0);
-  upper = CreateBodies(70.0, 200.0, 30.0);
-  lower = CreateBodies(50.0, 270.0, 20.0);
-
   // Create a revolute (pin) joint between the two bodies at the given position
 //~   RevoluteJoint revolute = physics.createRevoluteJoint(body1, body2, x, y);
 }
 
 void CreateGearObjects()
 {
-  physics.setDensity(0.0);
-  anchors = CreateBodies(70.0, 50.0, 10.0);
-  physics.setDensity(1.0);
-  swinging = CreateBodies(50.0, 120.0, 20.0);
-  upper = CreateBodies(70.0, 200.0, 30.0);
-  lower = CreateBodies(50.0, 270.0, 20.0);
-
   // Create a gear joint, which binds together two existing revolute or prismatic joints (any combination will work)
 //~   GearJoint gear = physics.createGearJoint(body1, body2, xa, ya, xb, yb);
 }
 
 void CreatePulleyObjects()
 {
-  physics.setDensity(0.0);
-  anchors = CreateBodies(70.0, 50.0, 10.0);
-  physics.setDensity(1.0);
-  swinging = CreateBodies(50.0, 120.0, 20.0);
-  upper = CreateBodies(70.0, 200.0, 30.0);
-  lower = CreateBodies(50.0, 270.0, 20.0);
-
   // Make a pulley joint
   float groundAnchorAx = 100;
   float groundAnchorAy = 150;
@@ -254,17 +307,6 @@ void CreatePulleyObjects()
 //~       ratio);
 }
 
-Body[] CreateBodies(float xPos, float yPos, float halfSize)
-{
-  Body[] bodies = new Body[BODY_NB];
-  float interval = width / (BODY_NB + 0.75);
-  for (int i = 0; i < BODY_NB; i++)
-  {
-    bodies[i] = physics.createRect(xPos + interval * i - halfSize, yPos - halfSize,
-        xPos + interval * i + halfSize, yPos + halfSize);
-  }
-  return bodies;
-}
 // Idea taken from source seen at The Stem > Box2D Joints #2 - Revolute Joints <http://blog.thestem.ca/archives/102>
 Body GetBodyAtPoint(float x, float y)
 {
