@@ -4,7 +4,8 @@
  * Part 4: using joints
  */
 /* File history:
- *  1.00.000 -- 2009/07/12 (PL) -- Creation
+ *  1.01.000 -- 2009/07/15 (PL) -- PrismaticJoint
+ *  1.00.000 -- 2009/07/14 (PL) -- Creation. DistanceJoint
  */
 /*
 Author: Philippe Lhoste <PhiLho(a)GMX.net> http://Phi.Lho.free.fr
@@ -56,7 +57,7 @@ void setup()
   // Set up everything physics
   InitScene();
   // And add object to the scene
-  CreateDistanceObjects();
+  CreatePrismaticObjects();
 }
 
 void draw()
@@ -262,10 +263,58 @@ void CreateDistanceObjects()
 // drive the motion or to model joint friction.
 void CreatePrismaticObjects()
 {
+  // Set some fixed objects (handles)
+  physics.setDensity(0.0);
+  Body htl = physics.createCircle(70.0, 50.0, 10.0);
+  Body htr = physics.createCircle(width - 70.0, 50.0, 10.0);
+  Body hbl = physics.createCircle(70.0, height - 50.0, 10.0);
+
+  int C_NB = 7;
+  Body[] hc = new Body[C_NB];
+  for (int i = 0; i < C_NB; i++)
+  {
+    hc[i] = physics.createCircle(170 + 75.0 * i, 50.0, 10.0);
+  }
+
+  // And some moving ones
+  physics.setDensity(1.0);
+  Body hangingTL = physics.createRect(50.0, 150.0, 90.0, 200.0);
+  Body hangingTR = physics.createRect(width - 100.0, 80.0, width - 140.0, 120.0);
+  Body hangingBL = physics.createRect(150.0, height - 70.0, 130.0, height - 30.0);
+
+  Body[] hangC = new Body[C_NB];
+  for (int i = 0; i < C_NB; i++)
+  {
+    hangC[i] = physics.createRect(150 + 75.0 * i, 200.0, 190 + 75.0 * i, 250.0);
+  }
+
   // Create a prismatic (piston) joint between two bodies that allows movement in the given direction
-//~   PrismaticJoint prismatic = physics.createPrismaticJoint(body2, body3, dirX, dirY);
-//~   pj.m_enableLimit = true;
-//~   pj.setLimits(-1.0f, 1.0f);
+  // Vertical direction
+  physics.createPrismaticJoint(htl, hangingTL, 0.0, 1.0);
+  // Diagonal direction
+  physics.createPrismaticJoint(htr, hangingTR, 1.0, 1.0);
+  // Horizontal direction
+  physics.createPrismaticJoint(hbl, hangingBL, 1.0, 0.0);
+
+  PrismaticJoint[] pj = new PrismaticJoint[C_NB];
+  for (int i = 0; i < C_NB; i++)
+  {
+    pj[i] = physics.createPrismaticJoint(hc[i], hangC[i], 0.0, 1.0);
+  }
+  pj[0].enableLimit(true);
+  pj[0].setLimits(-1.0, 1.0);
+
+  pj[1].enableMotor(true);
+  pj[1].setMotorSpeed(-10.0); // In meters per second
+  pj[1].setMaxMotorForce(1000.0); // In Newtons
+
+  pj[2].enableMotor(true);
+  pj[2].setMotorSpeed(-30.0); // In meters per second
+  pj[2].setMaxMotorForce(1000.0); // In Newtons
+
+  pj[3].enableMotor(true);
+  pj[3].setMotorSpeed(10.0); // In meters per second
+  pj[3].setMaxMotorForce(500.0); // In Newtons
 }
 
 void CreateRevoluteObjects()
