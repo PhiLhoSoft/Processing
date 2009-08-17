@@ -1,17 +1,17 @@
-/**
+/*
 Example of Processing sketch using my DataUpload class.
 Just a demo / test of that class.
-
-by Philippe Lhoste <PhiLho(a)GMX.net> http://Phi.Lho.free.fr & http://PhiLho.deviantART.com
 */
 /* File/Project history:
- 1.01.000 -- 2008/07/24 (PL) -- Fix of Jpeg images (get rid of alpha channel).
+ 1.01.000 -- 2008/07/24 (PL) -- Fix for Jpeg images (get rid of alpha channel).
  1.00.000 -- 2008/07/23 (PL) -- Creation.
 */
-/* Copyright notice: For details, see the following file:
+/*
+Author: Philippe Lhoste <PhiLho(a)GMX.net> http://Phi.Lho.free.fr & http://PhiLho.deviantART.com
+Copyright notice: For details, see the following file:
 http://Phi.Lho.free.fr/softwares/PhiLhoSoft/PhiLhoSoftLicence.txt
 This program is distributed under the zlib/libpng license.
-Copyright (c) 2008 Philippe Lhoste / PhiLhoSoft
+Copyright (c) 2009 Philippe Lhoste / PhiLhoSoft
 */
 //~ import com.sun.image.codec.jpeg.*;
 import javax.imageio.*;

@@ -257,7 +257,7 @@ void CreateDistanceObjects()
   ldj.setDampingRatio(0.1);
 }
 
-// A prismatic joint. This joint provides one degree of freedom: translation
+// A prismatic joint provides one degree of freedom: translation
 // along an axis fixed in body1. Relative rotation is prevented. You can
 // use a joint limit to restrict the range of motion and a joint motor to
 // drive the motion or to model joint friction.

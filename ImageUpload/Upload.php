@@ -1,15 +1,16 @@
 <?php
 /*
 Generic PHP upload script.
-
-// by Philippe Lhoste <PhiLho(a)GMX.net> http://Phi.Lho.free.fr & http://PhiLho.deviantART.com
-// File/Project history:
+*/
+/* File/Project history:
  1.00.000 -- 2008/07/25 (PL) -- Creation.
 */
-/* Copyright notice: For details, see the following file:
+/*
+Author: Philippe Lhoste <PhiLho(a)GMX.net> http://Phi.Lho.free.fr & http://PhiLho.deviantART.com
+Copyright notice: For details, see the following file:
 http://Phi.Lho.free.fr/softwares/PhiLhoSoft/PhiLhoSoftLicence.txt
 This program is distributed under the zlib/libpng license.
-Copyright (c) 2008 Philippe Lhoste / PhiLhoSoft
+Copyright (c) 2009 Philippe Lhoste / PhiLhoSoft
 */
 
 // Constants since these parameters are unlikely to change on each call...

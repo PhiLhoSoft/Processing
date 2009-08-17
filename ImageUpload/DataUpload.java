@@ -1,21 +1,22 @@
-/**
+/*
 Handling of upload of files from a Processing applet to a server supporting uploads
 (eg. using PHP).
 
 A class for Processing.org language extension.
 Heavily based on the savetoweb Processing hack:
 http://processing.org/hacks/doku.php?id=hacks:savetoweb
-
-by Philippe Lhoste <PhiLho(a)GMX.net> http://Phi.Lho.free.fr & http://PhiLho.deviantART.com
 */
 /* File/Project history:
+ 1.02.000 -- 2009/07/24 (PL) -- More comments, mostly.
  1.01.000 -- 2008/07/24 (PL) -- Finished code with quality control.
  1.00.000 -- 2008/07/20 (PL) -- Creation.
 */
-/* Copyright notice: For details, see the following file:
+/*
+Author: Philippe Lhoste <PhiLho(a)GMX.net> http://Phi.Lho.free.fr & http://PhiLho.deviantART.com
+Copyright notice: For details, see the following file:
 http://Phi.Lho.free.fr/softwares/PhiLhoSoft/PhiLhoSoftLicence.txt
 This program is distributed under the zlib/libpng license.
-Copyright (c) 2008 Philippe Lhoste / PhiLhoSoft
+Copyright (c) 2009 Philippe Lhoste / PhiLhoSoft
 */
 //package org.philhosoft.processing;
 
@@ -52,10 +53,17 @@ class DataUpload
   private static final String FIELD_NAME = "image";
   /** PHP script name. */
   // I hard-code it here, I suppose there is no need for several scripts per applet...
+  // and source can be edited for your own sketch.
+  // Can be easily transformed into a mutable field specified at construction time or with a setter
   private static final String SCRIPT_NAME = "Upload.php";
   /** URL path to the PHP script. */
+  // Same remark here: hardcoded for usage within a given sketch
   private static final String BASE_URL = "http://www.zigouzis.com/Tests/Processing";
+  /** A computed, hopefully unique (not found in data) Mime boundary string,
+   * separating the various parts of the message.
+   */
   private String boundary;
+  /** Made of the URL and the server script name. Can add parameters too. */
   private String uploadURL;
   /** The connection to the server. */
   private HttpURLConnection connection;
@@ -66,11 +74,11 @@ class DataUpload
   {
     // Mime boundary of the various parts of the message.
     boundary = "-----DataUploadClass-----PhiLhoSoft-----" + System.currentTimeMillis();
-    // We can add a optional parameters, eg. a string given by the user, parameters used, etc.
+    // We can add optional parameters, eg. a string given by the user, parameters used, etc.
     uploadURL = BASE_URL + "/" + SCRIPT_NAME;// + "?optionalParam=value&foo=bar";
   }
 
-  /** Pushes binary data to server. */
+  /** Pushes any binary data to server. */
   boolean UploadBinaryData(String fileName, String dataMimeType, byte[] data)
   {
     try
@@ -101,7 +109,9 @@ class DataUpload
     return true;  // OK
   }
 
-  /** Pushes image to server. */
+  /** Pushes image to server. Similar to UploadBinaryData but is given a BufferedImage
+   * and guesses the Mime type with the file name extension.
+   */
   boolean UploadImage(String fileName, BufferedImage image)
   {
     String imageType = null, imageMimeType = null;
@@ -287,6 +297,7 @@ class DataUpload
 
     return true;
   }
+
   private boolean EndPOSTRequest()
   {
     try
