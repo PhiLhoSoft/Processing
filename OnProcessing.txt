@@ -122,6 +122,36 @@ translate(OFFSET, 0);
 fill(202);
 ellipse(0, 0, ELLIPSE_WIDTH, 180);
 
+### Handling Ctrl+Char
+
+boolean ctrlPressed;
+
+void keyPressed() {
+  // special key
+  if (key == CODED) {
+    if (keyCode == CONTROL) {
+      ctrlPressed = true;
+    }
+  }
+  // regular key
+  else {
+    if (ctrlPressed) {
+      // CTRL + KEY
+    }
+    else {
+      // OTHER
+    }
+  }
+}
+
+void keyReleased() {
+  if (key == CODED) {
+    if (keyCode == CONTROL) {
+      ctrlPressed = false;
+    }
+  }
+}
+
 ### Java syntax
 
 If the code is in a .pde file, you must use untyped Collections:
