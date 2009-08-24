@@ -40,7 +40,9 @@ public class FloodFill
     while (stack.size() > 0)
     {
       PVector p = (PVector) stack.remove(stack.size() - 1);
+      // Go left
       FillScanLine((int) p.x, (int) p.y, -1);
+      // Go right
       FillScanLine((int) p.x + 1, (int) p.y, 1);
     }
   }

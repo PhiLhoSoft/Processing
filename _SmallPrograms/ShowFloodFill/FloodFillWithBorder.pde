@@ -27,14 +27,24 @@ public class FloodFillWithBorder extends FloodFill
     int idx = x + y * iw;
     boolean inColorRunAbove = false;
     boolean inColorRunBelow = false;
+    int borderIdx = -1;
+
+    // Particular case when start position is just on the left
+    // of a boundary
+    if (dir < 0 && x < iw - 1 &&
+        imagePixels[idx] == backColor &&
+        imagePixels[idx + 1] != backColor)
+    {
+      borderIdx = idx;
+    }
 
     // fill until boundary in current scanline...
     // checking neighbouring pixel rows
     while (x >= 0 && x < iw && imagePixels[idx] == backColor)
     {
       // If we are at a color boundary (in the horizontal axis)
-      if (x > 0 && dir < 0 && imagePixels[idx - 1] != backColor ||
-          x < iw - 1 && dir > 0 && imagePixels[idx + 1] != backColor)
+      if (dir < 0 && x > 0 && imagePixels[idx - 1] != backColor ||
+          dir > 0 && x < iw - 1 && imagePixels[idx + 1] != backColor)
       {
         // We paint the pixel with the border color
         imagePixels[idx] = borderColor;
@@ -91,6 +101,10 @@ public class FloodFillWithBorder extends FloodFill
       // Continue in given direction
       x += dir;
       idx += dir;
+    }
+    if (borderIdx >= 0)
+    {
+      imagePixels[borderIdx] = borderColor;
     }
   }
 }
