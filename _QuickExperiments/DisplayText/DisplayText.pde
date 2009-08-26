@@ -7,14 +7,14 @@ String textToDisplay =
 boolean bTestI18N = true;
 
 // Testing internationalization
-Locale locale = Locale.getDefault();
-Locale enLocale = new Locale("en","US");
-Locale esLocale = new Locale("es","ES");
-Locale frLocale = new Locale("fr","FR");
+Locale esLocale = new Locale("es");
 
 ResourceBundle res;
 String bundleName = "Localization";
 PFont fa;
+int i18bPos = 500;
+int menuPos = i18bPos + 50;
+int infoPos = menuPos + 50;
 
 void setup()
 {
@@ -22,7 +22,8 @@ void setup()
   smooth();
   background(#AAFFEE);
 
-  GetStrings(locale);
+  // Get the strings corresponding to YOUR locale
+  GetStrings(Locale.getDefault());
   frameRate(1);
 
 //  PFont f = loadFont("Silkscreen-8.vlw");
@@ -70,27 +71,42 @@ void draw()
   {
     background(#CAFEBA);
   }
+  textFont(fa, 24);
   fill(#5599AA);
-  textFont(fa);
-  textAlign(CENTER);
-  text(en, 100, 500);
-  text(es, 200, 500);
-  text(fr, 300, 500);
-
   textAlign(LEFT);
-  text(title + ": " + titleValue, 50, 550);
-  text(artist + ": " + artistValue, 50, 570);
-  text(album + ": " + albumValue, 50, 590);
-  text(genre + ": " + genreValue, 50, 610);
+  text(appName + " (" + appAuth + ")", 50, i18bPos);
+  textFont(fa);
+  text(slogan, 50, i18bPos + 20);
+
+  fill(#557799);
+  textAlign(CENTER);
+  text(en, 100, menuPos);
+  text(es, 200, menuPos);
+  text(fr, 300, menuPos);
+
+  fill(#335577);
+  textAlign(LEFT);
+  text(title + ": " + titleValue, 50, infoPos);
+  text(artist + ": " + artistValue, 50, infoPos + 20);
+  text(album + ": " + albumValue, 50, infoPos + 40);
+  text(genre + ": " + genreValue, 50, infoPos + 60);
 }
 
 void mouseReleased()
 {
-  if (mouseY > 480 && mouseY < 520)
+  boolean bAlt = keyPressed && key == CODED && keyCode == CONTROL;
+  if (mouseY > menuPos - 20 && mouseY < menuPos + 20)
   {
     if (mouseX > 60 && mouseX < 140)
     {
-      GetStrings(enLocale);
+      if (bAlt)
+      {
+        GetStrings(Locale.US); // Locale("en", "US")
+      }
+      else
+      {
+        GetStrings(Locale.ENGLISH); // Locale("en")
+      }
     }
     else if (mouseX > 160 && mouseX < 240)
     {
@@ -98,21 +114,36 @@ void mouseReleased()
     }
     else if (mouseX > 260 && mouseX < 340)
     {
-      GetStrings(frLocale);
+      if (bAlt)
+      {
+        GetStrings(Locale.CANADA_FRENCH); // Locale("fr", "CA")
+      }
+      else
+      {
+        GetStrings(Locale.FRENCH); // Locale("fr")
+      }
+    }
+    else
+    {
+      GetStrings(Locale.getDefault());
     }
   }
 //  println(mouseX + " " + mouseY);
 }
 
+String appName, appAuth, slogan;
 String title, artist, album, genre;
 String en, es, fr;
 String titleValue = "Hey Jude", artistValue = "The Beatles",
     albumValue = "Abbey Road", genreValue = "Pop";
 void GetStrings(Locale locale)
 {
-  res = ProcessingResourceBundle.getBundle(bundleName, locale,
-      new ProcessingClassLoader(sketchPath));
+  res = UTF8ResourceBundle.getBundle(bundleName, locale,
+      new ProcessingClassLoader(this));
 
+  appName = res.getString("APP_NAME");
+  appAuth = res.getString("APP_AUTH");
+  slogan = res.getString("slogan");
   title = res.getString("Title");
   artist = res.getString("Artist");
   album = res.getString("Album");
