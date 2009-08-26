@@ -7,6 +7,7 @@ import processing.core.PApplet;
  * Default class loaders look in class path, ie. Processing libs and where the class files are,
  * typically in a randomly named build folder in system's temp dir.
  * This class loader looks in the sketch's data folder instead, because that's where
+ * they are likely to be put and will be kept in an export.
  */
 public class ProcessingClassLoader extends ClassLoader
 {
@@ -22,7 +23,7 @@ public class ProcessingClassLoader extends ClassLoader
   public URL getResource(String name)
   {
     String textURL = "file:///" + m_pa.dataPath(name);
-    System.out.println("getResource " + textURL);
+//    System.out.println("getResource " + textURL);
     URL url = null;
     try
     {
@@ -36,6 +37,7 @@ public class ProcessingClassLoader extends ClassLoader
   }
 
   // Not necessary, mostly there to see if it is used...
+  /*
   @Override
   public Class loadClass(String name, boolean resolve)
       throws ClassNotFoundException
@@ -43,4 +45,5 @@ public class ProcessingClassLoader extends ClassLoader
     System.out.println("loadClass: " + name);
     return findSystemClass(name);
   }
+  */
 }

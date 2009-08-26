@@ -7,6 +7,7 @@ import java.util.Enumeration;
 // I found a trick in a blog article to load them in UTF-8 instead.
 // Quick and Dirty Hack for UTF-8 Support in ResourceBundle
 // <http://www.thoughtsabout.net/blog/archives/000044.html>
+// Doesn't extend ResourceBundle because getBundle are final...
 public abstract class UTF8ResourceBundle
 {
   // I keep the public API compatible with ResourceBundle
@@ -49,9 +50,13 @@ public abstract class UTF8ResourceBundle
     @Override
     public Object handleGetObject(String key)
     {
-      String value = (String) m_bundle.handleGetObject(key);
+      // Use getString (instead of handleGetObject) because:
+      // 1) It is only a PropertyResourceBundle
+      // 2) It allows fallback on parent bundle
+      String value = (String) m_bundle.getString(key);
       if (value == null)
         return null;
+
       try
       {
         // The default resource bundle returns ISO-8859-1 strings. We get the bytes using this encoding,
