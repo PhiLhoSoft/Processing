@@ -1,11 +1,13 @@
 void setup()
 {
-  Plant grass = new Plant();
-  Plant daisy = new Flower();
-  Animal cow = new Herbivore();
-  Animal lion = new Carnivore();
-  Animal pig = new Omnivore();
+  println("Creating world");
+  Plant grass = new Plant(); println();
+  Plant daisy = new Flower(); println();
+  Animal cow = new Herbivore(); println();
+  Animal lion = new Carnivore(); println();
+  Animal pig = new Omnivore(); println();
   
+  println();
   println(lion.likesToEat(cow));
   println(lion.likesToEat(pig));
   println(lion.likesToEat(grass));
@@ -21,6 +23,8 @@ void setup()
   println(pig.likesToEat(grass));
   println(pig.likesToEat(daisy));
   println(pig.likesToEat(pig));
+  
+  println(pig.isLiving);
 }
 
 interface Eater {
@@ -28,31 +32,31 @@ interface Eater {
 }
 abstract class Organism {
   boolean isLiving;
-  Organism() { isLiving = true; }
+  Organism() { isLiving = true; print(this.getClass().getSimpleName() + " > Organism"); }
 }
 class Plant extends Organism {
-  Plant() {}
+  Plant() { print("-Plant"); }
 }
 class Flower extends Plant {
-  Flower() { super(); }
+  Flower() { print("-Flower"); }
 }
 abstract class Animal extends Organism implements Eater {
-  Animal() {}
+  Animal() { print("-Animal"); }
 }
 class Herbivore extends Animal {
-  Herbivore() { super(); }
+  Herbivore() { print("-Herbivore"); }
   boolean likesToEat(Organism o) {
     return o instanceof Plant;
   }
 }
 class Carnivore extends Animal {
-  Carnivore() { super(); }
+  Carnivore() { print("-Carnivore"); }
   boolean likesToEat(Organism o) {
     return o instanceof Animal;
   }
 }
 class Omnivore extends Animal {
-  Omnivore() { super(); }
+  Omnivore() { print("-Omnivore"); }
   boolean likesToEat(Organism o) {
     return o instanceof Animal || o instanceof Plant;
   }

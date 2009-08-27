@@ -90,6 +90,9 @@ void draw()
   text(artist + ": " + artistValue, 50, infoPos + 20);
   text(album + ": " + albumValue, 50, infoPos + 40);
   text(genre + ": " + genreValue, 50, infoPos + 60);
+
+  fill(#337755);
+  text(releaseInfo, 50, infoPos + 80, width - 100, 50);
 }
 
 void mouseReleased()
@@ -133,13 +136,15 @@ void mouseReleased()
 
 String appName, appAuth, slogan;
 String title, artist, album, genre;
-String en, es, fr;
+String en, es, fr, enC, esC, frC;
 String titleValue = "Here Comes the Sun", artistValue = "The Beatles",
     albumValue = "Abbey Road", genreValue = "Pop";
+String releaseInfo;
 void GetStrings(Locale locale)
 {
   res = UTF8ResourceBundle.getBundle(bundleName, locale,
       new ProcessingClassLoader(this));
+  double[] pluralLimits = { 0, 1, 2 };
 
   appName = GetString("APP_NAME");
   appAuth = GetString("APP_AUTH");
@@ -151,6 +156,43 @@ void GetStrings(Locale locale)
   en = GetString("en");
   es = GetString("es");
   fr = GetString("fr");
+
+  enC = GetString("EN");
+  esC = GetString("ES");
+  frC = GetString("FR");
+  String country = { enC, esC, frC }[(int) random(0, 4)];
+  String releaseInfoPat = GetString("release");
+  String diskNbMsgPat = GetString("disk number");
+  String [] diskNbPats =
+  {
+    GetString("DN.zero"),
+    GetString("DN.one"),
+    GetString("DN.more")
+  };
+  ChoiceFormat choice = new ChoiceFormat(pluralLimits, diskNbPats);
+
+  int diskNb = (int) random(0, 4);
+  int diskNbMore = (int) (diskNb * 1E6 + random(1000, 1E6));
+
+  MessageFormat formatter = new MessageFormat("");
+  formatter.setLocale(locale);
+
+  formatter.applyPattern(diskNbMsgPat);
+  Object[] diskStats =
+  {
+    diskNb, diskNbMore
+  };
+  String diskNbMsg = formatter.format(diskStats);
+
+  formatter.applyPattern(releaseInfoPat);
+  Object[] information =
+  {
+    country,
+    new Date((long) random(1E8, 1E9)),
+    diskNbMsg,
+    diskNbMore / 1.42E5,
+  };
+  releaseInfo = formatter.format(information);
 }
 
 String GetString(String key)
@@ -162,6 +204,7 @@ String GetString(String key)
   }
   catch (MissingResourceException e)
   {
+    println("Key " + key + " not found");
     value = key; // Poor substitute, but hey, might give an information anyway
   }
   return value;
@@ -192,3 +235,4 @@ These two tricks combined allow to use i18n in Processing. How cool is that? :-)
 I made a demo sketch (reusing some other unrelated sketch), trying to highlight the hierarchical loading of resources.
 
 */
+
