@@ -7,6 +7,7 @@ String textToDisplay =
 boolean bTestI18N = true;
 
 // Testing internationalization
+// http://processing.org/discourse/yabb2/YaBB.pl?num=1251195029
 Locale esLocale = new Locale("es");
 
 ResourceBundle res;
@@ -142,10 +143,16 @@ String titleValue = "Here Comes the Sun", artistValue = "The Beatles",
 String releaseInfo;
 void GetStrings(Locale locale)
 {
+  println(locale.getLanguage() + " / " + locale.getCountry());
   res = UTF8ResourceBundle.getBundle(bundleName, locale,
       new ProcessingClassLoader(this));
+
+  // We distinguish between 0 items, 1 item and 2 or more items.
+  // According to the PluralForm.jsm file I found in Firefox 3 folders,
+  // this array should be dependent of the language: Latvian is different, so is Russian, etc.
   double[] pluralLimits = { 0, 1, 2 };
 
+  // Simple translations, no parameters
   appName = GetString("APP_NAME");
   appAuth = GetString("APP_AUTH");
   slogan = GetString("slogan");
@@ -157,11 +164,15 @@ void GetStrings(Locale locale)
   es = GetString("es");
   fr = GetString("fr");
 
-  enC = GetString("EN");
-  esC = GetString("ES");
-  frC = GetString("FR");
-  String country = { enC, esC, frC }[(int) random(0, 4)];
-  String releaseInfoPat = GetString("release");
+  // Translations including parameters: the value order might depend on language
+  // So we use MessageFormat to handle this order, and formatting information (date, decimal/thousand separators...)
+  // depending on locale.
+
+  // Generic, will give patterns later
+  MessageFormat formatter = new MessageFormat("", locale);
+
+  // Disk number, I have to use a choice format
+  // to select the correct the plural form depending on the quantity.
   String diskNbMsgPat = GetString("disk number");
   String [] diskNbPats =
   {
@@ -174,21 +185,25 @@ void GetStrings(Locale locale)
   int diskNb = (int) random(0, 4);
   int diskNbMore = (int) (diskNb * 1E6 + random(1000, 1E6));
 
-  MessageFormat formatter = new MessageFormat("");
-  formatter.setLocale(locale);
-
   formatter.applyPattern(diskNbMsgPat);
+  // Apply the choice on pattern {0}
+  formatter.setFormatByArgumentIndex(0, choice);
   Object[] diskStats =
   {
     diskNb, diskNbMore
   };
   String diskNbMsg = formatter.format(diskStats);
 
+  // Release information
+  String releaseInfoPat = GetString("release");
   formatter.applyPattern(releaseInfoPat);
+  // I just want to display data according to the chosen locale...
+  String country = GetString(locale.getLanguage().toUpperCase()); // EN, ES, FR or other
   Object[] information =
   {
     country,
-    new Date((long) random(1E8, 1E9)),
+    // Some random date in late XXth century...
+    new Date((long) random(1E10, 1E12)),
     diskNbMsg,
     diskNbMore / 1.42E5,
   };
