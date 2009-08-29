@@ -98,6 +98,7 @@ void draw()
 
 void mouseReleased()
 {
+  // Alternative language
   boolean bAlt = keyPressed && key == CODED && keyCode == CONTROL;
   if (mouseY > menuPos - 20 && mouseY < menuPos + 20)
   {

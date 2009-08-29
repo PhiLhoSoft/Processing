@@ -1,4 +1,5 @@
 import java.net.URL;
+import java.io.File;
 
 import processing.core.PApplet;
 
@@ -22,12 +23,12 @@ public class ProcessingClassLoader extends ClassLoader
   @Override
   public URL getResource(String name)
   {
-    String textURL = "file:///" + m_pa.dataPath(name);
+    String textURL = m_pa.dataPath(name);
 //    System.out.println("getResource " + textURL);
     URL url = null;
     try
     {
-      url = new URL(textURL);
+      url = (new File(textURL)).toURI().toURL();
     }
     catch (java.net.MalformedURLException e)
     {

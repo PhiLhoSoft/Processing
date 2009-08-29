@@ -324,3 +324,16 @@ Obviously the Upload.php must be on the server, and you have to adjust some para
 
 ImageUpload is a sample / example Processing script using my image upload class, DataUpload.
 
+### Compact Discourse Page (Stylish)
+
+@namespace url(http://www.w3.org/1999/xhtml);
+
+@-moz-document url("http://processing.org/discourse/yabb2/YaBB.pl") {
+#container, #maincontainer { width: 1250px !important; }
+#mainnav_noSub { margin-bottom: 5px !important; }
+#board_nav { padding: 5px 0 !important; }
+div.content { margin: 0 10px !important; }
+td.windowbg + td.windowbg { width: 64% !important; }
+td.windowbg2 { width: 14% !important; }
+}
+
