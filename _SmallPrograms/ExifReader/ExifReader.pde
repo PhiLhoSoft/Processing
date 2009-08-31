@@ -10,7 +10,7 @@ void setup()
 {
   size(800, 800);
   background(0);
-
+/*
   String pictureFolder = selectFolder("Image Folder");
 
   if (pictureFolder == null)
@@ -18,6 +18,9 @@ void setup()
     println("Canceled");
     return;
   }
+*/
+String pictureFolder = "E:/Documents/Images/Tests";
+
   File pictFolder = new File(pictureFolder);
   File[] pictureFiles = pictFolder.listFiles(
       new FilenameFilter()
@@ -39,7 +42,6 @@ void setup()
     try
     {
       pf = pictureFiles[fi];
-      println("\n" + pf);
       metadata = JpegMetadataReader.readMetadata(pf);
     }
     catch (JpegProcessingException ex)
@@ -48,9 +50,55 @@ void setup()
     }
     if (metadata != null)
     {
-      ExifProcessing.ShowInformation(metadata);
-      ExifProcessing.WriteThumbnail(metadata, pf);
+//      println("\n" + pf);
+//      ExifProcessing.ShowInformation(metadata);
+//      ExifProcessing.WriteThumbnail(metadata, pf);
+      BufferedImage bi = ExifProcessing.GetThumbnail(metadata);
+      if (bi == null)
+        continue; // No thumbnail
+      println("\n" + pf);
+//      println(bi);
+      PImage pi = GetPImage(bi);
+      println("Thumb: " + pi.width + "x" + pi.height);
+      if (x + pi.width > width)
+      {
+        x = 10;
+        y += maxHeight + 10;
+        maxHeight = 0;
+      }
+      image(pi, x, y);
+      x += pi.width + 10;
+      if (pi.height > maxHeight)
+      {
+        maxHeight = pi.height;
+      }
     }
   }
-  exit();
+//  exit();
+}
+
+PImage GetPImage(BufferedImage image)
+{
+  Raster raster = image.getRaster();
+  if (raster.getTransferType() == DataBuffer.TYPE_INT)
+  {
+    // Just use the built-in converter
+    return new PImage(image);
+//    PImage pi = createImage(image.getWidth(), image.getHeight(), RGB);
+//    raster.getDataElements(0, 0, pi.width, pi.height, pi.pixels);
+  }
+  else
+  {
+    // Can be DataBuffer.TYPE_BYTE (that's what we have in the Jpeg thumbnails
+    // or something else
+    PImage pi = createImage(image.getWidth(), image.getHeight(), RGB);
+    PixelGrabber pg = new PixelGrabber(image, 0, 0, pi.width, pi.height,
+        pi.pixels, 0, pi.width);
+    try
+    {
+      pg.grabPixels();
+    }
+    catch (InterruptedException e) { }
+    return pi;
+  }
 }
