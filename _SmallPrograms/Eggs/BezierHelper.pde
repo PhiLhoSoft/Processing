@@ -1,3 +1,5 @@
+// [url=http://processing.org/discourse/yabb2/YaBB.pl?num=1236849784/2#2]Re: Why theese bezierVertex don´t make an egg[/url]
+
 float BezierHelper_prevX = 0;
 float BezierHelper_prevY = 0;
 
