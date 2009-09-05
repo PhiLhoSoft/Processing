@@ -20,12 +20,11 @@ import jpen.*;
 
 void setup()
 {
-  size(700, 700);
+  size(800, 800);
 
   PenManager pm = new PenManager(this);
   pm.pen.addListener(new ProcessingPen());
   smooth();
-  noStroke();
   background(#FFFFFF);
 }
 
@@ -44,7 +43,7 @@ public class ProcessingPen extends PenAdapter
     // See if the pen is down
     bIsDown = evt.pen.hasPressedButtons();
     /* Or check with a finer granularity.
-    // Pen pressed in LEFT for me (Bamboo).
+    // Pen pressed is LEFT for me (Bamboo).
     if (evt.pen.getButtonValue(PButton.Type.LEFT))
       println("LEFT");
     if (evt.pen.getButtonValue(PButton.Type.CENTER))
@@ -66,13 +65,24 @@ public class ProcessingPen extends PenAdapter
     // Get the current cursor location
     float xPos = evt.pen.getLevelValue(PLevel.Type.X);
     float yPos = evt.pen.getLevelValue(PLevel.Type.Y);
-    // Set the brush's size, and opacity relative to the pressure
+
+    // Set the brush's size, and darkness relative to the pressure
     float pressure = evt.pen.getLevelValue(PLevel.Type.PRESSURE);
     float brushSize = pressure * 10;
-    float opacity = 255 * pressure;
-    // Get the tilt values (not with a Bamboo...)
+    float darkness = 255 * pressure;
+
+    // Get the tilt values (not with a Bamboo... so untested!)
     float xTilt = evt.pen.getLevelValue(PLevel.Type.TILT_X);
     float yTilt = evt.pen.getLevelValue(PLevel.Type.TILT_Y);
+    // Transform them to azimuthX and altitude, two angles with the projection of the pen against the X-Y plane
+    // azimuthX is the angle (clockwise direction) between this projection and the X axis. Range: -pi/2 to 3*pi/2.
+    // altitude is the angle between this projection and the pen itself. Range: 0 to pi/2.
+    // Might be more pratical to use than raw x/y tilt values.
+    double[] aa = { 0.0, 0.0 };
+    PLevel.Type.evalAzimuthXAndAltitude(aa, xTilt, yTilt);
+    // or just PLevel.Type.evalAzimuthXAndAltitude(aa, evt.pen);
+    double azimuthX = aa[0];
+    double altitude = aa[1];
 
     /* If the stylus is being pressed down, we want to draw a black
        line onto the screen. If it's the eraser, we want to create
@@ -80,12 +90,12 @@ public class ProcessingPen extends PenAdapter
     */
     if (type == PKind.valueOf(PKind.Type.STYLUS))
     {
-      color c = color(255 * xTilt, 255 * yTilt, 255 - opacity);
+      color c = color(0, 0, 255 - darkness);
       stroke(c);
     }
     else if (type == PKind.valueOf(PKind.Type.ERASER))
     {
-      stroke(255);
+      stroke(255, darkness);
     }
     else
     {
