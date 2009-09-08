@@ -1,5 +1,9 @@
-// [url=http://processing.org/discourse/yabb2/YaBB.pl?num=1236849784/2#2]Re: Why theese bezierVertex don´t make an egg[/url]
+// [url=http://processing.org/discourse/yabb2/YaBB.pl?num=1236849784/2#2]Re: Why these bezierVertex don't make an egg[/url]
 
+/*
+ * Helper functions to visualize the vertices and control points of a BÃ©zier curve.
+ * Replace vertex() by Vertex() and bezierVertex() by BezierVertex().
+ */
 float BezierHelper_prevX = 0;
 float BezierHelper_prevY = 0;
 
