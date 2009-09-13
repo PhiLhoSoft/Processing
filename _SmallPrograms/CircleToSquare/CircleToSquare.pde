@@ -41,18 +41,18 @@ void DrawSpiral(float cx, float cy, float diameter, float ratio, float interval,
     beginShape();
     vertex(x, y + radius); // Left
   }
-  bezierVertex(x, y + ctrlLen,
-      x + ctrlLen - step, y - step,
-      x + radius - step, y - step); // Top
-  bezierVertex(x + diameter - ctrlLen - step, y - step,
-      x + diameter - 2 * step, y + ctrlLen - 2 * step,
-      x + diameter - 2 * step, y + radius - 2 * step); // Right
-  bezierVertex(x + diameter - 2 * step, y + diameter - ctrlLen - 2 * step,
-      x + diameter - 3 * step - ctrlLen, y + diameter - 3 * step,
-      x + radius - 3 * step, y + diameter - 3 * step); // Bottom
-  bezierVertex(x + ctrlLen - 3 * step, y + diameter - 4 * step,
-      x - 4 * step, y + diameter - ctrlLen - 4 * step,
-      x - 4 * step, y + radius - 4 * step); // Back to left
+  bezierVertex(x + 2 * step, y + ctrlLen,
+      x + ctrlLen, y + step,
+      x + radius, y + step); // Top
+  bezierVertex(x + diameter - ctrlLen, y + step,
+      x + diameter - 2 * step, y + ctrlLen,
+      x + diameter - 2 * step, y + radius); // Right
+  bezierVertex(x + diameter - 2 * step, y + diameter - ctrlLen,
+      x + diameter - ctrlLen, y + diameter - 3 * step,
+      x + radius, y + diameter - 3 * step); // Bottom
+  bezierVertex(x + ctrlLen, y + diameter - 3 * step,
+      x + 4 * step, y + diameter - ctrlLen,
+      x + 4 * step, y + radius); // Back to left
   if (radius > interval)
   {
     DrawSpiral(cx, cy, diameter - interval, ratio, interval, false);
@@ -115,7 +115,7 @@ void draw()
 
     noFill();
     stroke(#FF0000);
-    DrawSpiral(halfW, halfH, 360, pcr, 21, true);
+    DrawSpiral(halfW, halfH, 400, pcr, 21, true);
     noLoop();
   }
   ratio += 0.01 * direction;
