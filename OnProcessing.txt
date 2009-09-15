@@ -337,3 +337,35 @@ td.windowbg + td.windowbg { width: 64% !important; }
 td.windowbg2 { width: 14% !important; }
 }
 
+### Sign jar
+
+> keytool -genkey -keystore plKeyStore -alias PhiLho
+Tapez le mot de passe du Keystore : Tagada!
+Ressaisissez le nouveau mot de passe :
+Quels sont vos prÚnom et nom ?
+  [Unknown] :  Philippe Lhoste
+Quel est le nom de votre unitÚ organisationnelle ?
+  [Unknown] :
+Quelle est le nom de votre organisation ?
+  [Unknown] :  PhiLhoSoft
+Quel est le nom de votre ville de rÚsidence ?
+  [Unknown] :  Sevran
+Quel est le nom de votre Útat ou province ?
+  [Unknown] :  93270
+Quel est le code de pays Ó deux lettres pour cette unitÚ ?
+  [Unknown] :  fr
+Est-ce CN=Philippe Lhoste, OU=Unknown, O=PhiLhoSoft, L=Sevran, ST=93270, C=fr ?
+  [non] :  oui
+
+SpÚcifiez le mot de passe de la clÚ pour <PhiLho>
+        (appuyez sur EntrÚe s'il s'agit du mot de passe du Keystore) :
+
+> keytool -selfcert -keystore plKeyStore -alias PhiLho
+Tapez le mot de passe du Keystore :
+
+> jarsigner -keystore ..\..\..\plKeyStore DisplayText.jar PhiLho
+Enter Passphrase for keystore:
+
+Warning:
+The signer certificate will expire within six months.
+

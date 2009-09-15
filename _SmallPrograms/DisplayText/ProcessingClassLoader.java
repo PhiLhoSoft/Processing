@@ -23,16 +23,26 @@ public class ProcessingClassLoader extends ClassLoader
   @Override
   public URL getResource(String name)
   {
-    String textURL = m_pa.dataPath(name);
-//    System.out.println("getResource " + textURL);
+    String textPath = m_pa.dataPath(name);
+//    System.out.println("getResource " + textPath);
+    File textFile = new File(textPath);
     URL url = null;
-    try
+    if (textFile.exists())
     {
-      url = (new File(textURL)).toURI().toURL();
+      try
+      {
+        url = textFile.toURI().toURL();
+      }
+      catch (java.net.MalformedURLException e)
+      {
+        System.out.println("ProcessingClassLoader - Incorrect path: " + textPath);
+      }
     }
-    catch (java.net.MalformedURLException e)
+    else
     {
-      System.out.println("ProcessingClassLoader - Incorrect URL: " + textURL);
+      ClassLoader cl = getClass().getClassLoader();
+      url = cl.getResource("data/" + name);
+//      System.out.println("Using URL: " + url);
     }
     return url;
   }
