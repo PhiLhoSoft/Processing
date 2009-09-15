@@ -35,6 +35,7 @@ void DrawSpiral(float cx, float cy, float diameter, float ratio, float interval,
   float ctrlLen = (1 - ratio) * radius;
   float x = cx - radius, y = cy - radius;
   float step = interval / 4;
+  float rrs = (1 - ratio) * step / 2;
 
   if (bStart)
   {
@@ -44,14 +45,14 @@ void DrawSpiral(float cx, float cy, float diameter, float ratio, float interval,
   bezierVertex(x + 2 * step, y + ctrlLen,
       x + ctrlLen, y + step,
       x + radius, y + step); // Top
-  bezierVertex(x + diameter - ctrlLen, y + step,
-      x + diameter - 2 * step, y + ctrlLen,
+  bezierVertex(x + diameter - ctrlLen - rrs, y + step,
+      x + diameter - 2 * step, y + ctrlLen + 2 * rrs,
       x + diameter - 2 * step, y + radius); // Right
-  bezierVertex(x + diameter - 2 * step, y + diameter - ctrlLen,
-      x + diameter - ctrlLen, y + diameter - 3 * step,
+  bezierVertex(x + diameter - 2 * step, y + diameter - ctrlLen - 2 * rrs,
+      x + diameter - ctrlLen - 3 * rrs, y + diameter - 3 * step,
       x + radius, y + diameter - 3 * step); // Bottom
-  bezierVertex(x + ctrlLen, y + diameter - 3 * step,
-      x + 4 * step, y + diameter - ctrlLen,
+  bezierVertex(x + ctrlLen + 3 * rrs, y + diameter - 3 * step,
+      x + 4 * step, y + diameter - ctrlLen - 4 * rrs,
       x + 4 * step, y + radius); // Back to left
   if (radius > interval)
   {
@@ -72,10 +73,10 @@ int halfW, halfH;
 
 void setup()
 {
-  size(500, 500);
+  size(800, 800);
   halfW = width / 2;
   halfH = height / 2;
-  smooth();
+  //smooth();
 }
 
 void draw()
@@ -106,16 +107,18 @@ void draw()
   fill(0x8800EE00);
   stroke(#2288FF);
   if (bShowCircle) ratio = pcr;
-  DrawCircle(halfW, halfH, 400, 400, ratio);
+  DrawCircle(halfW, halfH, 700, 700, ratio);
   if (bShowCircle)
   {
     fill(0x480000EE);
     stroke(0x402288FF);
-    ellipse(halfW, halfH, 400, 400);
+    ellipse(halfW, halfH, 700, 700);
 
     noFill();
     stroke(#FF0000);
-    DrawSpiral(halfW, halfH, 400, pcr, 21, true);
+    strokeWeight(1);
+    DrawSpiral(halfW, halfH, 700, pcr, 21, true);
+
     noLoop();
   }
   ratio += 0.01 * direction;

@@ -13,7 +13,7 @@ void setup()
   }
   // Show result
   DumpArray(numbers);
-  
+
   // Declare copy
   int[][] copy = new int[numbers.length][];
   // Do the copy
@@ -21,7 +21,7 @@ void setup()
   {
     copy[i] = Arrays.copyOf(numbers[i], numbers[i].length);
   }
-  
+
   // Alter the original, to show it copied more than references...
   for (int i = 0; i < numbers.length; i++)
   {
@@ -35,6 +35,20 @@ void setup()
   println("");
   DumpArray(copy);
   DumpArray(numbers);
+
+  println("\n\nTest enums\n");
+
+  TestEnum ev = TestEnum.valueOf("Number1");
+  System.out.printf("Enumeration: %s (%s) = %d -- %s (%b) = %d\n",
+      ev, ev.name(), ev.ordinal(), ev.GetNameList(), ev.IsEven(), ev.GetValue());
+  
+  TestEnum[] enums = TestEnum.values();
+  for (int i = 0; i < enums.length; i++)
+  {
+    TestEnum te = enums[i];
+    System.out.printf("%d) %s = %d -- %s (%b)\n",
+        te.ordinal(), te.name(), te.GetValue(), te.GetNameList(), te.IsEven());
+  }
 }
 
 void DumpArray(int[][] arr)
