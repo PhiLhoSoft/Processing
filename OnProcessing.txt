@@ -369,3 +369,70 @@ Enter Passphrase for keystore:
 Warning:
 The signer certificate will expire within six months.
 
+### Perspective transform
+http://download.java.net/media/jai/javadoc/1.1.2_01/jai-apidocs/javax/media/jai/PerspectiveTransform.html
+
+A perspective transformation is capable of mapping an arbitrary quadrilateral into another arbitrary quadrilateral, while preserving the straightness of lines.
+Such a coordinate transformation can be represented by a 3x3 matrix which transforms homogenous source coordinates (x, y, 1) into destination coordinates (x', y', w). To convert back into non-homogenous coordinates (X, Y), x' and y' are divided by w.
+
+[ x']   [  m00  m01  m02  ] [ x ]   [ m00x + m01y + m02 ]
+[ y'] = [  m10  m11  m12  ] [ y ] = [ m10x + m11y + m12 ]
+[ w ]   [  m20  m21  m22  ] [ 1 ]   [ m20x + m21y + m22 ]
+
+x' = (m00x + m01y + m02)
+y' = (m10x + m11y + m12)
+w  = (m20x + m21y + m22)
+
+X = x' / w
+Y = y' / w
+
+http://knol.google.com/k/koen-samyn/perspective-transformation/2lijysgth48w1/19#
+
+aspectRatio: width / height
+fov: field of view (in radians) -- eg. 45° or 0.785398163 radians
+far: the distance to the far clip plane -- eg. 1
+near: the distance to the near clip plane -- eg. 1000
+a = aspectRatio ; f = far ; n = near ; t = tan(fov/2)
+
+[ 1/a/t  0        0       0 ]
+[  0    1/t       0       0 ]
+[  0     0    f/(f - n)  -1 ]
+[  0     0  -n*f/(f - n)  0 ]
+
+http://answers.google.com/answers/threadview/id/515829.html
+
+I recently wrote a function that you pass:
+x0,y0, x1,y1, x2,y2, x3,y3: Coordinates of four corners of a box, in
+clockwise order.
+x,y: coordinates of two points in a flat image from 0,0 to SX-1,SY-1.
+It writes the result on *px, *py. The result is the point which
+corresponds to x,y inside projection box. I used int because of
+performance. Floating point would probably give better results. The
+code is:
+
+void corPix(int x0, int y0, int x1, int y1, int x2, int y2, int x3,
+int y3, int x, int y, int *px, int *py) {
+
+  intersectLines(px, py,
+    ((SY-y)*x0 + (y)*x3)/SY, ((SY-y)*y0 + y*y3)/SY,
+    ((SY-y)*x1 + (y)*x2)/SY, ((SY-y)*y1 + y*y2)/SY,
+    ((SX-x)*x0 + (x)*x1)/SX, ((SX-x)*y0 + x*y1)/SX,
+    ((SX-x)*x3 + (x)*x2)/SX, ((SX-x)*y3 + x*y2)/SX);
+}
+
+It uses two functions I defined:
+
+int det(int a, int b, int c, int d) {
+  return a*d-b*c;
+}
+
+void intersectLines(int *px, int *py, int x1, int y1, int x2, int y2,
+int x3, int y3, int x4, int y4) {
+  int d = det(x1-x2,y1-y2,x3-x4,y3-y4);
+
+  if (d==0)
+    d = 1;
+
+  *px = det(det(x1,y1,x2,y2),x1-x2,det(x3,y3,x4,y4),x3-x4)/d;
+  *py = det(det(x1,y1,x2,y2),y1-y2,det(x3,y3,x4,y4),y3-y4)/d;
+}
