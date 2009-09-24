@@ -337,6 +337,12 @@ td.windowbg + td.windowbg { width: 64% !important; }
 td.windowbg2 { width: 14% !important; }
 }
 
+### Export to applet from command line (Windows)
+
+From Processing install dir
+
+java -cp lib/pde.jar;lib/jna.jar;lib/ecj.jar;lib/core.jar;lib/antlr.jar;C:/Java/jdk1.6.0_13/lib/tools.jar processing.app.Commander --sketch=E:/Dev/PhiLhoSoft/Processing/Bezier --export-applet --output=E:/Dev/PhiLhoSoft/Processing/Bezier/applet
+
 ### Sign jar
 
 > keytool -genkey -keystore plKeyStore -alias PhiLho
