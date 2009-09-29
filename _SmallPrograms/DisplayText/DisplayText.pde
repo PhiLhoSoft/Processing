@@ -40,6 +40,7 @@ void setup()
     text(textToDisplay, 10, 10, width - 10, height - 10);
 
     // Testing colorization of letters and "natural" spacing
+    // [url=http://processing.org/discourse/yabb2/YaBB.pl?num=1238833491/1#1]Re: Getting kerning data from font[/url]
     textAlign(LEFT);
 //    textMode(MODEL);
     String msg = "Processing is awesome!";
