@@ -9,19 +9,20 @@ public enum TestEnum
   private final String[] m_names;
   private final boolean m_bEven;
 
-  TestEnum(int value, String[] names, boolean bEven)
+  // No need to know it from the outside...
+  private TestEnum(int value, String[] names, boolean bEven)
   {
     m_value = value;
     m_names = names;
     m_bEven = bEven;
   }
 
-  String[] GetNames()
+  public String[] GetNames()
   {
     return m_names;
   }
 
-  static String GetNameList()
+  public static String GetNameList()
   {
     if (m_names == null || m_names.length == 0)
       return "";
@@ -33,12 +34,12 @@ public enum TestEnum
     return names.delete(names.length() - 2, names.length() - 1).toString();
   }
 
-  int GetValue()
+  public int GetValue()
   {
     return m_value;
   }
 
-  boolean IsEven()
+  public boolean IsEven()
   {
     return m_bEven;
   }

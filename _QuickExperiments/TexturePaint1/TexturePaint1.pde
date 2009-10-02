@@ -1,5 +1,7 @@
 //~ import java.awt.geom.Polygon;
 import java.awt.TexturePaint;
+// [url=http://processing.org/discourse/yabb2/YaBB.pl?num=1229687224/5#5]Re: fill shape with pattern[/url]
+// Doesn't work in Processing (doesn't like AWT?)
 
 PImage smallImage;
 Graphics2D g2;
