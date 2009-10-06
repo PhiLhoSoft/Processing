@@ -2,6 +2,8 @@
 // Motivation: Extend a line segment to bounding box
 // http://stackoverflow.com/questions/1520821/extend-a-line-segment-to-bounding-box
 
+boolean USE_SIMPLE_METHOD = true;
+
 int MARGIN = 10;
 int POINT_SIZE = 7;
 
@@ -22,7 +24,10 @@ void setup()
   size(800, 800);
   MakeBB();
   SetPoints();
-  FindIntersections();
+  if (USE_SIMPLE_METHOD)
+    FindSimpleIntersections();
+  else
+    FindIntersections();
 }
 
 void draw()
@@ -83,7 +88,7 @@ void FindIntersections()
   PVector pBL = new PVector(xMin, yMax);
   PVector pTR = new PVector(xMax, yMin);
   PVector pBR = new PVector(xMax, yMax);
-  // The sides of the BB
+  // Against the sides of the BB
   PVector pT = IntersectLines(pTL, pTR);
   PVector pB = IntersectLines(pBL, pBR);
   PVector pL = IntersectLines(pTL, pBL);
@@ -122,5 +127,57 @@ PVector IntersectLines(PVector p1, PVector p2)
   pRes.x = (v1 * (p1.x - p2.x) - (pointA.x - pointB.x) * v2) / d;
   pRes.y = (v1 * (p1.y - p2.y) - (pointA.y - pointB.y) * v2) / d;
   return pRes;
+}
+
+void FindSimpleIntersections()
+{
+  println("BB " + xMin + " .. " + xMax + " / " + yMin + " .. " + yMax);
+  // Test against the sides of the BB
+  PVector pT = IntersectHorizontalSegment(yMin, xMin, xMax);
+  PVector pB = IntersectHorizontalSegment(yMax, xMin, xMax);
+  PVector pL = IntersectVecticalSegment(xMin, yMin, yMax);
+  PVector pR = IntersectVecticalSegment(xMax, yMin, yMax);
+  println("T: " + pT);
+  println("B: " + pB);
+  println("L: " + pL);
+  println("R: " + pR);
+
+  int i = 0;
+  // Eliminates the non-intersecting solutions
+  if (pT != null) pointsI[i++] = pT;
+  if (pB != null) pointsI[i++] = pB;
+  if (pL != null) pointsI[i++] = pL;
+  if (pR != null) pointsI[i++] = pR;
+  println("=> " + i);
+  println("1: " + pointsI[0].x + ", " + pointsI[0].y);
+  println("2: " + pointsI[1].x + ", " + pointsI[1].y);
+}
+
+PVector IntersectHorizontalSegment(float y, float xMin, float xMax)
+{
+  float d = pointA.y - pointB.y;
+  if (d == 0)
+    return null;  // Horizontal line doesn't intersect horizontal segment (unless they have same y)
+
+  float x = -(pointA.x * pointB.y - pointA.y * pointB.x - y * (pointA.x - pointB.x)) / d;
+  println("X: " + x);
+  if (x < xMin || x > xMax)
+    return null;  // Not in segement
+
+  return new PVector(x, y);
+}
+
+PVector IntersectVecticalSegment(float x, float yMin, float yMax)
+{
+  float d = pointA.x - pointB.x;
+  if (d == 0)
+    return null;  // Vertical line doesn't intersect vertical segment (unless they have same x)
+
+  float y = (pointA.x * pointB.y - pointA.y * pointB.x - x * (pointA.y - pointB.y)) / d;
+  println("Y: " + y);
+  if (y < yMin || y > yMax)
+    return null;  // Not in segement
+
+  return new PVector(x, y);
 }
 
