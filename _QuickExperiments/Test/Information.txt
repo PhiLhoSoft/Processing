@@ -1,0 +1,2 @@
+Printing on text file
+E:/Dev/PhiLhoSoft/Processing/Globe.png
