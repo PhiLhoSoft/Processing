@@ -1,5 +1,5 @@
 PImage niceImage;
-PImage maskImage;
+PImage maskedImage;
 PGraphics graphicalMask;
 int iw, ih;
 int dw, dh;
@@ -7,7 +7,7 @@ int dw, dh;
 void setup()
 {
   size(500, 500);
-  niceImage = loadImage("E:/Dev/PhiLhoSoft/Processing/me.png");
+  niceImage = loadImage("D:/_PhiLhoSoft/Processing/me.png");
   iw = niceImage.width;
   ih = niceImage.height;
   dw = width - iw;
@@ -20,25 +20,29 @@ void draw()
   background(200);
 
   graphicalMask.beginDraw();
-  // Erase graphics
+  // Erase graphics with black background
   graphicalMask.background(0);
-  // Draw the mask
+  // Draw the mask, depending on mouse position
   int x = mouseX - dw/2;
   int y = mouseY - dh/2;
+  // Draw in white
   graphicalMask.fill(255);
   graphicalMask.noStroke();
+  // An ellipse to see a good part of the image
   graphicalMask.ellipse(x, y, 100, 50);
+  // Draw in gray, resulting in translucent mask
   graphicalMask.stroke(128);
   graphicalMask.strokeWeight(5);
+  // Draw a thick cross-wire
   graphicalMask.line(0, y, iw, y);
   graphicalMask.line(x, 0, x, ih);
   graphicalMask.endDraw();
 
   // Copy the original image (kept as reference)
-  maskImage = niceImage.get();
+  maskedImage = niceImage.get();
   // Apply the mask
-  maskImage.mask(graphicalMask);
+  maskedImage.mask(graphicalMask);
   // Display the result
-  image(maskImage, dw/2, dh/2);
+  image(maskedImage, dw/2, dh/2);
 }
 
