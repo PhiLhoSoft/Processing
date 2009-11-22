@@ -1,4 +1,5 @@
 // [url=http://processing.org/discourse/yabb2/YaBB.pl?num=1229687224/5#5]Re: fill shape with pattern[/url]
+// See also [url=http://processing.org/reference/texture_.html]texture()[/url] (P2D, P3D, OPENGL)
 PGraphics pgTexture;
 PGraphics pgMask;
 PGraphics pgShape;
