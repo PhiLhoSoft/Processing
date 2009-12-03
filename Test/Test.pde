@@ -17,17 +17,14 @@ final byte[] sigBefore =
 final byte[] sigAfter  =
 {
   (byte) 0x08,
-  (byte) 0x8C,
-  (byte) 0xFF,
-  (byte) 0x00,
-  (byte) 0x00
+  (byte) 0x8C
 };
 
 String currentName;
 
 void setup()
 {
-  byte[] originalBytes = loadBytes("slices_t_A.vfb");
+  byte[] originalBytes = loadBytes("SL_A.vfb");
   byte[] alteredBytes = Arrays.copyOf(originalBytes, originalBytes.length);
 
   int maxPos = originalBytes.length - sigBefore.length - 1 - maxNameLength - sigAfter.length;

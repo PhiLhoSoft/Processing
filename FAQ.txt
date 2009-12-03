@@ -1,0 +1,48 @@
+Q: Why all the drawings I do are superposed?
+Q: I draw text (or some complex shape), using smooth(), but it becomes progressively blocky (aliased). Why?
+A: Just put a call to background() at the start of draw(). It will erase the whole drawing done on preceding frame and restart from fresh.
+The blocky look comes from the fact that aliased, semi-transparent pixels cumulate and become opaque, thus pixillated.
+
+Q: I write some lines of code, which work. I wanted to put put some repetitive code in a function, I get the error:
+... [TBC]
+What is it?
+A: Processing automatically puts your casual code in a generated setup() function, if you don't provide it yourself.
+But if you add a function, it will goes into this setup() routine, and Java doesn't accept nesting functions, hence the error.
+Just put your few lines in setup() (and perhaps some declarations outside) and it should work.
+
+Q: I declare a PImage (or PFont or String) outside of setup() to make it global, and I initialize it with loadImage() (or loadFont() or loadString(), etc.).
+But my variable is null! Why, I am sure my file is in the data folder.
+A: Processing knows about the data folder only after starting to run setup(). But variables put at global level are initialized before calling setup(). So Processing doesn't know where to get these files.
+Declare the variables at global level (eg. <code>PImage niceImage;</code>) and initialize them in setup() (eg. <code>niceImage = loadImage("NiceImage.png");</code>).
+Note that if your initialization code doesn't access the data folder, it is safe to init at declaration level:
+<code>ArrayList al = new ArrayList();</code> is OK.
+See also next question.
+
+Q: I declare my class variable at global level and initialize it in setup(). But it is always null.
+A: A frequent error is to do <code>ArrayList al;</code> or <code>PImage niceImage;</code> at global level, then to do <code>ArrayList al = new ArrayList();</code> or <code>PImage niceImage = loadImage("...");</code> in setup() (or draw() or elsewhere). The error is to repeat the declaration, it should be: <code>al = new ArrayList();</code> or <code>niceImage = loadImage("...");</code>. Otherwise that will create a new local variable hidding the global one and disappearing at the end of setup()...
+
+Q: The code I have put at the start of setup() is called twice! How come?
+A: This behavior is documented in the setup() reference page: code put before the call of size() can be called twice. Just follow the advice and put size() as first line of setup().
+
+Q: How do I do an action at regular intervals?
+A: You have to use the good old "elapsed time" pattern.
+<code>// Declare a global time tracking variable
+long timeSinceLastEvent;
+long DELAY_BETWEEN_EVENTS = 5 * 1000;  // 5s
+
+void setup()
+{
+  // Usual setup stuff, size() and al
+  // Record starting time
+  timeSinceLastEvent = millis();
+}
+
+void draw()
+{
+  if (millis() - timeSinceLastEvent > DELAY_BETWEEN_EVENTS)
+  {
+    DoSomething();
+    timeSinceLastEvent = millis();
+  }
+}
+</code>
