@@ -1,4 +1,4 @@
-int queueSize = 50;
+int queueSize = -1;
 
 ArrayDeque lines;
 
@@ -9,11 +9,20 @@ void setup()
   lines = new ArrayDeque();
   noFill();
   ellipseMode(CENTER);
+  
+  noLoop();
+  PFont f = createFont("Verdana", 16);
+  textFont(f);
 }
 
 void draw()
 {
-  background(255);
+  background(128, 128, 255);
+  if (queueSize < 0)
+  {
+    text("Type a number between 1 and 9", 10, 20);
+    return;
+  }
 
   if (mouseX != pmouseX || mouseY != pmouseY)
   {
@@ -40,6 +49,17 @@ void draw()
       ellipse(cp.x, cp.y, 21, 21); 
     }
     pp = cp;
+  }
+}
+
+void keyReleased()
+{
+  int number = int(key) - int('0');
+  if (number > 0)
+  {
+    println(number);
+    queueSize = 10 * number;
+    loop();
   }
 }
 
