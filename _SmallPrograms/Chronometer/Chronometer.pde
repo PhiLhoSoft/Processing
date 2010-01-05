@@ -24,6 +24,11 @@ void setup()
 
 void draw()
 {
+  if (frameCount == 1)
+  {
+    ChangeWindowListener();
+  }
+
   background(#99EEAA);
 
   int seconds = (millis() - startingTime) / 1000;
@@ -69,5 +74,44 @@ String GetPlural(int value, String word)
 void keyPressed()
 {
   startingTime = millis();
+  
+  // Also prevent direct exit from Escape key, ask confirmation first
+  if (key == KeyEvent.VK_ESCAPE) 
+  {
+    key = 0;
+    ConfirmExit();
+  }
+}
+
+// Testing preventing accidental window closing...
+void ChangeWindowListener()
+{
+  WindowListener[] wls = frame.getWindowListeners();
+  //println("Found " + wls.length + " listeners");
+  if (wls.length > 0)
+  {
+    frame.removeWindowListener(wls[0]); // Suppose there is only one...
+    frame.addWindowListener(new WindowAdapter()
+    {
+      public void windowClosing(WindowEvent we)
+      {
+          //println("Should be closing!");
+          ConfirmExit();
+      }
+    });
+  }
+}
+
+void ConfirmExit()
+{
+  int exitChoice = javax.swing.JOptionPane.showConfirmDialog(frame, 
+      "Are you sure you want to exit?",
+      "Chronometer - Confirm exit",
+      javax.swing.JOptionPane.YES_NO_OPTION
+  );
+  if (exitChoice == javax.swing.JOptionPane.YES_OPTION) 
+  {
+    exit();
+  }
 }
 

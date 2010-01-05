@@ -18,6 +18,7 @@
 *.pde-
 *.java+
 *.java-
+*.vfb
 
 libraries/
 tools/
