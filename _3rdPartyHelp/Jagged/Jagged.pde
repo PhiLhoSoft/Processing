@@ -1,10 +1,11 @@
 // http://processing.org/discourse/yabb2/YaBB.pl?num=1263387820
-int num = 90;
+final int NUM = 90;
 float deg = 0;
+int method = 2;
 
 // By default initialized to 0
-float[] xpos = new float[num];
-float[] ypos = new float[num];
+float[] xpos = new float[NUM];
+float[] ypos = new float[NUM];
 
 void setup() {
   size(600, 600, P2D);
@@ -20,22 +21,50 @@ void draw() {
 }
 
 void path() {
-  for(int i = 0; i < num-1; i++) {
+  for (int i = 0; i < NUM-1; i++) {
     xpos[i] = xpos[i+1];
     ypos[i] = ypos[i+1];
   }
-  deg += 0.0008 * num;
-  float n = map(noise(xpos[num-1]), 0.0, 1.0, 10, 300);
+  deg += 0.0008 * NUM;
+  float n = map(noise(xpos[NUM-1]), 0.0, 1.0, 10, 300);
   float rx = sin(deg)*n;
   float ry = cos(deg)*n;
-  xpos[num-1] = rx;
-  ypos[num-1] = ry;
-  
+  xpos[NUM-1] = rx;
+  ypos[NUM-1] = ry;
+
   beginShape();
   vertex(xpos[0], ypos[0]);
-  for(int j = 1; j < num; j++) {
-    vertex(xpos[j], ypos[j]);
+  for (int j = 1; j < NUM; j++) {
+    switch (method) {
+    case 1: // Straight lines
+      vertex(xpos[j], ypos[j]);
+      break;
+    case 2: { // First version of curves
+      float cp1x = xpos[j-1];
+      float cp1y = ypos[j-1];
+      float cp2x = xpos[j];
+      float cp2y = ypos[j];
+      bezierVertex(cp1x, cp1y, cp2x, cp2y, (cp1x + cp2x)/2, (cp1y + cp2y)/2);
+      }
+      break;
+    case 3: { // Second version of curves
+      // Should compute line parameters and put the control points at a given distance of pos
+      float cp1x = xpos[j];
+      float cp1y = ypos[j] - 5;
+      float cp2x = xpos[j] - 5;
+      float cp2y = ypos[j];
+      bezierVertex(cp1x, cp1y, cp2x, cp2y, xpos[j], ypos[j]);
+      }
+      break;
+    default: // Whatever...
+    }
   }
   endShape();
-} 
+}
+
+void keyPressed() {
+  if (key == '1') method = 1;
+  else if (key == '2') method = 2;
+  else if (key == '3') method = 3;
+}
 
