@@ -2,6 +2,7 @@
 final int NUM = 90;
 float deg = 0;
 int method = 2;
+float tightness = 0;
 
 // By default initialized to 0
 float[] xpos = new float[NUM];
@@ -32,6 +33,7 @@ void path() {
   xpos[NUM-1] = rx;
   ypos[NUM-1] = ry;
 
+  curveTightness(tightness);
   beginShape();
   vertex(xpos[0], ypos[0]);
   for (int j = 1; j < NUM; j++) {
@@ -56,6 +58,12 @@ void path() {
       bezierVertex(cp1x, cp1y, cp2x, cp2y, xpos[j], ypos[j]);
       }
       break;
+    case 4: // Using curve instead of bezier
+      curveVertex(xpos[j], ypos[j]);
+      break;
+    case 5: // Using curve instead of bezier
+      curveVertex((xpos[j-1] + xpos[j])/2, (ypos[j-1] + ypos[j])/2);
+      break;
     default: // Whatever...
     }
   }
@@ -66,5 +74,9 @@ void keyPressed() {
   if (key == '1') method = 1;
   else if (key == '2') method = 2;
   else if (key == '3') method = 3;
+  else if (key == '4') method = 4;
+  else if (key == '5') method = 5;
+  else if (key == '+') tightness += 0.2;
+  else if (key == '-') tightness -= 0.2;
 }
 
