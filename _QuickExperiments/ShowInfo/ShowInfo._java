@@ -1,14 +1,17 @@
 // I use a (simplistic) logger, shown in
 // [url=http://processing.org/discourse/yabb2/YaBB.pl?num=1196069582/8]Processing 1.0 - Processing to send e-mail or SMS?[/url])
 // not because it is useful here, but because I needed some dumb/simple code to illustrate its usage...
+import java.io.*;
 
-void setup() // Must add it because I use a class
+class ShowInfo
+{
+public static void main(String[] args)
 {
 
 // Use:
 //Logger logger = new Logger(sketchPath("Information.txt"));
 // or:
-Logger logger = new Logger(System.err);
+Logger logger = new Logger(System.out);
 
 String[] props =
 {
@@ -23,10 +26,10 @@ logger.log(cp);
 String ed = System.getProperty("java.ext.dirs");
 logger.log(ed);
 logger.setDateFormat("yyyy-MM-dd HH:mm:ss");
-logger.log(sketchPath);
+logger.log(System.getProperty("user.dir"));
 try
 {
-  logger.log(java.net.URLEncoder.encode("http://stackoverflow.com/questions/292362/url ‚åò‚ç∫ decoding#293028", "UTF-8"));
+  logger.log(java.net.URLEncoder.encode("http://stackoverflow.com/questions/292362/url È‡Á˘ decoding#293028", "UTF-8"));
 }
 catch (UnsupportedEncodingException e)
 {
@@ -41,6 +44,6 @@ catch (UnsupportedEncodingException e)
 {
   logger.log("Bad encoding!", e);
 }
-exit();
 
+}
 }
