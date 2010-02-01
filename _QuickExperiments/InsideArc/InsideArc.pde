@@ -1,6 +1,6 @@
 // Data of arc
-int x = 100;
-int y = 100;
+int x = 200;
+int y = 200;
 int d = 200;
 float a1 = 0, a2 = 0;
 
@@ -12,14 +12,17 @@ void setup()
 
 void draw()
 {
+  background(255);
   if (frameCount % 20 == 0)
   {
     // Every 20 frames, change the angles in opposite directions with different speeds,
     // to make interesting range of angles
+    // EDIT: Looks like something is broken (in 1.0.5) as arc() doesn't accept negative
+    // angles any longer?
     a1 += PI/11;
     a2 -= PI/7;
   }
-  // Draw the circle base of the arc
+  // Draw the circle base of the arc in green
   fill(#00FF00); ellipse(x, y, d, d);
   if (IsPointInsideArc(mouseX, mouseY, x, y, d, a1, a2))
   {
