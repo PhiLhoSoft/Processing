@@ -14,3 +14,8 @@ http://philho.pastebin.com/f19f2cace -- Handle (class)
 
 # ShowMySQLData
 [url=http://processing.org/discourse/yabb2/YaBB.pl?num=1237210485/10#10]arraylist with mysql[/url]
+
+
+## (Unrelated, template)
+
+[size=8][color=#8000ff][Moderator's note: Bla][/color][/size]

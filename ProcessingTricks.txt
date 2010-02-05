@@ -329,12 +329,38 @@ ImageUpload is a sample / example Processing script using my image upload class,
 @namespace url(http://www.w3.org/1999/xhtml);
 
 @-moz-document url("http://processing.org/discourse/yabb2/YaBB.pl") {
+/* I reduce headers height and widen the section list table
+   to try and display the state of as much sections as possible
+   without scrolling.
+ */
+/* Widen the display */
 #container, #maincontainer { width: 1250px !important; }
+/* Don't skip space before the list of board links */
 #mainnav_noSub { margin-bottom: 5px !important; }
-#board_nav { padding: 5px 0 !important; }
-div.content { margin: 0 10px !important; }
-td.windowbg + td.windowbg { width: 64% !important; }
-td.windowbg2 { width: 14% !important; }
+/* Give less space around the message nb line */
+#container .content td[height] { height: 15px !important; }
+/* Hide "Processing 1.0" above the section list */
+#board_nav { display: none !important; }
+/* Reduce the left and right margins of the section list */
+#container .content { margin: 0 10px !important; }
+/* Second (windowbg) column of the table: the section name and description */
+td.windowbg:first-child + td.windowbg { width: 64% !important; }
+/* The Last Post column */
+td.windowbg2 { width: 18% !important; }
+/* Hide moderator info (these are always the same... :-P) */
+/*td.windowbg div.small { display: none !important; }*/
+/* Or float them to the right, so they take less room */
+td.windowbg div.small { float: right !important; margin-top: -22px !important; }
+}
+
+@-moz-document url-prefix("http://processing.org/discourse/yabb2/YaBB.pl?board=")
+{
+/* Widen the display */
+#container, #maincontainer { width: 1250px !important; }
+td.titlebg:first-child, td.titlebg:nth-child(3)
+  { width: 50px !important; }
+/* Second (titlebg) column of the table: the subject */
+td.titlebg:first-child + td.titlebg { width: 30% !important; }
 }
 
 ### Export to applet from command line (Windows)
