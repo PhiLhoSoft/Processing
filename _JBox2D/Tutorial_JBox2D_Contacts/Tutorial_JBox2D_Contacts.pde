@@ -4,7 +4,8 @@
  * Part n: Contacts
  */
 /* File history:
- *  1.00.000 -- 2009/09/26 (PL) -- Creation
+ *  1.00.000 -- 2010/10/19 (PL) -- Making it handling contacts...
+ *  0.00.000 -- 2009/09/26 (PL) -- Creation
  */
 /*
 Author: Philippe Lhoste <PhiLho(a)GMX.net> http://Phi.Lho.free.fr
@@ -27,6 +28,9 @@ import org.jbox2d.p5.*;
 
 // A reference to the physics engine
 Physics physics;
+// Reference to the world as we need it for more advanced stuff...
+World world;
+// We observe a particular object
 Body circle;
 boolean bShown; long timeStart;
 
@@ -52,11 +56,6 @@ void draw()
 {
   // Not much to do here, most drawing is handled by BoxWrap2D
   background(255);
-  // Show position of circle
-  Vec2 posW = circle.getPosition();
-  Vec2 posS = physics.worldToScreen(posW);
-  String position = String.format("Pos: %.2f, %.2f", posS.x, posS.y);
-  text(position, 10, 20);
   if (circle.isSleeping() && !bShown)
   {
     println(millis() - timeStart + " " + frameCount);
@@ -88,6 +87,8 @@ void InitScene()
 {
   // Set up the engine with the sketch's dimensions
   physics = new Physics(this, width, height);
+  world = physics.getWorld();
+
   // Add fixed obstacles, of density 0.0
   physics.createCircle(width / 5, height / 5, 10.0);
   physics.createCircle(4 * width / 5, height / 5, 10.0);
@@ -95,6 +96,9 @@ void InitScene()
   physics.createCircle(4 * width / 5, 4 * height / 5, 10.0);
   // And set the density for the other objects
   physics.setDensity(1.0);
+
+  // Add contact listener
+  world.setContactListener(new HitHandler());
 }
 
 void CreateObjects()
@@ -106,10 +110,10 @@ void CreateObjects()
   // A round object in the middle of the scene (center coordinates, radius)
   circle = physics.createCircle(hw, hh, 50.0);
   // Make it rotating (value in radian/second)
-  circle.setAngularVelocity(3.0);
-  Vec2 vc = new Vec2(-30.0, 0.0); // To the left
-  circle.setLinearVelocity(vc);
-
+//~   circle.setAngularVelocity(3.0);
+//~   Vec2 vc = new Vec2(-30.0, 0.0); // To the left
+//~   circle.setLinearVelocity(vc);
+/*
   // And two rectangles not far (coordinates of top-left, and bottom-right corners)
   Body rect1 = physics.createRect(
       hw - 150, hh - 50,
@@ -135,7 +139,81 @@ void CreateObjects()
   );
   Vec2 v3 = new Vec2(5.0, 30.0); // Go a little high
   triangle.setLinearVelocity(v3);
-
+*/
   timeStart = millis(); bShown = false;
+}
+
+public class HitHandler implements ContactListener
+{
+  HitHandler()
+  {
+  }
+
+  /**
+   * Called when a contact point is added, ie. when colliding.
+   * This includes the geometry and the forces.
+   */
+  public void add(ContactPoint cp)
+  {
+    println("Ouch!");
+    DumpContactPoint(cp);
+  }
+
+  /**
+   * Called when a contact point persists, ie. contact is maintained.
+   * This includes the geometry and the forces.
+   */
+  public void persist(ContactPoint cp)
+  {
+    println("Sticky, eh?");
+    DumpContactPoint(cp);
+  }
+
+  /**
+   * Called when a contact point is removed, ie. contact is broken.
+   * This includes the last computed geometry and forces.
+   */
+  public void remove(ContactPoint cp)
+  {
+    println("Good riddance!");
+    DumpContactPoint(cp);
+  }
+
+  /**
+   *
+   */
+  public void result(ContactResult cr)
+  {
+    DumpContactResult(cr);
+  }
+}
+
+void DumpContactResult(ContactResult cr)
+{
+  println("ContactResult: " + cr + " (" + cr.id.features.incidentEdge + ")");
+  println("- Shapes: " + cr.shape1 + ", " + cr.shape2);
+  println("- Position: " + cr.position);
+  println("- Normal: " + cr.normal + " -> " + cr.normalImpulse + " / " + cr.tangentImpulse);
+}
+
+void DumpContactPoint(ContactPoint cp)
+{
+  println("ContactPoint: " + cp + " (" + cp.id.features.incidentEdge + ")");
+  println("- Shapes: " + cp.shape1 + ", " + cp.shape2);
+  println("- Position: " + cp.position);
+  println("- Velocity: " + cp.velocity);
+  println("- Normal: " + cp.normal);
+  println("- Separation: " + cp.separation);
+  println("- Friction / Restitution: " + cp.friction + " / " + cp.restitution);
+}
+
+void ShowInformation()
+{
+  // Show position of circle
+  Vec2 posW = circle.getPosition();
+  Vec2 posS = physics.worldToScreen(posW);
+  String position = String.format("Pos: %.2f, %.2f", posS.x, posS.y);
+  fill(#208020);
+  text(position, 10, 20);
 }
 

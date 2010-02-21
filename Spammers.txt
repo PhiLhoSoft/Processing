@@ -4,10 +4,13 @@ Paul Jake	;username=1001150C0A010B05515453600
 Carol Anne	username=04010C0C0113020114081205600
 Lexor Soft	username=69607D6A77766A63716C6B636A050
 Angela Votive
+alexbuss	username=59545D40565D4C5A4D4B51565D4B4B380
+Erma Lewis	username=3C2B343835590
 discount cabinets	username=616C76666A706B716664676C6B607176050
 kathlene	username=3832273B3F363D366263530 (making money online)
 Jordan	username=2627233A2D383F4C0 (Life Insurance)
 Ron Jacobson	username=534E4F4B40424E43524E4F210 (Housekeepers)
+Kelly Johns	username=6D6C696E6875060
 
 
 ## Highly suspicious users
@@ -17,6 +20,17 @@ in Exhibition > contemporary art exhibition <http://processing.org/discourse/yab
 in Events, Publications, Opportunities > Contemporary art exhibition for Sudanese artists <http://processing.org/discourse/yabb2/YaBB.pl?num=1265210810>
 Link in signature to a site unrelated to Processing, coding or art.
 People answering in this thread, if they are new to the site, are suspicious as well...
+
+# Cannot remove messages as they posted in sections where I have no power... :-(
+chandelier01	username=505B525D57565F5A5641330
+Commercial links in signature
+mariyanaaaa	username=55796A7179477679180
+Commercial links in signature (Colombian Emeralds, Star sapphire)
+
+# Commercial link in signature, answer is OK...
+Rick 71	username=40585B4152455E5952060E0006370
+in http://processing.org/discourse/yabb2/YaBB.pl?num=1260214925
+
 
 
 ## Highly suspicious threads
@@ -59,6 +73,9 @@ in http://processing.org/discourse/yabb2/YaBB.pl?num=1214781848
 
 mytwtstar	username=4B404F447E4D4E5344404D210
 in http://processing.org/discourse/yabb2/YaBB.pl?num=1258822384
+
+Robert Wilson	username=5B40475A5C4049415A5B5C51444D5B280
+in http://processing.org/discourse/yabb2/YaBB.pl?num=1265127269/15#15
 
 Want to Learn Programming...Where to start? <http://processing.org/discourse/yabb2/YaBB.pl?num=1265224817>
 Answers by sashaf0908, martinr1111, even michael22 and CarolRiver if I get paranoid!

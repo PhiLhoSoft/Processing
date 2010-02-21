@@ -18,4 +18,4 @@ http://philho.pastebin.com/f19f2cace -- Handle (class)
 
 ## (Unrelated, template)
 
-[size=8][color=#8000ff][Moderator's note: Bla][/color][/size]
+[size=9][color=#8000ff][Moderator's note: Bla][/color][/size]

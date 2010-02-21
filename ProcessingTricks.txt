@@ -350,7 +350,7 @@ td.windowbg2 { width: 18% !important; }
 /* Hide moderator info (these are always the same... :-P) */
 /*td.windowbg div.small { display: none !important; }*/
 /* Or float them to the right, so they take less room */
-td.windowbg div.small { float: right !important; margin-top: -22px !important; }
+td.windowbg div.small { float: right !important; margin-top: -21px !important; background-color: #EEFFEE !important; font-size: 0.9em !important; }
 }
 
 @-moz-document url-prefix("http://processing.org/discourse/yabb2/YaBB.pl?board=")
