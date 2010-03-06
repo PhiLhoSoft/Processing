@@ -6,6 +6,7 @@
 *.ico
 *.avi
 *.pdf
+*.html
 
 *.ini
 *.csv
@@ -32,5 +33,4 @@ application.*
 plKeyStore
 _SmallPrograms/DelaunayTriangles/co-de
 _3rdPartyHelp/proto_type
-_3rdPartyHelp/Email
 _3rdPartyHelp/TextInput
