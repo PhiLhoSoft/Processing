@@ -2,14 +2,12 @@
 //when totalling no. of medals by nationality into new array, only append for country that is not in array already!
 //need o sort this for re-sizing? - or is the pdf setup ok?
 
+// Code by Ladle (Sam Humphrey)
+// Various refactoring by PhiLho (Philippe Lhoste)
 // Remarks by PhiLho are marked with //PL//
 
 import processing.pdf.*;
 
-//PL// Long variable names are good, but the Array suffix is a bit too much.
-// Usually I just use the plural (or a name like List or Sequence) for array variables.
-//PL// Added some spaces around operators to make code "breathe" and break visually long lines in smaller chunks.
-//PL// And fixed indenting.
 
 //SOURCE: http://espn.go.com/olympics/winter/2010/results/_/date/20100220
 String[] sourceAddressesByDate = new String[17];//17 days of olympics.
@@ -26,6 +24,10 @@ String[] nationNumOfMedals= new String[0];
 int goldMedalCounter = 0;//total of all golds.
 int silverMedalCounter = 0;//total of all silvers.
 int bronzeMedalCounter = 0;//total of all bronzes.
+
+final String MEDAL_IMAGE_GOLD = "medalimage-G";
+final String MEDAL_IMAGE_SILVER = "medalimage-S";
+final String MEDAL_IMAGE_BRONZE = "medalimage-B";
 
 PFont font;
 PFont bigFont;
@@ -54,7 +56,8 @@ void setup() {
   fill(0);
   for (int i = 0; i < sourceAddressesByDate.length; i++) {//loop through the days..---------------------------------------------------------------------------------------------SKIPPING DAYS!!? - make sure this gets reset to 0.
 
-    sourceAddressesByDate[i] = "http://espn.go.com/olympics/winter/2010/results/_/date/201002" + (12 + i);//gets the url of each day's results table.
+    String medalWinDate = "201002" + (12 + i);
+    sourceAddressesByDate[i] = "http://espn.go.com/olympics/winter/2010/results/_/date/" + medalWinDate;//gets the url of each day's results table.
     println("loading day" + (i + 1) + "strings");
     String[] tempDaySourceLines = loadStrings(sourceAddressesByDate[i]);
 
@@ -70,113 +73,16 @@ void setup() {
 
         //THIS IS WITHIN EACH EVENT, OF ALL DAYS.
         for (int n=1; n < thisDaysEvents.length; n++) {//for every event this day..
-          int startGetEvent = thisDaysEvents[n].indexOf("\"4\" > ") + 4;
-          int endGetEvent = thisDaysEvents[n].indexOf("<", startGetEvent);
-          String event = thisDaysEvents[n].substring(startGetEvent, endGetEvent);
+          String dayEvent = thisDaysEvents[n];
+          int startGetEvent = dayEvent.indexOf("\"4\" > ") + 4;
+          int endGetEvent = dayEvent.indexOf("<", startGetEvent);
+          String event = dayEvent.substring(startGetEvent, endGetEvent);
 
-          if (thisDaysEvents[n].indexOf("medalimage-G") >= 0) {//if there is a GOLD medal in the current event..
+          ParseMedalData(dayEvent, event, medalWinDate, MEDAL_IMAGE_GOLD, 'G');
+          ParseMedalData(dayEvent, event, medalWinDate, MEDAL_IMAGE_SILVER, 'S');
+          ParseMedalData(dayEvent, event, medalWinDate, MEDAL_IMAGE_BRONZE, 'B');
 
-            int startGetGoldCountry = thisDaysEvents[n].indexOf("&nbsp") + 6;
-            int endGetGoldCountry = thisDaysEvents[n].indexOf("&nbsp") + 9;
-            String goldCountry = thisDaysEvents[n].substring(startGetGoldCountry, endGetGoldCountry);
-            // println(goldCountry + " goldCountry");
-
-            //PL// Replaced all expand() followed by assignment on last index by append(): shorter and easier to understand
-            allWinningNationalities = append(allWinningNationalities, goldCountry);//adds the nation to the nations array.
-
-            allWonMedals = append(allWonMedals, 'G');//adds the medal to the totals array.
-
-            int preGetAthleteName = thisDaysEvents[n].indexOf("href") + 4;
-            int startGetAthleteName = thisDaysEvents[n].indexOf(">", preGetAthleteName) + 1;
-            int endGetAthleteName = thisDaysEvents[n].indexOf("<", startGetAthleteName);
-            String athleteName = thisDaysEvents[n].substring(startGetAthleteName, endGetAthleteName);
-            if ((athleteName.length() > 8) && (athleteName.substring(0, 8).equals("Complete"))) {// if it finds a team event instead of a name, rename to the event name.
-              println("COMPLETE! - renaming to team event.");
-              int getResultsIndex = athleteName.indexOf("Results");
-              String renamedTeamEvent = athleteName.substring(9, getResultsIndex-1);
-              athleteName = "Team Event - " + renamedTeamEvent;
-            }
-
-            allWinningAthletes = append(allWinningAthletes, athleteName);//adds the athlete to the winners array.
-            // println(allWinningAthletes);
-
-            allMedalEvents = append(allMedalEvents, event);//adds the nation to the nations array.
-
-            allMedalWinDates = append(allMedalWinDates, sourceAddressesByDate[i].substring(55, 63));//adds the nation to the nations array.
-
-            //PL// Same here, and replaced multiple x = x + "string" by multiple concatenation in single expression
-            fullDetails = append(fullDetails, athleteName + "," + goldCountry + "," + event + "," +
-                allWonMedals[allWonMedals.length-1] + "," + allMedalWinDates[allMedalWinDates.length-1]);
-          }//end of gold.
-
-          if (thisDaysEvents[n].indexOf("medalimage-S") >= 0) {//if there is a SILVER medal in the current event..
-
-            int startGetSilverCountry = thisDaysEvents[n].indexOf("medalimage-S") + 12;
-            int endGetSilverCountry = thisDaysEvents[n].indexOf("&nbsp", startGetSilverCountry) + 9;
-            String silverCountry = thisDaysEvents[n].substring(endGetSilverCountry-3, endGetSilverCountry);
-            // println(silverCountry + " silverCountry");
-
-            allWinningNationalities = append(allWinningNationalities, silverCountry);//adds the nation to the nations array.
-
-            allWonMedals = append(allWonMedals, 'S');//adds the medal to the totals array.
-
-            int lookFromIndex = thisDaysEvents[n].indexOf("medalimage-S");
-            int preGetAthleteName = thisDaysEvents[n].indexOf("href", lookFromIndex) + 4;
-            int startGetAthleteName = thisDaysEvents[n].indexOf(">", preGetAthleteName) + 1;
-            int endGetAthleteName = thisDaysEvents[n].indexOf("<", startGetAthleteName);
-            String athleteName = thisDaysEvents[n].substring(startGetAthleteName, endGetAthleteName);
-            if ((athleteName.length() > 8) && (athleteName.substring(0, 8).equals("Complete"))) {// if it finds a team event instead of a name, rename to the event name.
-              println("COMPLETE! - renaming to team event.");
-              int getResultsIndex = athleteName.indexOf("Results");
-              String renamedTeamEvent = athleteName.substring(9, getResultsIndex-1);
-              athleteName = "Team Event - " + renamedTeamEvent;
-            }
-
-            allWinningAthletes = append(allWinningAthletes, athleteName);//adds the athlete to the winners array.
-            // println(allWinningAthletes);
-
-            allMedalEvents = append(allMedalEvents, event);//adds the nation to the nations array.
-
-            allMedalWinDates = append(allMedalWinDates, sourceAddressesByDate[i].substring(55, 63));//adds the nation to the nations array.
-
-            fullDetails = append(fullDetails, athleteName + "," + silverCountry + "," + event + "," +
-                allWonMedals[allWonMedals.length-1] + "," + allMedalWinDates[allMedalWinDates.length-1]);
-          }//end of silver.
-
-          if (thisDaysEvents[n].indexOf("medalimage-B") >= 0) {//if there is a BRONZE medal in the current event..
-
-            int startGetBronzeCountry = thisDaysEvents[n].indexOf("medalimage-B") + 12;
-            int endGetBronzeCountry = thisDaysEvents[n].indexOf("&nbsp", startGetBronzeCountry) + 9;
-            String bronzeCountry = thisDaysEvents[n].substring(endGetBronzeCountry-3, endGetBronzeCountry);
-            //   println(bronzeCountry + " bronzeCountry");
-
-            allWinningNationalities = append(allWinningNationalities, bronzeCountry);//adds the nation to the nations array.
-
-            allWonMedals = append(allWonMedals, 'B');//adds the medal to the totals array.
-
-            int lookFromIndex = thisDaysEvents[n].indexOf("medalimage-B");
-            int preGetAthleteName = thisDaysEvents[n].indexOf("href", lookFromIndex) + 4;
-            int startGetAthleteName = thisDaysEvents[n].indexOf(">", preGetAthleteName) + 1;
-            int endGetAthleteName = thisDaysEvents[n].indexOf("<", startGetAthleteName);
-            String athleteName = thisDaysEvents[n].substring(startGetAthleteName, endGetAthleteName);
-            if ((athleteName.length() > 8) && (athleteName.substring(0, 8).equals("Complete"))) {// if it finds a team event instead of a name, rename to the event name.
-              println("COMPLETE! - renaming to team event.");
-              int getResultsIndex = athleteName.indexOf("Results");
-              String renamedTeamEvent = athleteName.substring(9, getResultsIndex-1);
-              athleteName = "Team Event - " + renamedTeamEvent;
-            }
-
-            allWinningAthletes = append(allWinningAthletes, athleteName);//adds the athlete to the winners array.
-
-            allMedalEvents = append(allMedalEvents, event);//adds the nation to the nations array.
-
-            allMedalWinDates = append(allMedalWinDates, sourceAddressesByDate[i].substring(55, 63));//adds the nation to the nations array.
-
-            fullDetails = append(fullDetails, athleteName + "," + bronzeCountry + "," + event + "," +
-                allWonMedals[allWonMedals.length-1] + "," + allMedalWinDates[allMedalWinDates.length-1]);
-          }//end of bronze.
-
-          //      if (thisDaysEvents[n].indexOf("medalimage") < 0) {//if there are no medals to get for the event..
+          //      if (event.indexOf("medalimage") < 0) {//if there are no medals to get for the event..
           //        println("No medals awarded for this event");
           //      }
 
@@ -236,7 +142,6 @@ void draw() {
 //-----------------------------//-----------------------------//-----------------------------//-----------------------------//-----------------------------
 
   for (int i = 0; i < allWonMedals.length; i++) {//goes through all medals won..
-    //PL// x++ is better than x += 1 which is better than x = x + 1...
     if (allWonMedals[i] == 'G') {//counts gold medals.
       goldMedalCounter++;
     }
@@ -372,3 +277,49 @@ void draw() {
   exit();
 }//end of draw.
 
+void ParseMedalData(String dayEvent, String event, String medalWinDate, String medalImage, char medalSymbol)
+{
+  if (dayEvent.indexOf(medalImage) >= 0) {
+
+    String country;
+    if (medalSymbol == 'G')
+    {
+      int startGetCountry = dayEvent.indexOf("&nbsp;") + 6;
+      int endGetCountry = dayEvent.indexOf("&nbsp") + 9;
+      country = dayEvent.substring(startGetCountry, endGetCountry);
+    }
+    else
+    {
+      int startGetCountry = dayEvent.indexOf(medalImage) + 12;
+      int endGetCountry = dayEvent.indexOf("&nbsp", startGetCountry) + 9;
+      country = dayEvent.substring(endGetCountry-3, endGetCountry);
+    }
+    // println(country + " country for " + medalSymbol);
+
+    allWinningNationalities = append(allWinningNationalities, country);//adds the nation to the nations array.
+
+    allWonMedals = append(allWonMedals, medalSymbol);//adds the medal to the totals array.
+
+    int lookFromIndex = dayEvent.indexOf(medalImage);
+    int preGetAthleteName = dayEvent.indexOf("href", lookFromIndex) + 4;
+    int startGetAthleteName = dayEvent.indexOf(">", preGetAthleteName) + 1;
+    int endGetAthleteName = dayEvent.indexOf("<", startGetAthleteName);
+    String athleteName = dayEvent.substring(startGetAthleteName, endGetAthleteName);
+    if ((athleteName.length() > 8) && (athleteName.substring(0, 8).equals("Complete"))) {// if it finds a team event instead of a name, rename to the event name.
+      println("COMPLETE! - renaming to team event.");
+      int getResultsIndex = athleteName.indexOf("Results");
+      String renamedTeamEvent = athleteName.substring(9, getResultsIndex-1);
+      athleteName = "Team Event - " + renamedTeamEvent;
+    }
+
+    allWinningAthletes = append(allWinningAthletes, athleteName);//adds the athlete to the winners array.
+    // println(allWinningAthletes);
+
+    allMedalEvents = append(allMedalEvents, event);//adds the nation to the nations array.
+
+    allMedalWinDates = append(allMedalWinDates, medalWinDate);
+
+    fullDetails = append(fullDetails, athleteName + "," + country + "," + event + "," +
+        medalSymbol + "," + medalWinDate);
+  }
+}
