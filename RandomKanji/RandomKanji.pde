@@ -1,10 +1,13 @@
 /**
 Show randomly chosen kanji & kana Japanese characters.
+Kanji extracted from Kanjidic file found at http://www.csse.monash.edu.au/~jwb/kanjidic.html
+Copyright for kanjidic information is vested in the EDRG (Electronic Dictionary Research Group).
+http://www.EDRG.org - License statement at http://www.edrdg.org/edrdg/licence.html
 
 by Philippe Lhoste <PhiLho(a)GMX.net> http://Phi.Lho.free.fr & http://PhiLho.deviantART.com
 */
 /* File/Project history:
- 1.00.000 -- 2010/02/27 (PL) -- Creation.
+ 0.01.000 -- 2010/02/27 (PL) -- Creation.
 */
 /* Copyright notice: For details, see the following file:
 http://Phi.Lho.free.fr/softwares/PhiLhoSoft/PhiLhoSoftLicence.txt
@@ -13,19 +16,23 @@ Copyright (c) 2010 Philippe Lhoste / PhiLhoSoft
 */
 /*
 Color of character will depend on its grade
-grade = color - hue on a 1000 scale
-G1 = white   - S=0
-G2 = yellow  - 160
-G3 = orange  - 90
-G4 = green   - 380
-G5 = blue    - 630
-G6 = brown   - 54 & S= & B=
-G8 = black   - B=0
+grade = color - hue on a 360 scale, S=100 & B=100 (max) unless noted
+G1 = white   - 0 & S=0
+G2 = yellow  - 60
+G3 = orange  - 30
+G4 = green   - 120
+G5 = blue    - 240
+G6 = brown   - 30 & B=80
+G8 = black   - 0 & B=0
 
 Yes, these are judo belt colors...
 Also:
-hiragana = violet - 823
-katakana = red    - 0
+hiragana = magenta - 300
+katakana = cyan    - 180
+no grade = red     - 0 = 360
+
+Covers the hue range, +60 increment, except for orange & brown.
+0 30 60 120 180 240 300 360
 */
 final color START_COLOR_TOP    = #335533;
 final color START_COLOR_BOTTOM = #55AA55;
@@ -40,7 +47,7 @@ int colorCycleCursor;
 void setup()
 {
   size(1000, 700);
-  colorMode(HSB, 1000, 100, 100);
+  colorMode(HSB, 360, 100, 100);
 
   smooth();
 //  noLoop();
