@@ -36,6 +36,7 @@ int bigFontSize;
 
 int diameterOne;
 float lastAng = 0;
+float degreesPerMedal;
 int goldCount;
 int silverCount;
 int bronzeCount;
@@ -74,7 +75,7 @@ void setup() {
         //THIS IS WITHIN EACH EVENT, OF ALL DAYS.
         for (int n=1; n < thisDaysEvents.length; n++) {//for every event this day..
           String dayEvent = thisDaysEvents[n];
-          int startGetEvent = dayEvent.indexOf("\"4\" > ") + 4;
+          int startGetEvent = dayEvent.indexOf("\"4\">") + 4;
           int endGetEvent = dayEvent.indexOf("<", startGetEvent);
           String event = dayEvent.substring(startGetEvent, endGetEvent);
 
@@ -96,6 +97,9 @@ void setup() {
 
 
 
+float goldMedalsTotalMappedToCircle;
+float silverMedalsTotalMappedToCircle;
+float bronzeMedalsTotalMappedToCircle;
 
 void draw() {
   noLoop();//----------------------------------------------------------WHAT IS WRONG WITH THE ROTATION IN DRAW?
@@ -109,12 +113,11 @@ void draw() {
   // println(allMedalWinDates);
   //println(fullDetails);
 
-  String[] fullDetailsAlpha;
-  fullDetailsAlpha= sort(fullDetails);//sorts full array by name order.
+  String[] fullDetailsAlpha = sort(fullDetails);//sorts full array by name order.
   println(fullDetailsAlpha);
 
   int arrayLength = fullDetails.length;
-  float degreesPerMedal = 360/arrayLength;//calculates degrees of a circle per medal winner.
+  degreesPerMedal = 360/arrayLength;//calculates degrees of a circle per medal winner.
 //-----------------------------//-----------------------------//-----------------------------//-----------------------------//-----------------------------
 
   String[] allNationalitiesOrdered;
@@ -126,9 +129,9 @@ void draw() {
     String nationalityNow = allNationalitiesOrdered[i];
     int index = 0;
     int count = 0;
-    while(allNationalitiesList.indexOf(nationalityNow,index) >= 0) {
+    while (allNationalitiesList.indexOf(nationalityNow, index) >= 0) {
       count++;
-      index=allNationalitiesList.indexOf(nationalityNow,index) + 3; //search from after this occurance next time...
+      index = allNationalitiesList.indexOf(nationalityNow, index) + 3; //search from after this occurance next time...
     }
     //println(count + " " + nationalityNow + " medals");
 
@@ -156,123 +159,48 @@ void draw() {
   //println(goldMedalCounter + " golds");
   //println(silverMedalCounter + " silvers");
   //println(bronzeMedalCounter + " bronzes");
-  int[] medalTotals = {
-    goldMedalCounter, silverMedalCounter, bronzeMedalCounter
-  };
-  float goldMedalsTotalMappedToCircle = map(goldMedalCounter, 0, arrayLength, 0, 360);
-  float silverMedalsTotalMappedToCircle = map(silverMedalCounter, 0, arrayLength, 0, 360);
-  float bronzeMedalsTotalMappedToCircle = map(bronzeMedalCounter, 0, arrayLength, 0, 360);
+  goldMedalsTotalMappedToCircle = map(goldMedalCounter, 0, arrayLength, 0, 360);
+  silverMedalsTotalMappedToCircle = map(silverMedalCounter, 0, arrayLength, 0, 360);
+  bronzeMedalsTotalMappedToCircle = map(bronzeMedalCounter, 0, arrayLength, 0, 360);
   ///println(goldMedalsTotalMappedToCircle + "goldMedalsTotalMappedToCircle");
   ///println(silverMedalsTotalMappedToCircle + "silverMedalsTotalMappedToCircle");
   ///println(bronzeMedalsTotalMappedToCircle + "bronzeMedalsTotalMappedToCircle");
-  float[] medalTotalsMappedToCircle = {
-    goldMedalsTotalMappedToCircle, silverMedalsTotalMappedToCircle, bronzeMedalsTotalMappedToCircle
-  };
 
-  float goldMedalsAngle = goldMedalsTotalMappedToCircle/goldMedalCounter;
-  float silverMedalsAngle = silverMedalsTotalMappedToCircle/silverMedalCounter;
-  float bronzeMedalsAngle = bronzeMedalsTotalMappedToCircle/bronzeMedalCounter;
-
-  for (int i = 0; i < medalTotalsMappedToCircle.length; i++) {//draws 3 slices for medal colours.
+  for (int i = 0; i < 3; i++) {//draws 3 slices for medal colours.
+    float totalMappedToCircle = 0;
     if (i == 0) {//if its drawing the golds..
       fill(goldColour);
+      totalMappedToCircle = goldMedalsTotalMappedToCircle;
     }
     else if (i == 1) {//if it's drawing silvers..
       fill(silverColour);
+      totalMappedToCircle = silverMedalsTotalMappedToCircle;
     }
     else if (i == 2) {//if it's drawing bronzes..
       fill(bronzeColour);
+      totalMappedToCircle = bronzeMedalsTotalMappedToCircle;
     }
-    arc(width/2, height/2, diameterOne, diameterOne, lastAng, lastAng + radians(medalTotalsMappedToCircle[i]));//draws an arc for g, s, & b.
-    lastAng += radians(medalTotalsMappedToCircle[i]);//adds last angle on to make slices join properly.
-    fill(255);
-    ellipse(width/2, height/2, diameterOne*0.9, diameterOne*0.9);//clears the centre of the circle.
-    textFont(bigFont);
-    fill(0);
-    textAlign(CENTER);
-    text("Vancouver 2010", width/2, height/2);
-    text("Medalists", width/2, (height/2) + bigFontSize);
-    textFont(font);
-    textAlign(LEFT);
+    arc(width/2, height/2, diameterOne, diameterOne, lastAng, lastAng + radians(totalMappedToCircle));//draws an arc for g, s, & b.
+    lastAng += radians(totalMappedToCircle);//adds last angle on to make slices join properly.
   }
+  fill(255);
+  ellipse(width/2, height/2, diameterOne*0.9, diameterOne*0.9);//clears the centre of the circle.
+  textFont(bigFont);
+  fill(0);
+  textAlign(CENTER);
+  text("Vancouver 2010", width/2, height/2);
+  text("Medalists", width/2, (height/2) + bigFontSize);
+  textFont(font);
+  textAlign(LEFT);
 
-  int getMedalFromFinal;
+  translate(width/2, height/2); //translates everything to centre.
 
-  translate(width/2, height/2);//translates everything to centre.
-
-  for (int i = 0; i < fullDetailsAlpha.length; i++) {//loops through final collected array.
-    // ---------------------
-    getMedalFromFinal = fullDetailsAlpha[i].indexOf(",G,");
-    if (getMedalFromFinal > 0) {//if it finds a gold medal..
-      goldCount++;
-      int getCommaOneFromFinal = fullDetailsAlpha[i].indexOf(",");//finds the first comma..
-      String goldMedallist = fullDetailsAlpha[i].substring(0, getCommaOneFromFinal);
-      println(goldMedallist + " " + goldCount);
-      fill(goldColour);
-      pushMatrix();
-      rotate(radians(((goldCount-1)*goldMedalsAngle) + degreesPerMedal));
-      text(goldMedallist, diameterOne, 0);//lists names.
-
-      int getCommaBeforeNationality = fullDetailsAlpha[i].indexOf(",");
-      int getCommaAfterNationality = fullDetailsAlpha[i].indexOf(",", getCommaBeforeNationality + 1);
-      String nationality = fullDetailsAlpha[i].substring(getCommaBeforeNationality + 1, getCommaAfterNationality);//gets nationality.
-      //println(nationality + " nationality");
-      PImage flag = loadImage(nationality + ".gif");
-      println(flag.width + " " + flag.height);
-      if (flag != null) {
-        image(flag, diameterOne/2, 0, 8, 5);
-      }
-      popMatrix();
-    }
-    //  ---------------------
-
-    getMedalFromFinal = fullDetailsAlpha[i].indexOf(",S,");
-    if (getMedalFromFinal > 0) {//if it finds a silver medal..
-      silverCount = silverCount + 1;
-      int getCommaOneFromFinal = fullDetailsAlpha[i].indexOf(",");//finds the first comma..
-      String silverMedallist = fullDetailsAlpha[i].substring(0, getCommaOneFromFinal);
-      println(silverMedallist + " " + silverCount);
-      fill(silverColour);
-      pushMatrix();
-      rotate(radians(goldMedalsTotalMappedToCircle + (((silverCount-1)*silverMedalsAngle) + degreesPerMedal)));
-      text(silverMedallist, diameterOne, 0);
-
-      int getCommaBeforeNationality = fullDetailsAlpha[i].indexOf(",");
-      int getCommaAfterNationality = fullDetailsAlpha[i].indexOf(",", getCommaBeforeNationality + 1);
-      String nationality = fullDetailsAlpha[i].substring(getCommaBeforeNationality + 1, getCommaAfterNationality);//gets nationality.
-      //println(nationality + " nationality");
-      PImage flag = loadImage(nationality + ".gif");
-      println(flag.width + " " + flag.height);
-      if (flag != null) {
-        image(flag, diameterOne/2, 0, 8, 5);
-      }
-      popMatrix();
-    }
-    //  ---------------------
-
-    getMedalFromFinal = fullDetailsAlpha[i].indexOf(",B,");
-    if (getMedalFromFinal > 0) {//if it finds a bronze medal..
-      bronzeCount++;
-      int getCommaOneFromFinal = fullDetailsAlpha[i].indexOf(",");//finds the first comma..
-      String bronzeMedallist = fullDetailsAlpha[i].substring(0, getCommaOneFromFinal);
-      println(bronzeMedallist + " " + bronzeCount);
-      fill(bronzeColour);
-      pushMatrix();
-      rotate(radians(goldMedalsTotalMappedToCircle + silverMedalsTotalMappedToCircle + (((bronzeCount-1)*bronzeMedalsAngle) + degreesPerMedal)));
-      text(bronzeMedallist, diameterOne, 0);
-
-      int getCommaBeforeNationality = fullDetailsAlpha[i].indexOf(",");
-      int getCommaAfterNationality = fullDetailsAlpha[i].indexOf(",", getCommaBeforeNationality + 1);
-      String nationality = fullDetailsAlpha[i].substring(getCommaBeforeNationality + 1, getCommaAfterNationality);//gets nationality.
-      //println(nationality + " nationality");
-      PImage flag = loadImage(nationality + ".gif");
-      println(flag.width + " " + flag.height);
-      if (flag != null) {
-        image(flag, diameterOne/2, 0, 8, 5);
-      }
-      popMatrix();
-    }
+  for (int i = 0; i < fullDetailsAlpha.length; i++) { //loops through final collected array.
+    Draw('G', fullDetailsAlpha[i]); // Gold medals
+    Draw('S', fullDetailsAlpha[i]); // Silver medals
+    Draw('B', fullDetailsAlpha[i]); // Bronze medals
   }
+  println("Gold: " + goldCount + ", Silver: " + silverCount + ", Bonze: " + bronzeCount);
 
   exit();
 }//end of draw.
@@ -321,5 +249,52 @@ void ParseMedalData(String dayEvent, String event, String medalWinDate, String m
 
     fullDetails = append(fullDetails, athleteName + "," + country + "," + event + "," +
         medalSymbol + "," + medalWinDate);
+  }
+}
+
+void Draw(char medalSymbol, String data)
+{
+  int getMedalFromFinal = data.indexOf("," + medalSymbol + ",");
+  if (getMedalFromFinal > 0) {//if it finds a medal of this metal..
+    int getCommaOneFromFinal = data.indexOf(",");//finds the first comma..
+    String medalist = data.substring(0, getCommaOneFromFinal);
+    println(medalist);
+    float medalsAngle;
+    pushMatrix();
+    switch (medalSymbol)
+    {
+    case 'G':
+      medalsAngle = goldMedalsTotalMappedToCircle/goldMedalCounter;
+      goldCount++;
+      fill(goldColour);
+      rotate(radians(((goldCount - 1) * medalsAngle) + degreesPerMedal));
+      break;
+    case 'S':
+      medalsAngle = silverMedalsTotalMappedToCircle/silverMedalCounter;
+      silverCount++;
+      fill(silverColour);
+      rotate(radians(goldMedalsTotalMappedToCircle +
+          (silverCount - 1) * medalsAngle + degreesPerMedal));
+      break;
+    case 'B':
+      medalsAngle = bronzeMedalsTotalMappedToCircle/bronzeMedalCounter;
+      bronzeCount++;
+      fill(bronzeColour);
+      rotate(radians(goldMedalsTotalMappedToCircle + silverMedalsTotalMappedToCircle +
+          (bronzeCount - 1) * medalsAngle + degreesPerMedal));
+      break;
+    }
+    text(medalist, diameterOne, 0);
+
+    int getCommaBeforeNationality = data.indexOf(",");
+    int getCommaAfterNationality = data.indexOf(",", getCommaBeforeNationality + 1);
+    String nationality = data.substring(getCommaBeforeNationality + 1, getCommaAfterNationality);//gets nationality.
+    //println(nationality + " nationality");
+    PImage flag = loadImage(nationality + ".gif");
+//~     println(flag.width + " " + flag.height);
+    if (flag != null) {
+      image(flag, diameterOne/2, 0, 8, 5);
+    }
+    popMatrix();
   }
 }
