@@ -45,7 +45,69 @@ class MedalInformation
   String event;
   char medal;
   String winDate;
+
+  // Override a fundamental method (found on all objects) to make personalized
+  // textual output of this class
+  public String toString()
+  {
+    return "MedalInformation: " + athleteName + " (" +
+        country + ") " + event + " -> " + medal + " (" + winDate + ")";
+  }
 }
+
+// Comparator is an interface: it is a contract, a way to say
+// "the class implementing this interface guarantee to have the methods defined in this interface,
+// so I can safely call them".
+class CompareNames implements Comparator
+{
+  // Comparator defines only the compare() method, which takes two objects (of same type)
+  // and return an int: < 0 if o1 < o2, == 0 if o1 == o2 and > 0 if o1 > o2
+  public int compare(Object o1, Object o2)
+  {
+    // We are given untyped objects, we must cast them back to their type to access fields or methods
+    // We use String's natural comparison method
+    return ((MedalInformation) o1).athleteName.compareTo(((MedalInformation) o2).athleteName);
+  }
+}
+class CompareEvent implements Comparator
+{
+  public int compare(Object o1, Object o2)
+  {
+    return ((MedalInformation) o1).event.compareTo(((MedalInformation) o2).event);
+  }
+}
+class CompareCompound implements Comparator
+{
+  public int compare(Object o1, Object o2)
+  {
+    // First sort by country
+    MedalInformation mi1 = (MedalInformation) o1;
+    MedalInformation mi2 = (MedalInformation) o2;
+    if (mi1.country.equals(mi2.country))
+    {
+      // Same country, compare by athlete's last name
+      int p1 = mi1.athleteName.indexOf(" ");
+      String name1 = mi1.athleteName;
+      if (p1 > 0)
+      {
+        name1 = name1.substring(p1 + 1);
+      }
+      int p2 = mi2.athleteName.indexOf(" ");
+      String name2 = mi2.athleteName;
+      if (p2 > 0)
+      {
+        name2 = name2.substring(p2 + 1);
+      }
+      return name1.compareTo(name2);
+    }
+    else
+    {
+      // Compare by country
+      return mi1.country.compareTo(mi2.country);
+    }
+  }
+}
+
 ArrayList allMedalInformation = new ArrayList();
 
 void setup() {
@@ -110,7 +172,9 @@ void draw() {
   noStroke();
   background(255);
 
-//~   allMedalInformation.sort(); // TO DO soon...
+//~   Collections.sort(allMedalInformation, new CompareNames());
+//~   Collections.sort(allMedalInformation, new CompareEvent());
+  Collections.sort(allMedalInformation, new CompareCompound());
   println(allMedalInformation);
 
   int arrayLength = allMedalInformation.size();
@@ -249,7 +313,7 @@ void Draw(char medalSymbol, MedalInformation info)
   if (info.medal != medalSymbol)
     return; // We don't process this one
 
-  println(info.athleteName);
+//~   println(info.athleteName);
   float medalsAngle;
   pushMatrix();
   switch (medalSymbol)

@@ -1,7 +1,9 @@
+// Random kanji generator - http://processing.org/discourse/yabb2/YaBB.pl?num=1267157349/1
+
 boolean bDebug = false;
-String[] fonts = 
+String[] fonts =
 {
-  "Arial Unicode MS", "MS Gothic", "MS Mincho", 
+  "Arial Unicode MS", "MS Gothic", "MS Mincho",
   "Batang", "Datum", "Gulim",
   "MingLiU", "SimHei", "SimSun"
 };
@@ -41,7 +43,7 @@ void setup()
 }
 
 char[] demoChars =
-{ 
+{
   // The 10 most frequently used kanji (according to kanjidic)
   0x65E5, 0x4E00, 0x4EBA, 0x56FD, 0x4F1A, 0x5E74, 0x5927, 0x5341, 0x4E8C, 0x672C,
   // Semi-randomly chosen chars
@@ -77,7 +79,7 @@ void draw()
   fill(128 + int(random(128)), 128 + int(random(128)), 128 + int(random(128)));
   textFont(jFonts[int(random(jFonts.length))]);
   text(character, posX, posY);
-  
+
   if (bDebug)
   {
     // Testing limits
