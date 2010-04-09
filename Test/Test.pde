@@ -1,22 +1,25 @@
 import processing.pdf.*;
-boolean bool;
-PFont font;
-void setup() {
-  size(512,512,PDF,"test.pdf");
+
+PFont fontR;
+PFont fontB;
+
+void setup()
+{
+  size(512, 512, PDF, "test.pdf");
+  textMode(SHAPE);
+  g.textMode = SHAPE;  // Should be done by textMode() call
   background(255);
-  bool = true; 
-  font = createFont("Arial",48);
+  fontR = createFont("Vera.ttf", 48);
+  fontB = createFont("VeraBd.ttf", 48);
   fill(0);
 }
-void draw() {
-  if (bool) {
-    beginRecord(PDF, "test.pdf");
-    textFont(font);
-  }
-  text("Hello!",200,200);
-  if (bool) {
-    endRecord();
-    bool = false;
-  }
+
+void draw()
+{
+  textFont(fontR);
+  text("This is a regular font", 20, 100);
+  textFont(fontB);
+  text("This is a bold font", 20, 200);
+  exit();
 }
 
