@@ -1,28 +1,75 @@
+PFont font;
+
+int IMAGE_W = 500;
+int IMAGE_H = 500;
+int CHOICE_T = 50;
+int CHOICE_L = 50;
+int CHOICE_W = 200;
+int CHOICE_SPACING = 25;
+PGraphics baseImage;
+PGraphics resultImage;
 int lineNb = 50;
 int lengthIncrement = 7;
 boolean bDoBlend;
 
 int currentBlendMode = ADD;
+class BlendMode
+{
+  int blendMode;
+  String blendName;
+  BlendMode(int bm, String bn) { blendMode = bm; blendName = bn; }
+}
+ArrayList<BlendMode> blendModes = new ArrayList<BlendMode>();
 
 void setup()
 {
-  size(500, 500);
+  size(700, 500);
   smooth();
-  noLoop();
-  colorMode(HSB, 1000);
+//  noLoop();
+  font = loadFont("Tahoma-Bold-14.vlw");
+  textFont(font);
 
-  // Try to make an interesting base image
+  blendModes.add(new BlendMode(REPLACE, "REPLACE"));
+  blendModes.add(new BlendMode(BLEND, "BLEND"));
+  blendModes.add(new BlendMode(ADD, "ADD"));
+  blendModes.add(new BlendMode(SUBTRACT, "SUBTRACT"));
+  blendModes.add(new BlendMode(LIGHTEST, "LIGHTEST"));
+  blendModes.add(new BlendMode(DARKEST, "DARKEST"));
+  blendModes.add(new BlendMode(DIFFERENCE, "DIFFERENCE"));
+  blendModes.add(new BlendMode(EXCLUSION, "EXCLUSION"));
+  blendModes.add(new BlendMode(MULTIPLY, "MULTIPLY"));
+  blendModes.add(new BlendMode(SCREEN, "SCREEN"));
+  blendModes.add(new BlendMode(OVERLAY, "OVERLAY"));
+  blendModes.add(new BlendMode(HARD_LIGHT, "HARD_LIGHT"));
+  blendModes.add(new BlendMode(SOFT_LIGHT, "SOFT_LIGHT"));
+  blendModes.add(new BlendMode(DODGE, "DODGE"));
+  blendModes.add(new BlendMode(BURN, "BURN"));
+
+  baseImage = createGraphics(IMAGE_W, IMAGE_H, JAVA2D);
   DrawImage();
+  resultImage = createGraphics(IMAGE_W, IMAGE_H, JAVA2D);
+  resultImage.beginDraw();
+  resultImage.image(baseImage, 0, 0);
+  resultImage.endDraw();
 }
 
-void draw() {} // To handle events
+void draw()
+{
+  background(#99EEFF);
+  ShowBlendChoices();
+  image(resultImage, CHOICE_W, 0);
+}
 
 // Choosing the operation to do
 // Will add choice of blend mode...
 void keyPressed()
 {
-  PImage img = get();
+  // Update base image with current screen
+  baseImage.beginDraw();
+  baseImage.image(g, CHOICE_W, 0);
+  baseImage.endDraw();
 
+PImage img = null;
   switch (key)
   {
   case 'b':
@@ -67,18 +114,22 @@ void keyPressed()
   redraw();
 }
 
+// Try to make an interesting base image
 // Square spiral, slightly improved from yet another old sketch
 void DrawImage()
 {
-  background(#99EEFF);
-  strokeWeight(7);
+  baseImage.beginDraw();
+  baseImage.colorMode(HSB, 1000);
+  baseImage.fill(#DDEEFF);
+  baseImage.rect(0, 0, IMAGE_W, IMAGE_H);
+  baseImage.strokeWeight(7);
 //  stroke(#005080);
   int cH = 200, cS = 1000, cB = 500;
   int lineLength = 5;
   int x, y;
   int px, py;
-  px = x = width / 2;
-  py = y = height / 2;
+  px = x = baseImage.width / 2;
+  py = y = baseImage.height / 2;
 
   for (int i = 0; i < lineNb; i++)
   {
@@ -97,14 +148,15 @@ void DrawImage()
       y += lineLength;
       break;
     }
-    stroke(cH, cS, cB);
+    baseImage.stroke(cH, cS, cB);
     cH += 1000 / lineNb;
     cS -= 1000 / lineNb;
     cB += 10;
-    line(px, py, x, y);
+    baseImage.line(px, py, x, y);
     px = x; py = y;
     lineLength += lengthIncrement;
   }
+  baseImage.endDraw();
 }
 
 void DrawInverted(PImage img)
@@ -186,4 +238,36 @@ void BlendShifted(PImage img)
   copy.scale(SCALE, SCALE);
   copy.endDraw();
   blend(copy, 0, 0, copy.width, copy.height, 0, 0, width, height, currentBlendMode);
+}
+
+void ShowBlendChoices()
+{
+  int posY = CHOICE_T;
+  for (BlendMode blendMode : blendModes)
+  {
+    if (IsMouseOverChoice(posY))
+    {
+      fill(#C05080);
+    }
+    else
+    {
+      fill(#005080);
+    }
+    text(blendMode.blendName, CHOICE_L, posY);
+    posY += CHOICE_SPACING;
+  }
+}
+
+boolean IsMouseOverChoice(int posY)
+{
+  if (mouseX < CHOICE_L - 20 ||
+      mouseX > CHOICE_W - 20)
+    return false;
+  if (mouseY < CHOICE_T - CHOICE_SPACING ||
+      mouseY > CHOICE_T + CHOICE_SPACING * blendModes.size())
+    return false;
+  if (mouseY < posY - CHOICE_SPACING ||
+      mouseY > posY)
+    return false;
+  return true;
 }
