@@ -1,3 +1,5 @@
+// [url=http://processing.org/discourse/yabb2/YaBB.pl?num=1271308799]mirroring image using blend()[/url]
+
 PFont font;
 
 int IMAGE_W = 500;
