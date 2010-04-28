@@ -108,6 +108,10 @@ frame.getLocationOnScreen(); // Identical result!
 // In OpenGL mode put in the setup(), in normal mode put in the draw(). (?)
 frame.setLocation(0, 0);
 
+### Where to put libraries
+
+[url=http://processing.org/discourse/yabb2/YaBB.pl?num=1269728211]Libraries -still confused about where to put...[/url]
+
 ### Rotate a shape around a given point
 
 // Where we want the shape drawn, depending on its mode: that's where the 0, 0 drawing will occur
