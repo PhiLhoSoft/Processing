@@ -1,13 +1,14 @@
 PImage niceImage;
 SortableColor[] colors;
 PImage sortedImage;
+boolean bSortOnHue;
 
 void setup()
 {
   size(500, 500);
   noLoop();
 
-  niceImage = loadImage("D:/Dev/PhiLhoSoft/images/TestImageS.jpg");
+  niceImage = loadImage("D:/Dev/PhiLhoSoft/images/me.png");
 
   image(niceImage, 0, 0);
 }
@@ -16,6 +17,8 @@ void draw() {} // Enable events
 
 void mousePressed()
 {
+  bSortOnHue = mouseButton == RIGHT;
+  
   niceImage.loadPixels();
   int colorNb = niceImage.pixels.length;
   colors = new SortableColor[colorNb];
@@ -43,11 +46,13 @@ class SortableColor
 {
   color originalColor;
   float brightness;
+  float hue;
 
   SortableColor(color c)
   {
     originalColor = c;
     brightness = brightness(c);
+    hue = hue(c);
   }
 }
 
@@ -55,7 +60,10 @@ class ColorComparator implements Comparator<SortableColor>
 {
   int compare(SortableColor sc1, SortableColor sc2)
   {
-    return int(sc1.brightness - sc2.brightness);
+    if (!bSortOnHue || sc1.brightness != sc2.brightness)
+      return int(sc1.brightness - sc2.brightness);
+    // Same brightness, we do a secondary sort on hue
+    return int(sc1.hue - sc2.hue);
   }
 }
 
