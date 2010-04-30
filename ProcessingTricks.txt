@@ -130,27 +130,36 @@ ellipse(0, 0, ELLIPSE_WIDTH, 180);
 
 boolean ctrlPressed;
 
-void keyPressed() {
+void keyPressed()
+{
   // special key
-  if (key == CODED) {
-    if (keyCode == CONTROL) {
+  if (key == CODED)
+  {
+    if (keyCode == CONTROL)
+    {
       ctrlPressed = true;
     }
   }
   // regular key
-  else {
-    if (ctrlPressed) {
+  else
+  {
+    if (ctrlPressed)
+    {
       // CTRL + KEY
     }
-    else {
+    else
+    {
       // OTHER
     }
   }
 }
 
-void keyReleased() {
-  if (key == CODED) {
-    if (keyCode == CONTROL) {
+void keyReleased()
+{
+  if (key == CODED)
+  {
+    if (keyCode == CONTROL)
+    {
       ctrlPressed = false;
     }
   }
