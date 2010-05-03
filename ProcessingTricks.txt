@@ -170,6 +170,14 @@ void keyReleased()
 If the code is in a .pde file, you must use untyped Collections:
 Processing uses Java 1.6 but is currently (1.0) stuck on 1.4 syntax. The 1.6 syntax is only usable within .java files in the sketch.
 
+### How to Increase the Java Applet Memory Limit
+[url=http://www.duckware.com/pmvr/howtoincreaseappletmemory.html]Sun Java Plugin - How to Increase the Java Applet Memory Limit[/url]
+
+### Maximum memory usable by Java
+
+The [url=http://processing.org/discourse/yabb2/YaBB.pl?num=1263007499]memory increase[/url] thread might be relevant. Basically, you need a 64bit Java on a 64bit OS (on a 64bit processor, of course).
+See also [url=http://forums.sun.com/thread.jspa?threadID=5433568]The truth about JVM max memory usage. Does it use only 2gb?[/url] and [url=http://rsbweb.nih.gov/ij/docs/install/windows.html]ImageJ: Windows Installation[/url].
+
 ### Get a BI from a PImage:
 
 BufferedImage bufimg = new BufferedImage(
