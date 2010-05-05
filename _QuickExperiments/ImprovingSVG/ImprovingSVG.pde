@@ -5,7 +5,8 @@ boolean bStatic = true;
 
   public PShape loadPLShape(String filename) {
     if (filename.toLowerCase().endsWith(".svg")) {
-      return new PLShapeSVG(this, filename);
+      PLShape shape = new PLShapeSVG(this, filename);
+      return shape.getShape();
     }
     return null;
   }
@@ -16,7 +17,7 @@ void setup()
   smooth();
 
   bot = loadPLShape("bot1.svg");
-  usa = loadPLShape("usa-wikipedia.svg");
+//  usa = loadPLShape("usa-wikipedia.svg");
   // Chess shapes from Wikipedia
   chessboard = loadPLShape("Chess_Board.svg");
   // This one is modified so it doesn't appear all black
@@ -37,7 +38,7 @@ void draw()
     return;
 
   shape(chessboard, 0, 0, width, height);
-  shape(usa, 0, 0, width, height);
+//  shape(usa, 0, 0, width, height);
 
   // Put in place
   translate(mouseX, mouseY);
@@ -67,7 +68,7 @@ void DrawEverything()
   chessboard.disableStyle();
   fill(#884422); noStroke();
   shape(chessboard, 0, 0, width, height);
-  shape(usa, 0, 0, width, height);
+//  shape(usa, 0, 0, width, height);
 
   fill(#FFAA55);
   DrawShapeAndOrigin(check, 100, 300, 200, 200, #FFAA55);
