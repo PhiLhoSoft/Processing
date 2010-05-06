@@ -973,10 +973,10 @@ PApplet.println("-> Path");
   // . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
 
   // Common class to define stroke and fill paints
-  protected class PPaint {
+  public class PPaint {
     protected boolean draw;
     protected int color;
     protected float opacity;
   }
-
 }
+

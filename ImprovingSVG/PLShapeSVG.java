@@ -1357,25 +1357,30 @@ PApplet.println("LinearGradient: " + properties.getName());
   // . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
 
   // Common class to define stroke and fill paints in SVG
-  class SVGPaint extends PPaint {
+  public class SVGPaint {
+    protected PPaint basePaint;
     protected Gradient gradient;
     protected Paint gradientPaint;
     protected String name;  // id of another object, gradients only?
+    
+    SVGPaint(PPaint paint) {
+      basePaint = paint;
+    }
 
     protected void parseColor(String colorDesc) {
-      draw = true;
-      int opacityMask = color & 0xFF000000;
+      basePaint.draw = true;
+      int opacityMask = basePaint.color & 0xFF000000;
       if (colorDesc.equals("none")) {
-        draw = false;
+        basePaint.draw = false;
       } else if (colorDesc.startsWith("#")) {
         if (colorDesc.length() == 4) {
           // Short form: #ABC, transform to long form #AABBCC
           colorDesc = colorDesc.replace("^#(.)(.)(.)$", "#$1$1$2$2$3$3");
         }
-        color = opacityMask |
+        basePaint.color = opacityMask |
             (Integer.parseInt(colorDesc.substring(1), 16)) & 0xFFFFFF;
       } else if (colorDesc.startsWith("rgb")) {
-        color = opacityMask | parseRGB(colorDesc);
+        basePaint.color = opacityMask | parseRGB(colorDesc);
       } else if (colorDesc.startsWith("url(#")) {
         name = colorDesc.substring(5, colorDesc.length() - 1);
         Object paintObject = findChild(name);
