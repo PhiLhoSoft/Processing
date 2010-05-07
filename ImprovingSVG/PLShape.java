@@ -68,16 +68,6 @@ import processing.core.PApplet;
  * @see PApplet#shapeMode(int)
  * @instanceName sh any variable of type PShape
  */
-class CompShape extends PShape {
-  PLShape shape;
-  public CompShape(PLShape shape) {
-    this.shape = shape;
-  }
-  public void draw(PGraphics g) {
-    shape.draw(g);
-  }
-}
-
 public class PLShape implements PConstants {
 
   protected String name;
@@ -979,4 +969,3 @@ PApplet.println("-> Path");
     protected float opacity;
   }
 }
-

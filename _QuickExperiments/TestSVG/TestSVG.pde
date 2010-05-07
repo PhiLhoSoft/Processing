@@ -1,5 +1,5 @@
 PShape bot, chessboard, usa;
-PShape chessK, check, checkGR;
+PShape chessK, circles, check, checkGR;
 float angle;
 boolean bStatic = true;
 
@@ -16,6 +16,7 @@ void setup()
   // Change "black" to "#000000" and "white" to "#FFFFFF"
   chessK = loadShape("Chess_klt45+.svg");
 //  PShape chessB = loadShape("Chess_blt45.svg"); // Uses unsupported arc
+  circles = loadShape("ThreeCircles.svg");
   // Custom personal shape
   check = loadShape("Check.svg");
   // Idem, with gradient
@@ -63,6 +64,7 @@ void DrawEverything()
   shape(usa, 0, 0, width, height);
 
   fill(#FFAA55);
+  DrawShapeAndOrigin(circles, 10, 10, #FFAA55);
   DrawShapeAndOrigin(check, 100, 300, 200, 200, #FFAA55);
   DrawShapeAndOrigin(check, 300, 300, 500, 500, #FFAA55);
   DrawShapeAndOrigin(checkGR, 100, 600, checkGR.width / 3, checkGR.height / 3, #00FF55);

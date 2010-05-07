@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Example taken from http://www.mozilla.org/projects/svg/ -->
+<svg xmlns="http://www.w3.org/2000/svg"
+     xmlns:xlink="http://www.w3.org/1999/xlink"
+     version="1.1"
+     baseProfile="full">
+  <g fill-opacity="0.5" stroke="#000000" stroke-width="2">
+    <circle cx="180" cy="60" r="100" fill="#FF0000"
+                    transform="translate(0,50)" />
+    <circle cx="180" cy="60" r="100" fill="#0000FF"
+                    transform="translate(70,150)" />
+    <circle cx="180" cy="60" r="100" fill="#00FF00"
+                    transform="translate(-70,150)" />
+  </g>
+</svg>

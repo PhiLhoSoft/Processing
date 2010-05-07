@@ -38,38 +38,27 @@ import processing.core.PApplet;
  * It is not a full SVG implementation, but offers some straightforward support for handling vector data.
  * =advanced
  *
- * @webref RootShape
+ * @webref LRootShape
  * @usage Web &amp; Application
  * @see PApplet#shape(PShape)
  * @see PApplet#loadShape(String)
  * @see PApplet#shapeMode(int)
  * @instanceName sh any variable of type PShape
  */
- /*
-class CompShape extends PShape {
-  PRootShape shape;
-  public CompShape(PRootShape shape) {
-    this.shape = shape;
-  }
-  public void draw(PGraphics g) {
-    shape.draw(g);
-  }
-}
-*/
-public class PRootShape implements PShape, PConstants {
+public class PLLRootShape implements PShape, PConstants {
 
   protected String name;
   // The list of IDs and the associated shapes
   protected HashMap<String, PLShape> nameTable;
 
   /**
-   * The width of the PRootShape document.
+   * The width of the PLRootShape document.
    * @webref
    * @brief  	Shape document width
    */
   public float width;
   /**
-   * The width of the PRootShape document.
+   * The width of the PLRootShape document.
    * @webref
    * @brief  	Shape document height
    */
@@ -79,14 +68,14 @@ public class PRootShape implements PShape, PConstants {
   protected boolean visible = true;
 
   protected int childCount;
-  protected PRootShape[] children;
+  protected PLRootShape[] children;
 
-  public PRootShape() {
+  public PLRootShape() {
     this(GROUP);
   }
 
 
-  public PRootShape(int family) {
+  public PLRootShape(int family) {
     this.family = family;
     stroke = new PPaint();
     fill = new PPaint();

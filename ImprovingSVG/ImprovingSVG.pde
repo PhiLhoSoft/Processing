@@ -3,14 +3,6 @@ PShape chessK, check, checkGR;
 float angle;
 boolean bStatic = true;
 
-  public PShape loadPLShape(String filename) {
-    if (filename.toLowerCase().endsWith(".svg")) {
-      PLShape shape = new PLShapeSVG(this, filename);
-      return shape.getShape();
-    }
-    return null;
-  }
-
 void setup()
 {
   size(800, 800);
