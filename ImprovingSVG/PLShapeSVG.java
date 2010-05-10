@@ -42,7 +42,7 @@ import processing.xml.XMLElement;
  * (assuming a working moo.svg is in your data folder)
  *
  * <PRE>
- * PLShape moo;
+ * PShape moo;
  *
  * void setup() {
  *   size(400, 400);
@@ -74,7 +74,7 @@ import processing.xml.XMLElement;
  *
  * August 2008 revisions by fry (Processing 0149)
  * <UL>
- * <LI> Major changes to rework around PLShape.
+ * <LI> Major changes to rework around PShape.
  * <LI> Now implementing more of the "transform" attribute.
  * </UL>
  *
@@ -118,14 +118,23 @@ import processing.xml.XMLElement;
  * For those interested, the SVG specification can be found
  * <A HREF="http://www.w3.org/TR/SVG">here</A>.
  */
-public class PLShapeSVG extends PLShape {
+public class PLShapeSVG extends PShape {
   XMLElement element;
 
   float opacity;
+  float strokeOpacity;
+  float fillOpacity;
 
-  SVGPaint stroke;
-  SVGPaint fill;
 
+  Gradient strokeGradient;
+  Paint strokeGradientPaint;
+  String strokeName;  // id of another object, gradients only?
+
+  Gradient fillGradient;
+  Paint fillGradientPaint;
+  String fillName;  // id of another object
+
+  public PLShapeSVG() {}
 
   /**
    * Initializes a new SVG Object with the given filename.
@@ -184,48 +193,47 @@ PApplet.println("\n=== SVG File: " + filename + "\n");
 
 
   public PLShapeSVG(PLShapeSVG parent, XMLElement properties) {
-    stroke = new SVGPaint();
-    fill = new SVGPaint();
+    //super(GROUP);
 
     if (parent == null) {
       // set values to their defaults according to the SVG spec
-      stroke.draw = false;
-      stroke.color = 0xff000000;
+      stroke = false;
+      strokeColor = 0xff000000;
       strokeWeight = 1;
       strokeCap = PConstants.SQUARE;  // equivalent to BUTT in svg spec
       strokeJoin = PConstants.MITER;
-      stroke.gradient = null;
-      stroke.gradientPaint = null;
-      stroke.name = null;
+      strokeGradient = null;
+      strokeGradientPaint = null;
+      strokeName = null;
 
-      fill.draw = true;
-      fill.color = 0xff000000;
-      fill.gradient = null;
-      fill.gradientPaint = null;
-      fill.name = null;
+      fill = true;
+      fillColor = 0xff000000;
+      fillGradient = null;
+      fillGradientPaint = null;
+      fillName = null;
 
       //hasTransform = false;
       //transformation = null; //new float[] { 1, 0, 0, 1, 0, 0 };
 
-      stroke.opacity = 1;
-      fill.opacity = 1;
+      strokeOpacity = 1;
+      fillOpacity = 1;
       opacity = 1;
 
     } else {
-      stroke.draw = parent.stroke.draw;
-      stroke.color = parent.stroke.color;
+      stroke = parent.stroke;
+      strokeColor = parent.strokeColor;
       strokeWeight = parent.strokeWeight;
       strokeCap = parent.strokeCap;
       strokeJoin = parent.strokeJoin;
-      stroke.gradient = parent.stroke.gradient;
-      stroke.gradientPaint = parent.stroke.gradientPaint;
-      stroke.name = parent.stroke.name;
+      strokeGradient = parent.strokeGradient;
+      strokeGradientPaint = parent.strokeGradientPaint;
+      strokeName = parent.strokeName;
 
-      fill.draw = parent.fill.draw;
-      fill.color = parent.fill.color;
-      fill.gradient = parent.fill.gradient;
-      fill.gradientPaint = parent.fill.gradientPaint;
-      fill.name = parent.fill.name;
+      fill = parent.fill;
+      fillColor = parent.fillColor;
+      fillGradient = parent.fillGradient;
+      fillGradientPaint = parent.fillGradientPaint;
+      fillName = parent.fillName;
 
       //hasTransform = parent.hasTransform;
       //transformation = parent.transformation;
@@ -251,11 +259,11 @@ PApplet.println("\n=== SVG File: " + filename + "\n");
 
   protected void parseChildren(XMLElement graphics) {
     XMLElement[] elements = graphics.getChildren();
-    children = new PLShape[elements.length];
+    children = new PShape[elements.length];
     childCount = 0;
 
     for (XMLElement elem : elements) {
-      PLShape kid = parseChild(elem);
+      PShape kid = parseChild(elem);
       if (kid != null) {
 if (kid.getName() != null) PApplet.println("Adding child: " + kid.getName());
         addChild(kid);
@@ -268,7 +276,7 @@ if (kid.getName() != null) PApplet.println("Adding child: " + kid.getName());
    * Parse a child XML element.
    * Override this method to add parsing for more SVG elements.
    */
-  protected PLShape parseChild(XMLElement elem) {
+  protected PShape parseChild(XMLElement elem) {
     String name = elem.getName();
     PLShapeSVG shape = null;
 
@@ -325,18 +333,12 @@ PApplet.println("Defs: " + elem.getName());
     } else if (name.equals("linearGradient")) {
       return new LinearGradient(this, elem);
 
-    } else if (name.equals("stop")) {
-      // Do nothing, this is processed in Gradient
-
-    } else if (name.equals("text")) {
-      PGraphics.showWarning("Text in SVG files is not currently supported, " +
+    } else if (name.equals("text") || name.equals("font")) {
+      PGraphics.showWarning("Text (and therefore fonts) in SVG files is not currently supported, " +
                             "convert text to outlines instead.");
 
     } else if (name.equals("filter")) {
       PGraphics.showWarning("Filters are not supported.");
-
-    } else if (name.equals("font")) {
-      PGraphics.showWarning("SVG fonts are not supported.");
 
     } else if (name.equals("mask")) {
       PGraphics.showWarning("Masks are not supported.");
@@ -842,7 +844,12 @@ PApplet.println("Defs: " + elem.getName());
 
     if (properties.hasAttribute("stroke")) {
       String strokeText = properties.getStringAttribute("stroke");
-      stroke.parseColor(strokeText);
+      setColor(strokeText, false);
+    }
+
+    if (properties.hasAttribute("stroke-opacity")) {
+      String strokeOpacityText = properties.getStringAttribute("stroke-opacity");
+      setStrokeOpacity(strokeOpacityText);
     }
 
     if (properties.hasAttribute("stroke-width")) {
@@ -861,12 +868,16 @@ PApplet.println("Defs: " + elem.getName());
       setStrokeCap(linecap);
     }
 
-
     // fill defaults to black (though stroke defaults to "none")
     // http://www.w3.org/TR/SVG/painting.html#FillProperties
     if (properties.hasAttribute("fill")) {
       String fillText = properties.getStringAttribute("fill");
-      fill.parseColor(fillText);
+      setColor(fillText, true);
+    }
+
+    if (properties.hasAttribute("fill-opacity")) {
+      String fillOpacityText = properties.getStringAttribute("fill-opacity");
+      setFillOpacity(fillOpacityText);
     }
 
     if (properties.hasAttribute("style")) {
@@ -881,27 +892,27 @@ PApplet.println("Defs: " + elem.getName());
         tokens[0] = PApplet.trim(tokens[0]);
 
         if (tokens[0].equals("fill")) {
-          fill.parseColor(tokens[1]);
+          setColor(tokens[1], true);
 
-        } else if(tokens[0].equals("fill-opacity")) {
+        } else if (tokens[0].equals("fill-opacity")) {
           setFillOpacity(tokens[1]);
 
-        } else if(tokens[0].equals("stroke")) {
-          stroke.parseColor(tokens[1]);
+        } else if (tokens[0].equals("stroke")) {
+          setColor(tokens[1], false);
 
-        } else if(tokens[0].equals("stroke-width")) {
+        } else if (tokens[0].equals("stroke-width")) {
           setStrokeWeight(tokens[1]);
 
-        } else if(tokens[0].equals("stroke-linecap")) {
+        } else if (tokens[0].equals("stroke-linecap")) {
           setStrokeCap(tokens[1]);
 
-        } else if(tokens[0].equals("stroke-linejoin")) {
+        } else if (tokens[0].equals("stroke-linejoin")) {
           setStrokeJoin(tokens[1]);
 
-        } else if(tokens[0].equals("stroke-opacity")) {
+        } else if (tokens[0].equals("stroke-opacity")) {
           setStrokeOpacity(tokens[1]);
 
-        } else if(tokens[0].equals("opacity")) {
+        } else if (tokens[0].equals("opacity")) {
           setOpacity(tokens[1]);
 
         } else {
@@ -911,11 +922,10 @@ PApplet.println("Defs: " + elem.getName());
     }
   }
 
-
   void setOpacity(String opacityText) {
     opacity = PApplet.parseFloat(opacityText);
-    stroke.color = ((int) (opacity * 255)) << 24 | stroke.color & 0xFFFFFF;
-    fill.color = ((int) (opacity * 255)) << 24 | fill.color & 0xFFFFFF;
+    strokeColor = ((int) (opacity * 255)) << 24 | strokeColor & 0xFFFFFF;
+    fillColor = ((int) (opacity * 255)) << 24 | fillColor & 0xFFFFFF;
   }
 
   void setStrokeWeight(String lineweight) {
@@ -923,8 +933,8 @@ PApplet.println("Defs: " + elem.getName());
   }
 
   void setStrokeOpacity(String opacityText) {
-    stroke.opacity = PApplet.parseFloat(opacityText);
-    stroke.color = ((int) (stroke.opacity * 255)) << 24 | stroke.color & 0xFFFFFF;
+    strokeOpacity = PApplet.parseFloat(opacityText);
+    strokeColor = ((int) (strokeOpacity * 255)) << 24 | strokeColor & 0xFFFFFF;
   }
 
   void setStrokeJoin(String linejoin) {
@@ -958,8 +968,69 @@ PApplet.println("Defs: " + elem.getName());
   }
 
   void setFillOpacity(String opacityText) {
-    fill.opacity = PApplet.parseFloat(opacityText);
-    fill.color = ((int) (fill.opacity * 255)) << 24 | fill.color & 0xFFFFFF;
+    fillOpacity = PApplet.parseFloat(opacityText);
+    fillColor = ((int) (fillOpacity * 255)) << 24 | fillColor & 0xFFFFFF;
+  }
+
+  void setColor(String colorText, boolean bFill) {
+    int opacityMask = fillColor & 0xFF000000;
+    boolean visible = true;
+    int color = 0;
+    String name = "";
+    Gradient gradient = null;
+    Paint paint = null;
+    if (colorText.equals("none")) {
+      visible = false;
+    } else if (colorText.equals("black")) {
+      color = opacityMask;
+    } else if (colorText.equals("white")) {
+      color = opacityMask | 0xFFFFFF;
+    } else if (colorText.startsWith("#")) {
+      if (colorText.length() == 4) {
+        // Short form: #ABC, transform to long form #AABBCC
+        colorText = colorText.replaceAll("^#(.)(.)(.)$", "#$1$1$2$2$3$3");
+      }
+      color = opacityMask |
+          (Integer.parseInt(colorText.substring(1), 16)) & 0xFFFFFF;
+      //System.out.println("hex for fill is " + PApplet.hex(fillColor));
+    } else if (colorText.startsWith("rgb")) {
+      color = opacityMask | parseRGB(colorText);
+    } else if (colorText.startsWith("url(#")) {
+      name = colorText.substring(5, colorText.length() - 1);
+      //PApplet.println("looking for " + fillName);
+      Object object = findChild(name);
+      //PApplet.println("found " + fillObject);
+      if (object instanceof Gradient) {
+        gradient = (Gradient) object;
+        paint = calcGradientPaint(gradient); //, opacity);
+        //PApplet.println("got filla " + fillObject);
+      } else {
+//        visible = false;
+        System.err.println("url " + name + " refers to unexpected data");
+      }
+    }
+    if (bFill) {
+      fill = visible;
+      fillColor = color;
+      fillName = name;
+      fillGradient = gradient;
+      fillGradientPaint = paint;
+    } else {
+      stroke = visible;
+      strokeColor = color;
+      strokeName = name;
+      strokeGradient = gradient;
+      strokeGradientPaint = paint;
+    }
+  }
+
+
+  static protected int parseRGB(String what) {
+    int leftParen = what.indexOf('(') + 1;
+    int rightParen = what.indexOf(')');
+    String sub = what.substring(leftParen, rightParen);
+    int[] values = PApplet.parseInt(PApplet.splitTokens(sub, ", "));
+    return (values[0] << 16) | (values[1] << 8) | (values[2]);
   }
 
 
@@ -1356,56 +1427,6 @@ PApplet.println("LinearGradient: " + properties.getName());
 
   // . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
 
-  // Common class to define stroke and fill paints in SVG
-  public class SVGPaint {
-    protected PPaint basePaint;
-    protected Gradient gradient;
-    protected Paint gradientPaint;
-    protected String name;  // id of another object, gradients only?
-    
-    SVGPaint(PPaint paint) {
-      basePaint = paint;
-    }
-
-    protected void parseColor(String colorDesc) {
-      basePaint.draw = true;
-      int opacityMask = basePaint.color & 0xFF000000;
-      if (colorDesc.equals("none")) {
-        basePaint.draw = false;
-      } else if (colorDesc.startsWith("#")) {
-        if (colorDesc.length() == 4) {
-          // Short form: #ABC, transform to long form #AABBCC
-          colorDesc = colorDesc.replace("^#(.)(.)(.)$", "#$1$1$2$2$3$3");
-        }
-        basePaint.color = opacityMask |
-            (Integer.parseInt(colorDesc.substring(1), 16)) & 0xFFFFFF;
-      } else if (colorDesc.startsWith("rgb")) {
-        basePaint.color = opacityMask | parseRGB(colorDesc);
-      } else if (colorDesc.startsWith("url(#")) {
-        name = colorDesc.substring(5, colorDesc.length() - 1);
-        Object paintObject = findChild(name);
-        if (paintObject instanceof Gradient) {
-          gradient = (Gradient) paintObject;
-          gradientPaint = calcGradientPaint(gradient); //, opacity);
-        } else {
-          System.err.println("url " + name + " refers to unexpected data");
-        }
-      } else {
-        System.err.println("Color " + colorDesc + " could not be parsed");
-      }
-    }
-
-    protected int parseRGB(String what) {
-      int leftParen = what.indexOf('(') + 1;
-      int rightParen = what.indexOf(')');
-      String sub = what.substring(leftParen, rightParen);
-      int[] values = PApplet.parseInt(PApplet.splitTokens(sub, ", "));
-      return (values[0] << 16) | (values[1] << 8) | (values[2]);
-    }
-  }
-
-  // . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
-
 
   protected void styles(PGraphics g) {
     super.styles(g);
@@ -1413,19 +1434,19 @@ PApplet.println("LinearGradient: " + properties.getName());
     if (g instanceof PGraphicsJava2D) {
       PGraphicsJava2D p2d = (PGraphicsJava2D) g;
 
-      if (stroke.gradient != null) {
+      if (strokeGradient != null) {
         p2d.strokeGradient = true;
-        p2d.strokeGradientObject = stroke.gradientPaint;
+        p2d.strokeGradientObject = strokeGradientPaint;
       } else {
         // need to shut off, in case parent object has a gradient applied
         //p2d.strokeGradient = false;
       }
-      if (fill.gradient != null) {
+      if (fillGradient != null) {
         p2d.fillGradient = true;
-        p2d.fillGradientObject = fill.gradientPaint;
+        p2d.fillGradientObject = fillGradientPaint;
       } else {
         // need to shut off, in case parent object has a gradient applied
-        //p2d.fill.gradient = false;
+        //p2d.fillGradient = false;
       }
     }
   }
@@ -1450,12 +1471,12 @@ PApplet.println("LinearGradient: " + properties.getName());
    * beneath them can be used here.
    * <PRE>
    * // This code grabs "Layer 3" and the shapes beneath it.
-   * PLShapeSVG layer3 = svg.getChild("Layer 3");
+   * PShape layer3 = svg.getChild("Layer 3");
    * </PRE>
    */
-  public PLShape getChild(String name) {
+  public PShape getChild(String name) {
 PApplet.println("Searching " + name);
-    PLShape found = super.getChild(name);
+    PShape found = super.getChild(name);
     if (found == null) {
       // Otherwise try with underscores instead of spaces
       // (this is how Illustrator handles spaces in the layer names).

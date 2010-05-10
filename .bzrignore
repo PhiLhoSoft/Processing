@@ -25,7 +25,7 @@ libraries/
 tools/
 Java/
 
-applet/
+applet*/
 data/
 *.gpx
 Processing-revisions-0135-20080208.txt

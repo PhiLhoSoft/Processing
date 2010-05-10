@@ -1,11 +1,11 @@
-  public PLShape loadPLShape(String filename) {
+  public PShape loadPLShape(String filename) {
     if (filename.toLowerCase().endsWith(".svg")) {
-      PLShape shape = new PLShapeSVG(this, filename);
-      return shape.getShape();
+      PShape shape = new PLShapeSVG(this, filename);
+      return shape;
     }
     return null;
   }
-
+/*
   public void shape(PLShape shape) {
     g.shape(shape);
   }
@@ -17,3 +17,5 @@
   public void shape(PLShape shape, float x, float y, float c, float d) {
     g.shape(shape, x, y, c, d);
   }
+*/
+
