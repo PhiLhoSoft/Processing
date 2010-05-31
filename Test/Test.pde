@@ -4,6 +4,7 @@ String setupSize;
 
 PFont fontR;
 PFont fontB;
+PFont fontT;
 
 void init()
 {
@@ -23,14 +24,20 @@ void setup()
   background(255);
   fontR = createFont("Arial", 48);
   fontB = createFont("Arial Bold", 48);
+  fontT = loadFont("TimesNewRomanPSMT-48.vlw");
+  /*
   fill(0);
   TestClass testClass = new TestClass();
   testClass.TestFun();
   noLoop();
+  */
+  textFont(fontT);
+  frameRate(10);
 }
 
 void draw()
 {
+  /*
   fill(#22AA55);
   noStroke();
   int hg = width / 6;
@@ -57,5 +64,9 @@ void draw()
   text("This is a bold font", 20, 200);
   println("Done");
 //  exit();
+  */
+//  background(#FF8800);
+  fill(#0088FF);
+  text("This is a test", 10, 100);
 }
 

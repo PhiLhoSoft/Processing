@@ -1,9 +1,12 @@
+// [url=http://processing.org/discourse/yabb2/YaBB.pl?num=1272553052/2]How to do this shape ?[/url]
+// [url=http://processing.org/discourse/yabb2/YaBB.pl?num=1274367486/0#2]shape arc form[/url]
+
 // Ratio for perfect circle
 float pcr = 0.5522847498;
 
 void setup()
 {
-  size(800, 550);
+  size(1100, 550);
   smooth();
 }
 
@@ -19,14 +22,22 @@ void draw()
 
   fill(0x880000EE);
   stroke(#22FF88);
-  DrawShape(450, 50, 20);
-  DrawShape(510, 140, 80);
-  DrawShape(620, 350, 150);
+  DrawShape(380, 50, 20);
+  DrawShape(440, 140, 80);
+  DrawShape(550, 350, 150);
+
+  fill(0x880055AA);
+  stroke(#00FF44);
+  DrawArc(730, 50, 20);
+  DrawArc(790, 140, 80);
+  DrawArc(900, 350, 150);
   
-  // Checking curvature
+  // Checking curvatures
   fill(0x50EE0000);
   noStroke();
-  DrawCircle(620, 350, 150);
+  DrawCircle(550, 350, 150);
+  DrawCircle(900, 350, 150);
+  DrawCircle(900, 350, 75);
 }
 
 // First step: draw a circle
@@ -77,6 +88,29 @@ void DrawShape(float x, float y, float r)
   bezierVertex(x, y + r - l,
       x + r - l, y,
       x + r, y); // Back to Top
+  endShape();
+}
+
+void DrawArc(float x, float y, float r)
+{
+  float l = (1 - pcr) * r;
+  float d = 2 * r;
+  // Internal radius, here set at half radius
+  float ir = r / 2;
+  // Assume here default CENTER mode
+  // I put x and y to top-left
+  x -= r; y -= r;
+
+  beginShape();
+  vertex(x, y + r); // Left
+  bezierVertex(x, y + l,
+      x + l, y,
+      x + r, y); // Top
+  vertex(x + r, y + ir); // Go down
+  bezierVertex(x + r - ir, y + ir,
+      x + r - ir, y + r,
+      x + r - ir, y + r); // Bottom
+  vertex(x, y + r); // Go back to left
   endShape();
 }
 

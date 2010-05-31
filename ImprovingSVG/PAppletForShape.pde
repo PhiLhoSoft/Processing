@@ -1,5 +1,6 @@
   public PShape loadPLShape(String filename) {
     if (filename.toLowerCase().endsWith(".svg")) {
+println("\n=== SVG File: " + filename + "\n");
       PShape shape = new PLShapeSVG(this, filename);
       return shape;
     }
