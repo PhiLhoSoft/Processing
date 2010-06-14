@@ -1,4 +1,5 @@
-//import processing.pdf.*;
+import processing.pdf.*;
+
 String rawSize;
 String setupSize;
 
@@ -14,7 +15,7 @@ void init()
 
 void setup()
 {
-//  size(512, 512, PDF, "test.pdf");
+//~   size(512, 512, PDF, "test.pdf");
   size(512, 512);
   Dimension size = getSize();
   setupSize = "Size after setup: " + size.width + "x" + size.height;
@@ -26,6 +27,15 @@ void setup()
   fill(0);
   TestClass testClass = new TestClass();
   testClass.TestFun();
+
+  PImage img = loadImage("D:/Dev/PhiLhoSoft/images/earth.png");
+  PGraphics pdf = createGraphics(512, 512, PDF, "test.pdf");
+  pdf.beginDraw();
+  pdf.background(#FFFF55);
+  pdf.image(img, 10, 10);
+  pdf.dispose();
+  pdf.endDraw();
+
   noLoop();
 }
 
@@ -38,7 +48,7 @@ void draw()
   triangle(
     4 * hg, 2 * vg,
     4 * hg, 4 * vg,
-    width, 3 * vg 
+    width, 3 * vg
   );
   triangle(
     2 * hg, 4 * vg,
@@ -56,6 +66,6 @@ void draw()
   textFont(fontB);
   text("This is a bold font", 20, 200);
   println("Done");
-//  exit();
+  exit();
 }
 
