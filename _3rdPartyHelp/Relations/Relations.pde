@@ -23,7 +23,7 @@ void setup() {
   XMLElement friend1;
   XMLElement friend2;
 
-  for (int i=0; i<mum.length; i++) {
+  for (int i = 0; i < mum.length; i++) {
     family = xml.getChild(i);
     //get family relations
     friend1 = family.getChild(0);
@@ -33,10 +33,8 @@ void setup() {
 
     mum[i] = new Mother(1+i);
     //add friends
-    mum[i].friends.add(mate1);
-    mum[i].girl.friends.add(mate1);
-    mum[i].friends.add(mate2);
-    mum[i].girl.friends.add(mate2);
+    mum[i].addFriend(mate1);
+    mum[i].addFriend(mate2);
   }
   noLoop();
 }
@@ -50,17 +48,8 @@ void draw() {
 void mousePressed()
 {
   //remove the friend of one son
-  Son son = (Son) mum[1].boys.get(0);
-  println(2 + ": " + 0 + ": i've had a fight with friend 3!");
-
-  for (int i = 0; i < son.friends.size(); i++) {
-    int fallenOutWith = (Integer) son.friends.get(i);
-    println(fallenOutWith);
-    if (fallenOutWith == 3) {
-      son.friends.remove(new Integer(fallenOutWith));
-    println("removed");
-    }
-  }
+  Son son = mum[1].getBoy(1);
+  son.removeFriend(3);
 
   redraw();
 }
@@ -80,23 +69,46 @@ class Mother {
     girl = new Daughter(id);
     ref = id;
     boys = new ArrayList();
-    for (int i=0; i<kids; i++) {
-      boys.add(new Son(id, i, friends));
+    for (int i = 0; i < kids; i++) {
+      boys.add(new Son(id, i+1));
     }
   }
 
   void transmit() {
-   girl.display();
-   for (int i=0; i<boys.size(); i++) {
-     Son maleChild = (Son) boys.get(i);
-     maleChild.display();
+    girl.display();
+    for (int i = 0; i < boys.size(); i++) {
+      Son maleChild = getBoy(i+1);
+      maleChild.display();
     }
+  }
+
+  Son getBoy(int id)
+  {
+    if (id < 1 || id > boys.size())
+      return null; // or throw exception or return "empty" boy
+    return (Son) boys.get(id-1);
+  }
+
+  void addFriend(int id)
+  {
+    friends.add(id);
+    girl.addFriend(id);
+    for (int i = 0; i < boys.size(); i++) {
+      Son maleChild = getBoy(i+1);
+      maleChild.addFriend(id);
+    }
+  }
+
+  void removeFriend(int fallenOutWith)
+  {
+    friends.remove(new Integer(fallenOutWith));
   }
 
   void display() {
     println(ref + ": " + "mum's friends" + friends);
   }
 }
+
 /*................................................*/
 class Daughter {
   int id;
@@ -106,24 +118,45 @@ class Daughter {
     id = identity;
   }
 
+  void addFriend(int id)
+  {
+    friends.add(id);
+  }
+
+  void removeFriend(int fallenOutWith)
+  {
+    println(id + ": girl: i've had a fight with friend " + fallenOutWith + "!");
+    friends.remove(new Integer(fallenOutWith));
+  }
+
   void display() {
     println(id + ": " + "girl's friends" + friends);
   }
 }
+
 /*................................................*/
 class Son {
   int id;
   int who;
   ArrayList friends = new ArrayList();
 
-  Son(int identity, int whom, ArrayList buddies) {
+  Son(int identity, int whom) {
     id = identity;
     who = whom;
-    friends = buddies;
+  }
+
+  void addFriend(int id)
+  {
+    friends.add(id);
+  }
+
+  void removeFriend(int fallenOutWith)
+  {
+    println(id + ": " + who + ": i've had a fight with friend " + fallenOutWith + "!");
+    friends.remove(new Integer(fallenOutWith));
   }
 
   void display() {
     println(id + ": " + who + ": " + "boy's friends" + friends);
   }
 }
-
