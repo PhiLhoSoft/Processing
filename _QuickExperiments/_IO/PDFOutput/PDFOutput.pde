@@ -8,7 +8,7 @@ PGraphics pdf;
 void setup()
 {
   size(400, 400);
-  f = createFont("Arial", 72);
+  f = createFont("Technical", 72);
   prevX = width/2;
   pdf = createGraphics(400, 400, PDF, "multipage.pdf");
   pdf.beginDraw();

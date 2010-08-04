@@ -345,6 +345,10 @@ Obviously the Upload.php must be on the server, and you have to adjust some para
 
 ImageUpload is a sample / example Processing script using my image upload class, DataUpload.
 
+### Code in Zoho
+
+<ol class="code" style="background-color: rgb(224, 248, 238); font-family: 'andale mono',monospace; font-size: 0.9em;">
+
 ### Compact Discourse Page (Stylish)
 
 @namespace url(http://www.w3.org/1999/xhtml);

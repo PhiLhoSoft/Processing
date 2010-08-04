@@ -45,12 +45,17 @@ void draw() {
   }
 }
 
-void mousePressed()
-{
-  //remove the friend of one son
-  Son son = mum[1].getBoy(1);
-  son.removeFriend(3);
-
+void mousePressed() {
+  if (mouseButton == LEFT) {
+    //remove the friend of one son
+    Son son = mum[1].getBoy(mum[1].getBoyNb());
+    son.removeFriend(3);
+  }
+  else if (mouseButton == RIGHT) {
+    for (int i = 0; i < mum.length; i++) {
+      mum[i].giveBirth();
+    }
+  }
   redraw();
 }
 
@@ -75,6 +80,7 @@ class Mother {
   }
 
   void transmit() {
+    display();
     girl.display();
     for (int i = 0; i < boys.size(); i++) {
       Son maleChild = getBoy(i+1);
@@ -88,6 +94,11 @@ class Mother {
       return null; // or throw exception or return "empty" boy
     return (Son) boys.get(id-1);
   }
+  
+  int getBoyNb()
+  {
+    return boys.size();
+  }
 
   void addFriend(int id)
   {
@@ -97,6 +108,16 @@ class Mother {
       Son maleChild = getBoy(i+1);
       maleChild.addFriend(id);
     }
+  }
+  
+  void giveBirth() {
+    ArrayList inheritedFriends = new ArrayList();
+    for (int i = 0; i < friends.size(); i++)
+    {
+      inheritedFriends.add(friends.get(i));
+    }
+    Son newborn = new Son(ref, boys.size() + 1, inheritedFriends);
+    boys.add(newborn);
   }
 
   void removeFriend(int fallenOutWith)
@@ -138,18 +159,24 @@ class Daughter {
 class Son {
   int id;
   int who;
-  ArrayList friends = new ArrayList();
+  ArrayList friends;
 
   Son(int identity, int whom) {
     id = identity;
     who = whom;
+    friends = new ArrayList();
+  }
+  Son(int identity, int whom, ArrayList fr) {
+    id = identity;
+    who = whom;
+    friends = fr;
   }
 
   void addFriend(int id)
   {
     friends.add(id);
   }
-
+  
   void removeFriend(int fallenOutWith)
   {
     println(id + ": " + who + ": i've had a fight with friend " + fallenOutWith + "!");
