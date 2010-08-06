@@ -63,6 +63,20 @@ public class StreamGobbler extends Thread
     {
       ioe.printStackTrace();
     }
+    finally
+    {
+      if (br != null)
+      {
+        try
+        {
+          br.close();
+        }
+        catch (IOException ioe)
+        {
+          ioe.printStackTrace();
+        }
+      }
+    }
   }
 
   protected String HandleOutputLine(String line)

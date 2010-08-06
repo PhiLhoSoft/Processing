@@ -1,4 +1,5 @@
 import java.io.File;
+import java.io.OutputStream;
 import java.io.IOException;
 import java.util.List;
 import java.util.ArrayList;
@@ -9,7 +10,7 @@ import java.util.Map;
 /**
  * Launcher of an external application.
  */
-public class RunApp extends Thread
+public class RunApp
 {
   private Process m_process;
   private AppDesc m_appDesc;
@@ -32,14 +33,13 @@ public class RunApp extends Thread
 
   public RunApp(AppDesc ad, String installDir, String configDir)
   {
-    super(ad.GetThreadName());
+//    super(ad.GetThreadName());
     m_appDesc = ad;
     m_installDir = installDir;
     m_configDir = configDir;
   }
 
-  @Override
-  public void run()
+  public void Run()
   {
     try
     {
@@ -70,6 +70,11 @@ public class RunApp extends Thread
   public void SetProgramArgs(String[] programArgs)
   {
     m_programArgs = programArgs;
+  }
+
+  public OutputStream GetOutputStream()
+  {
+    return m_process.getOutputStream();
   }
 
   protected int RunApplication()

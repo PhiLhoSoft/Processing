@@ -2,9 +2,9 @@ StringBuilder raResult;
 
 void setup()
 {
-//~   AppDesc zappa = new AppDesc("Zappa", "Zappa Chess Engine", "C:/PrgCmdLine", null);
-  AppDesc trid = new AppDesc("TriD", "TriD File Identifier", false, "C:/PrgCmdLine");
-  RunApp ra = new RunApp(trid, trid.GetPath(), "");
+//~   AppDesc app = new AppDesc("Zappa", "Zappa Chess Engine", false, "C:/PrgCmdLine");
+  AppDesc app = new AppDesc("TriD", "TriD File Identifier", false, "C:/PrgCmdLine");
+  RunApp ra = new RunApp(app, app.GetPath(), "");
   ra.SetProgramArgs(new String[] { "C:/PrgCmdLine/curl-ca-bundle.crt" });
   raResult = new StringBuilder();
   ra.SetOutputGobbler(new StreamGobbler()
@@ -16,9 +16,17 @@ void setup()
     }
   });
 
-  ra.run();
+  println("Running " + app.GetName());
+  ra.Run();
+  println("Done");
   println(raResult);
-
+/*
+  raResult = new StringBuilder();
+  PrintWriter printWriter = new PrintWriter(ra.GetOutputStream(), true);
+  println("Sending command");
+  printWriter.println("uci");
+  println(raResult);
+*/
   exit();
 }
 
