@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<families>
+  <family>
+    <friend mate1="2"/>
+    <friend mate2="3"/>
+  </family>
+  <family>
+    <friend mate1="1"/>
+    <friend mate2="3"/>
+  </family>
+  <family>
+    <friend mate1="1"/>
+    <friend mate2="2"/>
+  </family>
+</families>

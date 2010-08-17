@@ -10,7 +10,7 @@ void setup()
   size(400, 400);
   f = createFont("Arial", 72);
   prevX = width/2;
-  pdf = createGraphics(400, 400, "processing.pdf.InMemoryPGraphicsPDF");
+  pdf = createGraphics(400, 400, "InMemoryPGraphicsPDF");
   pdf.beginDraw();
 }
 
@@ -40,14 +40,15 @@ void draw()
     println("Done: " + pdfData.length + " bytes");
     // Output file to disk, to examine it
     // Purpose is actually to serialize it over network
-    try {
-      FileOutputStream fos = new FileOutputStream("E:/temp/Output.pdf");
+    try
+    {
+      FileOutputStream fos = new FileOutputStream("D:/Temp/Output.pdf");
       BufferedOutputStream bos = new BufferedOutputStream(fos, 16384);
       bos.write(pdfData);
       bos.flush();
       bos.close();
-    } catch (IOException ioe) {} // Not super clean but just ad hoc here
-    
+    } catch (IOException ioe) { ioe.printStackTrace(); } // Not super clean but just ad hoc here
+
     exit();
   }
   else

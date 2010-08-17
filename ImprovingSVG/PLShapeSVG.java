@@ -143,7 +143,6 @@ public class PLShapeSVG extends PShape {
     // this will grab the root document, starting <svg ...>
     // the xml version and initial comments are ignored
     this(new XMLElement(parent, filename));
-PApplet.println("\n=== SVG File: " + filename + "\n");
   }
 
 
@@ -346,6 +345,9 @@ PApplet.println("Defs: " + elem.getName());
     } else if (name.equals("pattern")) {
       PGraphics.showWarning("Patterns are not supported.");
 
+    } else if (name.equals("stop")) {
+      // stop tag is handled by gradient parser, so don't warn about it
+
     } else {
       PGraphics.showWarning("Ignoring  <" + name + "> tag.");
     }
@@ -357,10 +359,10 @@ PApplet.println("Defs: " + elem.getName());
     kind = LINE;
     family = PRIMITIVE;
     params = new float[] {
-      element.getFloatAttribute("x1"),
-      element.getFloatAttribute("y1"),
-      element.getFloatAttribute("x2"),
-      element.getFloatAttribute("y2"),
+      getFloatWithUnit(element, "x1"),
+      getFloatWithUnit(element, "y1"),
+      getFloatWithUnit(element, "x2"),
+      getFloatWithUnit(element, "y2"),
     };
     //    x = params[0];
     //    y = params[1];
@@ -378,15 +380,15 @@ PApplet.println("Defs: " + elem.getName());
     family = PRIMITIVE;
     params = new float[4];
 
-    params[0] = element.getFloatAttribute("cx");
-    params[1] = element.getFloatAttribute("cy");
+    params[0] = getFloatWithUnit(element, "cx");
+    params[1] = getFloatWithUnit(element, "cy");
 
     float rx, ry;
     if (circle) {
-      rx = ry = element.getFloatAttribute("r");
+      rx = ry = getFloatWithUnit(element, "r");
     } else {
-      rx = element.getFloatAttribute("rx");
-      ry = element.getFloatAttribute("ry");
+      rx = getFloatWithUnit(element, "rx");
+      ry = getFloatWithUnit(element, "ry");
     }
     params[0] -= rx;
     params[1] -= ry;
@@ -400,10 +402,10 @@ PApplet.println("Defs: " + elem.getName());
     kind = RECT;
     family = PRIMITIVE;
     params = new float[] {
-      element.getFloatAttribute("x"),
-      element.getFloatAttribute("y"),
-      element.getFloatAttribute("width"),
-      element.getFloatAttribute("height"),
+      getFloatWithUnit(element, "x"),
+      getFloatWithUnit(element, "y"),
+      getFloatWithUnit(element, "width"),
+      getFloatWithUnit(element, "height"),
     };
   }
 
@@ -929,7 +931,7 @@ PApplet.println("Defs: " + elem.getName());
   }
 
   void setStrokeWeight(String lineweight) {
-    strokeWeight = PApplet.parseFloat(lineweight);
+    strokeWeight = parseUnitSize(lineweight);
   }
 
   void setStrokeOpacity(String opacityText) {
@@ -1045,6 +1047,15 @@ PApplet.println("Defs: " + elem.getName());
   }
 
 
+  // Used in place of element.getFloatAttribute(a) because we can have a unit suffix (length or coordinate)
+  static protected float getFloatWithUnit(XMLElement element, String attribute) {
+    String val = element.getStringAttribute(attribute);
+    if (val == null)
+      return 0.0f;
+    return parseUnitSize(val);
+  }
+
+
   /**
    * Parse a size that may have a suffix for its units.
    * Ignoring cases where this could also be a percentage.
@@ -1101,7 +1112,13 @@ PApplet.println("Gradient: " + properties.getName());
         XMLElement elem = elements[i];
         String name = elem.getName();
         if (name.equals("stop")) {
-          offset[count] = elem.getFloatAttribute("offset");
+          String offsetAttr = elem.getStringAttribute("offset");
+          float div = 1.0f;
+          if (offsetAttr.endsWith("%")) {
+            div = 100.0f;
+            offsetAttr = offsetAttr.substring(0, offsetAttr.length() - 1);
+          }
+          offset[count] = PApplet.parseFloat(offsetAttr) / div;
           String style = elem.getStringAttribute("style");
           HashMap<String, String> styles = parseStyleAttributes(style);
 
@@ -1111,7 +1128,7 @@ PApplet.println("Gradient: " + properties.getName());
           if (opacityStr == null) opacityStr = "1";
           int tupacity = (int) (PApplet.parseFloat(opacityStr) * 255);
           color[count] = (tupacity << 24) |
-            Integer.parseInt(colorStr.substring(1), 16);
+              Integer.parseInt(colorStr.substring(1), 16);
           count++;
         }
       }
@@ -1128,10 +1145,10 @@ PApplet.println("Gradient: " + properties.getName());
       super(parent, properties);
 PApplet.println("LinearGradient: " + properties.getName());
 
-      this.x1 = properties.getFloatAttribute("x1");
-      this.y1 = properties.getFloatAttribute("y1");
-      this.x2 = properties.getFloatAttribute("x2");
-      this.y2 = properties.getFloatAttribute("y2");
+      this.x1 = getFloatWithUnit(properties, "x1");
+      this.y1 = getFloatWithUnit(properties, "y1");
+      this.x2 = getFloatWithUnit(properties, "x2");
+      this.y2 = getFloatWithUnit(properties, "y2");
 
       String transformStr =
         properties.getStringAttribute("gradientTransform");
@@ -1158,9 +1175,9 @@ PApplet.println("LinearGradient: " + properties.getName());
     public RadialGradient(PLShapeSVG parent, XMLElement properties) {
       super(parent, properties);
 
-      this.cx = properties.getFloatAttribute("cx");
-      this.cy = properties.getFloatAttribute("cy");
-      this.r = properties.getFloatAttribute("r");
+      this.cx = getFloatWithUnit(properties, "cx");
+      this.cy = getFloatWithUnit(properties, "cy");
+      this.r  = getFloatWithUnit(properties, "r");
 
       String transformStr =
         properties.getStringAttribute("gradientTransform");
