@@ -1,10 +1,10 @@
-//import processing.pdf.*;
+import processing.pdf.*;
+
 String rawSize;
 String setupSize;
 
 PFont fontR;
 PFont fontB;
-PFont fontT;
 
 void init()
 {
@@ -15,7 +15,7 @@ void init()
 
 void setup()
 {
-//  size(512, 512, PDF, "test.pdf");
+//~   size(512, 512, PDF, "test.pdf");
   size(512, 512);
   Dimension size = getSize();
   setupSize = "Size after setup: " + size.width + "x" + size.height;
@@ -24,20 +24,23 @@ void setup()
   background(255);
   fontR = createFont("Arial", 48);
   fontB = createFont("Arial Bold", 48);
-  fontT = loadFont("TimesNewRomanPSMT-48.vlw");
-  /*
   fill(0);
   TestClass testClass = new TestClass();
   testClass.TestFun();
+
+  PImage img = loadImage("D:/Dev/PhiLhoSoft/images/earth.png");
+  PGraphics pdf = createGraphics(512, 512, PDF, "test.pdf");
+  pdf.beginDraw();
+  pdf.background(#FFFF55);
+  pdf.image(img, 10, 10);
+  pdf.dispose();
+  pdf.endDraw();
+
   noLoop();
-  */
-  textFont(fontT);
-  frameRate(10);
 }
 
 void draw()
 {
-  /*
   fill(#22AA55);
   noStroke();
   int hg = width / 6;
@@ -45,7 +48,7 @@ void draw()
   triangle(
     4 * hg, 2 * vg,
     4 * hg, 4 * vg,
-    width, 3 * vg 
+    width, 3 * vg
   );
   triangle(
     2 * hg, 4 * vg,
@@ -63,10 +66,6 @@ void draw()
   textFont(fontB);
   text("This is a bold font", 20, 200);
   println("Done");
-//  exit();
-  */
-//  background(#FF8800);
-  fill(#0088FF);
-  text("This is a test", 10, 100);
+  exit();
 }
 

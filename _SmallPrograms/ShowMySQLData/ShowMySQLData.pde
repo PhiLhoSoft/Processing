@@ -1,3 +1,17 @@
+/**
+Get messages from MySQL database (filled with a PHP script) and display them progressively.
+
+by Philippe Lhoste <PhiLho(a)GMX.net> http://Phi.Lho.free.fr & http://PhiLho.deviantART.com
+*/
+/* File/Project history:
+ 1.00.000 -- 2009/05/11 (PL) -- First version.
+*/
+/* Copyright notice: For details, see the following file:
+http://Phi.Lho.free.fr/softwares/PhiLhoSoft/PhiLhoSoftLicence.txt
+This program is distributed under the zlib/libpng license.
+Copyright (c) 2009 Philippe Lhoste / PhiLhoSoft
+*/
+
 import de.bezier.data.sql.*;
 import java.sql.Timestamp;
 
