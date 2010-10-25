@@ -1,10 +1,10 @@
 // [url=http://processing.org/discourse/yabb2/YaBB.pl?num=1271308799]mirroring image using blend()[/url]
 
-PFont font;
+PFont fontMenu, fontHelp;
 
 int IMAGE_W = 500;
 int IMAGE_H = 500;
-int CHOICE_T = 50;
+int CHOICE_T = 40;
 int CHOICE_L = 50;
 int CHOICE_W = 200;
 int CHOICE_SPACING = 25;
@@ -14,12 +14,13 @@ int lineNb = 50;
 int lengthIncrement = 7;
 boolean bDoBlend;
 
-int currentBlendMode = ADD;
+BlendMode currentBlendMode;
 class BlendMode
 {
   int blendMode;
   String blendName;
   BlendMode(int bm, String bn) { blendMode = bm; blendName = bn; }
+  String toString() { return blendName; }
 }
 ArrayList<BlendMode> blendModes = new ArrayList<BlendMode>();
 
@@ -28,8 +29,8 @@ void setup()
   size(700, 500);
   smooth();
 //  noLoop();
-  font = loadFont("Tahoma-Bold-14.vlw");
-  textFont(font);
+  fontHelp = createFont("Tahoma", 12);
+  fontMenu = createFont("Tahoma Bold", 14);
 
   blendModes.add(new BlendMode(REPLACE, "REPLACE"));
   blendModes.add(new BlendMode(BLEND, "BLEND"));
@@ -46,6 +47,8 @@ void setup()
   blendModes.add(new BlendMode(SOFT_LIGHT, "SOFT_LIGHT"));
   blendModes.add(new BlendMode(DODGE, "DODGE"));
   blendModes.add(new BlendMode(BURN, "BURN"));
+
+  currentBlendMode = blendModes.get(0);
 
   baseImage = createGraphics(IMAGE_W, IMAGE_H, JAVA2D);
   DrawImage();
@@ -68,49 +71,60 @@ void keyPressed()
 {
   // Update base image with current screen
   baseImage.beginDraw();
-  baseImage.image(g, CHOICE_W, 0);
+  baseImage.copy(g, CHOICE_W, 0, IMAGE_W, IMAGE_H, 0, 0, IMAGE_W, IMAGE_H);
   baseImage.endDraw();
 
-PImage img = null;
   switch (key)
   {
   case 'b':
-    // Activate
     bDoBlend = !bDoBlend;
     println("Blend? " + bDoBlend);
     break;
   case 'i':
     if (bDoBlend)
     {
-      BlendInverted(img);
+      BlendInverted();
     }
     else
     {
-      DrawInverted(img);
+      DrawInverted();
     }
     break;
   case 'r':
     if (bDoBlend)
     {
-      BlendReflected(img);
+      BlendReflected();
     }
     else
     {
-      DrawReflected(img);
+      DrawReflected();
     }
     break;
   case 's':
     if (bDoBlend)
     {
-      BlendShifted(img);
+      BlendShifted();
     }
     else
     {
-      DrawShifted(img);
+      DrawShifted();
+    }
+    break;
+  case 't':
+    if (bDoBlend)
+    {
+      BlendRotated();
+    }
+    else
+    {
+      DrawRotated();
     }
     break;
   case 'c': // clear
     DrawImage();
+    resultImage.beginDraw();
+    resultImage.image(baseImage, 0, 0);
+    resultImage.endDraw();
     break;
   }
   redraw();
@@ -161,95 +175,99 @@ void DrawImage()
   baseImage.endDraw();
 }
 
-void DrawInverted(PImage img)
+void DrawInverted()
 {
   println("DrawInverted");
-  pushMatrix();
-  translate(img.width, img.height);
-  rotate(PI);
-  image(img, 0, 0);
-  popMatrix();
+  resultImage.beginDraw();
+  resultImage.translate(baseImage.width, baseImage.height);
+  resultImage.rotate(PI);
+  resultImage.image(baseImage, 0, 0);
+  resultImage.endDraw();
 }
 
-void DrawReflected(PImage img)
+void DrawReflected()
 {
   println("DrawReflected");
-  pushMatrix();
-  translate(0, img.height);
-  scale(1.00, -1.00);
-  image(img, 0, 0);
-  popMatrix();
+  resultImage.beginDraw();
+  resultImage.translate(0, baseImage.height);
+  resultImage.scale(1.00, -1.00);
+  resultImage.image(baseImage, 0, 0);
+  resultImage.endDraw();
 }
 
-void DrawShifted(PImage img)
+void DrawShifted()
 {
   println("DrawShifted");
   float SCALE = 1.2;
-  float ns = img.width * (SCALE - 1) / 2;
-  pushMatrix();
-  translate(-ns, -ns);
-  scale(SCALE, SCALE);
-  image(img, 0, 0);
-  popMatrix();
+  float ns = baseImage.width * (SCALE - 1) / 2;
+  resultImage.beginDraw();
+  resultImage.translate(-ns, -ns);
+  resultImage.scale(SCALE, SCALE);
+  resultImage.image(baseImage, 0, 0);
+  resultImage.endDraw();
 }
 
-
-// Copy the given image to a PGraphics of same size, to manipulate it
-PGraphics GetCopy(PImage img)
+void DrawRotated()
 {
-  PGraphics copy = createGraphics(img.width, img.height, JAVA2D);
-  copy.beginDraw();
-  copy.image(img, 0, 0);
-  copy.endDraw();
-
-  return copy;
+  println("DrawRotated");
+  float ns = resultImage.width;
+  resultImage.beginDraw();
+  resultImage.translate(ns, ns);
+  resultImage.rotate(PI / 36);
+  resultImage.translate(-ns, -ns);
+  resultImage.image(baseImage, 0, 0);
+  resultImage.endDraw();
 }
 
-void BlendInverted(PImage img)
+void Blend()
+{
+  println(currentBlendMode);
+  blend(resultImage, 0, 0, resultImage.width, resultImage.height,
+      CHOICE_W, 0, resultImage.width, resultImage.height,
+      currentBlendMode.blendMode);
+  resultImage.beginDraw();
+  resultImage.copy(g, CHOICE_W, 0, IMAGE_W, IMAGE_H, 0, 0, IMAGE_W, IMAGE_H);
+  resultImage.endDraw();
+}
+
+void BlendInverted()
 {
   println("BlendInverted");
-  PGraphics copy = GetCopy(img);
-  copy.beginDraw();
-  copy.translate(img.width, img.height);
-  copy.rotate(PI);
-  copy.image(img, 0, 0);
-  copy.endDraw();
-  blend(copy, 0, 0, copy.width, copy.height, 0, 0, width, height, currentBlendMode);
+  DrawInverted();
+  Blend();
 }
 
-void BlendReflected(PImage img)
+void BlendReflected()
 {
   println("BlendReflected");
-  PGraphics copy = GetCopy(img);
-  copy.beginDraw();
-  copy.translate(0, img.height);
-  copy.scale(1.0, -1.0);
-  copy.image(img, 0, 0);
-  copy.endDraw();
-  blend(copy, 0, 0, copy.width, copy.height, 0, 0, width, height, currentBlendMode);
+  DrawReflected();
+  Blend();
 }
 
-void BlendShifted(PImage img)
+void BlendShifted()
 {
   println("BlendShifted");
-  float SCALE = 1.2;
-  float ns = img.width * (SCALE - 1) / 2;
-  PGraphics copy = GetCopy(img);
-  copy.beginDraw();
-  copy.translate(-ns, -ns);
-  copy.scale(SCALE, SCALE);
-  copy.endDraw();
-  blend(copy, 0, 0, copy.width, copy.height, 0, 0, width, height, currentBlendMode);
+  DrawShifted();
+  Blend();
+}
+
+void BlendRotated()
+{
+  println("BlendRotated");
+  DrawRotated();
+  Blend();
 }
 
 void ShowBlendChoices()
 {
   int posY = CHOICE_T;
+  textFont(fontMenu);
   for (BlendMode blendMode : blendModes)
   {
     if (IsMouseOverChoice(posY))
     {
       fill(#C05080);
+      currentBlendMode = blendMode;
     }
     else
     {
@@ -258,6 +276,9 @@ void ShowBlendChoices()
     text(blendMode.blendName, CHOICE_L, posY);
     posY += CHOICE_SPACING;
   }
+  textFont(fontHelp);
+  String help = "b=activate blend; c=clear;\nDraw:\n  i=inverted;\n  r=reflected;\n  s=shifted";
+  text(help, CHOICE_L / 2, posY);
 }
 
 boolean IsMouseOverChoice(int posY)

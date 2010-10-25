@@ -33,26 +33,9 @@ public class RunApp
 
   public RunApp(AppDesc ad, String installDir, String configDir)
   {
-//    super(ad.GetThreadName());
     m_appDesc = ad;
     m_installDir = installDir;
     m_configDir = configDir;
-  }
-
-  public void Run()
-  {
-    try
-    {
-      RunApplication();
-    }
-    catch (IOException e)
-    {
-      e.printStackTrace();
-    }
-    catch (InterruptedException e)
-    {
-      e.printStackTrace();
-    }
   }
 
   public void SetErrorGobbler(StreamGobbler eg)
@@ -75,6 +58,22 @@ public class RunApp
   public OutputStream GetOutputStream()
   {
     return m_process.getOutputStream();
+  }
+
+  public void Run()
+  {
+    try
+    {
+      RunApplication();
+    }
+    catch (IOException e)
+    {
+      e.printStackTrace();
+    }
+    catch (InterruptedException e)
+    {
+      e.printStackTrace();
+    }
   }
 
   protected int RunApplication()
@@ -120,11 +119,15 @@ public class RunApp
     return CaptureProcessOutput();
   }
 
+  public void Stop()
+  {
+    m_process.destroy();
+  }
+
   /**
    * Launches stream gobblers for stderr and stdout of the given process
    * in separate threads to avoid buffer overflowing.
    *
-   * @param process
    * @return error code returned by the process when it ends
    * @throws IOException
    * @throws InterruptedException
@@ -166,11 +169,7 @@ public class RunApp
 
     // Get exit value
     return m_process.waitFor();
-  }
-
-  public void Stop()
-  {
-    m_process.destroy();
+//    return 0;
   }
 
   protected ArrayList<String> ExpandStrings(String[] stra)

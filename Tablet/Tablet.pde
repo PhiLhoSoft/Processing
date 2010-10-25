@@ -3,6 +3,8 @@ Experiment with JPen.
 JPen - Java Pen Tablet Access Library <http://jpen.wiki.sourceforge.net/>
 
 by Philippe Lhoste <PhiLho(a)GMX.net> http://Phi.Lho.free.fr & http://PhiLho.deviantART.com
+
+<a href="http://processing.org/discourse/yabb2/YaBB.pl?num=1252169588">Using graphics tablet with JPen</a>
 */
 /* File/Project history:
  1.01.000 -- 2009/09/04 (PL) -- Testing again (with Processing 1.0), minor fixes,

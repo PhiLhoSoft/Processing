@@ -1,0 +1,133 @@
+// Decompiled by Jad v1.5.8g. Copyright 2001 Pavel Kouznetsov.
+// Jad home page: http://www.kpdus.com/jad.html
+// Decompiler options: packimports(3) 
+// Source File Name:   ScannerIOMetadata.java
+
+package uk.co.mmscomputing.device.scanner;
+
+import java.awt.image.BufferedImage;
+import java.io.File;
+
+// Referenced classes of package uk.co.mmscomputing.device.scanner:
+//            ScannerDevice
+
+public abstract class ScannerIOMetadata
+{
+    public static class Type
+    {
+
+        public Type()
+        {
+        }
+    }
+
+
+    public ScannerIOMetadata()
+    {
+        laststate = 0;
+        state = 0;
+        cancel = false;
+        image = null;
+        file = null;
+        info = "";
+        exception = null;
+    }
+
+    public void setState(int i)
+    {
+        laststate = state;
+        state = i;
+    }
+
+    public int getLastState()
+    {
+        return laststate;
+    }
+
+    public int getState()
+    {
+        return state;
+    }
+
+    public String getStateStr()
+    {
+        return "State " + state;
+    }
+
+    public boolean isState(int i)
+    {
+        return state == i;
+    }
+
+    public void setImage(BufferedImage bufferedimage)
+    {
+        image = bufferedimage;
+        file = null;
+    }
+
+    public BufferedImage getImage()
+    {
+        return image;
+    }
+
+    public void setFile(File file1)
+    {
+        image = null;
+        file = file1;
+    }
+
+    public File getFile()
+    {
+        return file;
+    }
+
+    public void setInfo(String s)
+    {
+        info = s;
+    }
+
+    public String getInfo()
+    {
+        return info;
+    }
+
+    public void setException(Exception exception1)
+    {
+        exception = exception1;
+    }
+
+    public Exception getException()
+    {
+        return exception;
+    }
+
+    public boolean getCancel()
+    {
+        return cancel;
+    }
+
+    public void setCancel(boolean flag)
+    {
+        cancel = flag;
+    }
+
+    public abstract boolean isFinished();
+
+    public abstract ScannerDevice getDevice();
+
+    public static Type INFO = new Type();
+    public static Type EXCEPTION = new Type();
+    public static Type ACQUIRED = new Type();
+    public static Type FILE = new Type();
+    public static Type MEMORY = new Type();
+    public static Type NEGOTIATE = new Type();
+    public static Type STATECHANGE = new Type();
+    private int laststate;
+    private int state;
+    private boolean cancel;
+    private BufferedImage image;
+    private File file;
+    private String info;
+    private Exception exception;
+
+}

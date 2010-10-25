@@ -1,0 +1,136 @@
+// Decompiled by Jad v1.5.8g. Copyright 2001 Pavel Kouznetsov.
+// Jad home page: http://www.kpdus.com/jad.html
+// Decompiler options: packimports(3) 
+// Source File Name:   Scanner.java
+
+package uk.co.mmscomputing.device.scanner;
+
+import java.util.Enumeration;
+import java.util.Vector;
+import javax.swing.JComponent;
+import javax.swing.JLabel;
+
+// Referenced classes of package uk.co.mmscomputing.device.scanner:
+//            ScannerListener, ScannerIOException, ScannerIOMetadata, ScannerDevice
+
+public abstract class Scanner
+{
+
+    public Scanner()
+    {
+        listeners = new Vector();
+        metadata = null;
+        isbusy = false;
+    }
+
+    public abstract boolean isAPIInstalled();
+
+    public abstract void select()
+        throws ScannerIOException;
+
+    public abstract String[] getDeviceNames()
+        throws ScannerIOException;
+
+    public abstract void select(String s)
+        throws ScannerIOException;
+
+    public abstract String getSelectedDeviceName()
+        throws ScannerIOException;
+
+    public abstract void acquire()
+        throws ScannerIOException;
+
+    public abstract void setCancel(boolean flag)
+        throws ScannerIOException;
+
+    public boolean isBusy()
+    {
+        return isbusy;
+    }
+
+    public void waitToExit()
+    {
+        try
+        {
+            for(; isBusy(); Thread.sleep(200L))
+                Thread.currentThread();
+
+        }
+        catch(Exception exception)
+        {
+            exception.printStackTrace();
+        }
+    }
+
+    public void addListener(ScannerListener scannerlistener)
+    {
+        listeners.add(scannerlistener);
+    }
+
+    public void removeListener(ScannerListener scannerlistener)
+    {
+        listeners.remove(scannerlistener);
+    }
+
+    public void fireExceptionUpdate(Exception exception)
+    {
+        metadata.setException(exception);
+        ScannerIOMetadata _tmp = metadata;
+        fireListenerUpdate(ScannerIOMetadata.EXCEPTION);
+    }
+
+    public void fireListenerUpdate(ScannerIOMetadata.Type type)
+    {
+        if(type.equals(ScannerIOMetadata.STATECHANGE))
+            isbusy = metadata.getDevice().isBusy();
+        ScannerListener scannerlistener;
+        for(Enumeration enumeration = listeners.elements(); enumeration.hasMoreElements(); scannerlistener.update(type, metadata))
+            scannerlistener = (ScannerListener)enumeration.nextElement();
+
+    }
+
+    public JComponent getScanGUI()
+        throws ScannerIOException
+    {
+        return new JLabel("Dummy Scanner GUI");
+    }
+
+    public JComponent getScanGUI(int i)
+        throws ScannerIOException
+    {
+        return new JLabel("Dummy Scanner GUI");
+    }
+
+    public static Scanner getDevice()
+    {
+        String s1;
+        String s = System.getProperty("os.name");
+        if(s.startsWith("Linux"))
+            s1 = "uk.co.mmscomputing.device.sane.SaneScanner";
+        else
+        if(s.startsWith("Windows"))
+            s1 = "uk.co.mmscomputing.device.twain.TwainScanner";
+        else
+            return null;
+        Scanner scanner = (Scanner)Class.forName(s1).newInstance();
+        if(scanner.isAPIInstalled())
+            return scanner;
+        break MISSING_BLOCK_LABEL_82;
+        Object obj;
+        obj;
+        ((IllegalAccessException) (obj)).printStackTrace();
+        break MISSING_BLOCK_LABEL_82;
+        obj;
+        ((InstantiationException) (obj)).printStackTrace();
+        break MISSING_BLOCK_LABEL_82;
+        obj;
+        ((ClassNotFoundException) (obj)).printStackTrace();
+        return null;
+    }
+
+    protected static boolean installed = false;
+    protected Vector listeners;
+    protected ScannerIOMetadata metadata;
+    protected boolean isbusy;
+
+}

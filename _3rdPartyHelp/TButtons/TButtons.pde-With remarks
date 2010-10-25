@@ -1,0 +1,138 @@
+// http://forum.processing.org/topic/tbutton-v0-11
+// http://bwong.ca/TButton_01.html
+PFont fontA;
+// Wow, that's a long constructor!
+// Since Java doesn't support named parameters,
+// such super long call should be avoided, in favor of other style using setters.
+// The risk here is to mix up parameters, forget some or invert them.
+// At best the compiler will complain, at worst, you go some subtle runtime glitches...
+TButton tb0 = new TButton("TButton v0.11",149,99,28,130,#888888,#004400,#889977,#880000,5,3,#667755,#550000);
+// And you should add spaces after colons and around operators, this goes a long way toward readability!
+TButton tb1 = new TButton("by Brian Wong",149,199,28,130,#778899,#000066,#887799,#dddd00,10,7,#665577,#aaaa00);
+int bgc=0;
+
+void setup(){
+  size(300,300);
+  smooth();
+  // This is OK here, but annoying in a larger sketch, which might need different settings
+  // Look at pushStyle()
+  rectMode(CENTER);
+  fontA = loadFont("Glockenspiel-16.vlw");
+  textAlign(CENTER,CENTER);
+  textFont(fontA,16);
+  noStroke();
+}
+
+void draw(){
+  background(bgc);
+  // No need to set the variable to false...
+  boolean buttonClicked0=false;
+  // Since you immediately overwrite it!
+  buttonClicked0=tb0.update(buttonClicked0);
+  // You can use boolean variables directly, it looks more like English:
+  // if (buttonClicked0) {
+  if(buttonClicked0==true){
+    if(bgc==0){
+      bgc=255;
+      tb0.pos(width/2,height*2/3);
+      tb1.pos(width/2,height/3);
+    } else {
+      bgc=0;
+      tb0.pos(width/2,height/3);
+      tb1.pos(width/2,height*2/3);
+    }
+  }
+  boolean buttonClicked1=false;
+  buttonClicked1=tb1.update(buttonClicked1);
+  if(buttonClicked1==true){
+    if(bgc==#abcdef){
+      bgc=0;
+      tb0.pos(width/2,height*2/3);
+      tb1.pos(width/2,height/3);
+    } else {
+      bgc=#abcdef;
+      tb0.pos(width/2,height/3);
+      tb1.pos(width/2,height*2/3);
+    }
+  }
+}
+
+class TButton{
+  String buttonText;
+  // This is often frowned upon: lot of people recommend to put one declaration per line.
+  // This ease documentation of each field, and their initialization, and re-ordering if needed.
+  int buttonWidth, buttonHeight;
+  int buttonX,buttonY, bgCol,textCol,bgoCol,textoCol,bevSize,bevpSize,bgpCol,textpCol;
+  // That's the default value, so the initialization is unnecessary.
+  // Actually, it makes the field to be initialized twice: once at creation time,
+  // and once at static initializalition time (before the constructor call). Quite annoying when debugging...
+  // Default values are 0, false, null...
+  boolean buttonPressed=false;
+  boolean buttonClicked=false;
+  TButton(String bt, int x, int y, int fh , int bw, int bgc, int textc, int oc, int toc, int bv, int bvp, int pc, int tpc){
+    buttonText=bt;
+    buttonX=x;
+    buttonY=y;
+    buttonHeight=fh;
+    buttonWidth=bw;
+    bgCol=bgc;
+    bgoCol=oc;
+    textCol=textc;
+    bevSize=bv;
+    textoCol=toc;
+    bevpSize=bvp;
+    bgpCol=pc;
+    textpCol=tpc;
+  }
+  boolean update(boolean buttonClicked){
+    // Don't be afraid of splitting long lines
+    if((mouseX>buttonX-buttonWidth/2-bevSize)&&(mouseX<buttonX+buttonWidth/2+bevSize)&&(mouseY>buttonY-buttonHeight/2-bevSize)&&(mouseY<buttonY+buttonHeight/2+bevSize)){
+      if((buttonPressed==false)&&(mousePressed==true)){
+        buttonPressed=true;
+      }
+      // Same remark on booleans. And too many parentheses and not enough space: the eye is lost.
+      if((buttonPressed==true)&&(mousePressed==false)){
+        buttonPressed=false;
+        buttonClicked=true;
+      }
+      if((buttonPressed==true)&&(mousePressed==true)){
+        bevel(bgpCol,textpCol,bevpSize);
+      } else {bevel(bgoCol,textoCol,bevSize);}
+    } else {
+      buttonPressed=false;
+      bevel(bgCol,textCol,bevSize);
+      }
+    // You don't need parentheses there, return is a keyword, not a function call.
+    return(buttonClicked);
+    } // Beware of indentation!
+  // This method is used only inside the class. You should make it private, so it won't be called from outside.
+  // And by making the other methods public (even if not necessary in Processing), you make the official API clearer.
+  void bevel(int bcol, int tcol, int bevSize){
+    fill(bcol,255);
+    rect(buttonX,buttonY,buttonWidth+bevSize*2,buttonHeight+bevSize*2);
+    fill(tcol,255);
+    text(buttonText,buttonX,buttonY);
+    fill(bgCol);
+    if(bevSize>0){
+      fill(255,60);
+      // You could use some intermediary variables...
+      quad(buttonX-(buttonWidth/2)-bevSize, buttonY-buttonHeight/2-bevSize, buttonX+buttonWidth/2+bevSize, buttonY-buttonHeight/2-bevSize, buttonX+buttonWidth/2,buttonY-buttonHeight/2,buttonX-buttonWidth/2,buttonY-buttonHeight/2);
+      fill(255,26);
+      quad(buttonX+buttonWidth/2+bevSize, buttonY-buttonHeight/2-bevSize, buttonX+buttonWidth/2+bevSize, buttonY+buttonHeight/2+bevSize, buttonX+buttonWidth/2, buttonY+buttonHeight/2, buttonX+buttonWidth/2, buttonY-buttonHeight/2);
+      fill(0,60);
+      quad(buttonX+buttonWidth/2,buttonY+buttonHeight/2,buttonX+buttonWidth/2+bevSize,buttonY+buttonHeight/2+bevSize,buttonX-buttonWidth/2-bevSize,buttonY+buttonHeight/2+bevSize,buttonX-buttonWidth/2,buttonY+buttonHeight/2);
+      fill(0,26);
+      quad(buttonX-buttonWidth/2,buttonY+buttonHeight/2,buttonX-buttonWidth/2-bevSize,buttonY+buttonHeight/2+bevSize,buttonX-buttonWidth/2-bevSize,buttonY-buttonHeight/2-bevSize,buttonX-buttonWidth/2,buttonY-buttonHeight/2);
+    }
+  }
+  void pos(int mx,int my){
+    buttonX=mx;
+    buttonY=my;
+  }
+}
+
+void keyPressed() {
+  if (key == ESC) {
+    key = 0;
+  }
+}

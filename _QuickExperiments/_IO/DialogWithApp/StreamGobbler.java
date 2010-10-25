@@ -49,6 +49,7 @@ public class StreamGobbler extends Thread
   {
     if (m_is == null)
       throw new IllegalStateException("No input stream defined!");
+    System.out.println("Running stream gobbler " + m_type);
     InputStreamReader isr = new InputStreamReader(m_is);
     BufferedReader br = new BufferedReader(isr);
     String line = null;
@@ -77,6 +78,7 @@ public class StreamGobbler extends Thread
         }
       }
     }
+    System.out.println("End of stream gobbler " + m_type);
   }
 
   protected String HandleOutputLine(String line)

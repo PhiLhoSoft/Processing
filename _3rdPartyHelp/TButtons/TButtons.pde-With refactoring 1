@@ -1,0 +1,139 @@
+// http://forum.processing.org/topic/tbutton-v0-11
+// http://bwong.ca/TButton_01.html
+PFont fontA;
+TButton tb0 = new TButton("TButton v0.11", 149, 99, 28, 130,
+    #888888, #004400, #889977, #880000, 5, 3, #667755, #550000);
+TButton tb1 = new TButton("by Brian Wong", 149, 199, 28, 130,
+    #778899, #000066, #887799, #dddd00, 10, 7, #665577, #aaaa00);
+int bgc = 0;
+
+void setup() {
+  size(300, 300);
+  smooth();
+  rectMode(CENTER);
+  // Just to avoid creating the vlw file...
+  fontA = createFont("Calibri", 16);
+  textAlign(CENTER, CENTER);
+  textFont(fontA, 16);
+  noStroke();
+}
+
+void draw() {
+  background(bgc);
+  boolean buttonClicked0 = tb0.update(false);
+  if (buttonClicked0) {
+    if (bgc == 0) {
+      bgc = 255;
+      tb0.pos(width/2, height*2/3);
+      tb1.pos(width/2, height/3);
+    } else  {
+      bgc = 0;
+      tb0.pos(width/2, height/3);
+      tb1.pos(width/2, height*2/3);
+    }
+  }
+  boolean buttonClicked1 = tb1.update(false);
+  if (buttonClicked1) {
+    if (bgc == #abcdef) {
+      bgc = 0;
+      tb0.pos(width/2, height*2/3);
+      tb1.pos(width/2, height/3);
+    } else  {
+      bgc = #abcdef;
+      tb0.pos(width/2, height/3);
+      tb1.pos(width/2, height*2/3);
+    }
+  }
+}
+
+class TButton {
+  String buttonText;
+  int buttonWidth, buttonHeight;
+  int buttonX, buttonY, bgCol, textCol, bgoCol, textoCol, bevSize, bevpSize, bgpCol, textpCol;
+  boolean buttonPressed;
+  boolean buttonClicked;
+
+  private TButton(String bt, int x, int y, int fh, int bw, int bgc, int textc, int oc, int toc,
+      int bv, int bvp, int pc, int tpc) {
+    buttonText = bt;
+    buttonX = x;
+    buttonY = y;
+    buttonHeight = fh;
+    buttonWidth = bw;
+    bgCol = bgc;
+    bgoCol = oc;
+    textCol = textc;
+    bevSize = bv;
+    textoCol = toc;
+    bevpSize = bvp;
+    bgpCol = pc;
+    textpCol = tpc;
+  }
+
+  public boolean update(boolean buttonClicked) {
+    if (mouseX > buttonX - buttonWidth/2-bevSize &&
+        mouseX < buttonX + buttonWidth/2 + bevSize &&
+        mouseY > buttonY - buttonHeight/2-bevSize &&
+        mouseY < buttonY + buttonHeight/2 + bevSize) {
+      if (!buttonPressed && mousePressed) {
+        buttonPressed = true;
+      }
+      if (buttonPressed && !mousePressed) {
+        buttonPressed = false;
+        buttonClicked = true;
+      }
+      if (buttonPressed && mousePressed) {
+        bevel(bgpCol, textpCol, bevpSize);
+      } else {
+        bevel(bgoCol, textoCol, bevSize);
+      }
+    } else {
+      buttonPressed = false;
+      bevel(bgCol, textCol, bevSize);
+    }
+    return buttonClicked;
+  }
+
+  private void bevel(int bcol, int tcol, int bevSize) {
+    fill(bcol, 255);
+    rect(buttonX, buttonY, buttonWidth + bevSize * 2, buttonHeight + bevSize * 2);
+    fill(tcol, 255);
+    text(buttonText, buttonX, buttonY);
+    fill(bgCol);
+    if (bevSize > 0) {
+      int hbh = buttonHeight / 2; // Half Button Height...
+      int hbw = buttonWidth / 2; // Guess...
+      fill(255, 60);
+      quad(buttonX - hbw - bevSize, buttonY - hbh - bevSize,
+          buttonX + hbw + bevSize, buttonY - hbh - bevSize,
+          buttonX + hbw, buttonY - hbh,
+          buttonX - hbw, buttonY - hbh);
+      fill(255, 26);
+      quad(buttonX + hbw + bevSize, buttonY - hbh - bevSize,
+          buttonX + hbw + bevSize, buttonY + hbh + bevSize,
+          buttonX + hbw, buttonY + hbh,
+          buttonX + hbw, buttonY - hbh);
+      fill(0, 60);
+      quad(buttonX + hbw, buttonY + hbh,
+          buttonX + hbw + bevSize, buttonY + hbh + bevSize,
+          buttonX - hbw - bevSize, buttonY + hbh + bevSize,
+          buttonX - hbw, buttonY + hbh);
+      fill(0, 26);
+      quad(buttonX - hbw, buttonY + hbh,
+          buttonX - hbw - bevSize, buttonY + hbh + bevSize,
+          buttonX - hbw - bevSize, buttonY - hbh - bevSize,
+          buttonX - hbw, buttonY - hbh);
+    }
+  }
+
+  public void pos(int mx, int my) {
+    buttonX = mx;
+    buttonY = my;
+  }
+}
+
+void keyPressed() {
+  if (key == ESC) {
+    key = 0;
+  }
+}
