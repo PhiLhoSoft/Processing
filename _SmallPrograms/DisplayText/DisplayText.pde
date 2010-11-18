@@ -56,11 +56,11 @@ void setup()
       text(c, 10 + 18 * i, 340);
 
       text(c, pos1, 380);
-      pos1 += fTitle.width[c];
+      pos1 += fTitle.width(c);
 
       text(c, pos2, 420);
       pos2 += textWidth(c);
-      println(c + " " + textWidth(c) + " " + fTitle.width[c]);
+      println(c + " " + textWidth(c) + " " + fTitle.width(c));
     }
     noLoop();
   }

@@ -1,3 +1,6 @@
+import java.awt.event.*;
+import javax.swing.JOptionPane;
+
 int startingTime;
 final String format = "This timer has been running for {0,number,integer} days " +
     "{1,number,integer} hours {2,number,integer} minutes " +
@@ -7,7 +10,7 @@ final String prefix = "This timer has been running for ";
 void setup()
 {
   size(1000, 200);
-  PFont font= loadFont("AmericanTypewriter-24.vlw");
+  PFont font = loadFont("AmericanTypewriter-24.vlw");
   textFont(font);
   frameRate(1);
 
@@ -96,7 +99,9 @@ void ChangeWindowListener()
       public void windowClosing(WindowEvent we)
       {
           //println("Should be closing!");
+          noLoop();
           ConfirmExit();
+          loop();
       }
     });
   }
@@ -104,12 +109,12 @@ void ChangeWindowListener()
 
 void ConfirmExit()
 {
-  int exitChoice = javax.swing.JOptionPane.showConfirmDialog(frame, 
+  int exitChoice = JOptionPane.showConfirmDialog(frame, 
       "Are you sure you want to exit?",
       "Chronometer - Confirm exit",
-      javax.swing.JOptionPane.YES_NO_OPTION
+      JOptionPane.YES_NO_OPTION
   );
-  if (exitChoice == javax.swing.JOptionPane.YES_OPTION) 
+  if (exitChoice == JOptionPane.YES_OPTION) 
   {
     exit();
   }
