@@ -14,6 +14,7 @@ This program is distributed under the zlib/libpng license.
 Copyright (c) 2008 Philippe Lhoste / PhiLhoSoft
 */
 
+import java.awt.*;
 import java.awt.font.*;
 import java.awt.geom.*;
 
