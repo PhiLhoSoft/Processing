@@ -6,7 +6,6 @@ float a1 = 0, a2 = 0;
 
 void setup()
 {
-  background(0);
   size(400, 400);
 }
 
@@ -20,7 +19,7 @@ void draw()
     // EDIT: Looks like something is broken (in 1.0.5) as arc() doesn't accept negative
     // angles any longer?
     a1 += PI/11;
-    a2 -= PI/7;
+    a2 += PI/7; // Was -= (more interesting)
   }
   // Draw the circle base of the arc in green
   fill(#00FF00); ellipse(x, y, d, d);

@@ -24,6 +24,7 @@ void draw()
     stroke(#0000FF);
     text(emptyString, 100, 100, 200, 100);
   }
+  noFill();
   rect(100, 100, 200, 100);
 }
 
