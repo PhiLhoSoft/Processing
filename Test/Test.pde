@@ -31,8 +31,12 @@ void setup()
   PImage img = loadImage("D:/Dev/PhiLhoSoft/images/earth.png");
   PGraphics pdf = createGraphics(512, 512, PDF, "test.pdf");
   pdf.beginDraw();
-  pdf.background(#FFFF55);
+  pdf.background(#CCBB55);
   pdf.image(img, 10, 10);
+  pdf.textFont(fontR);
+  pdf.text("This is a regular font", 20, 200);
+  pdf.textFont(fontB);
+  pdf.text("This is a bold font", 20, 300);
   pdf.dispose();
   pdf.endDraw();
 
@@ -66,6 +70,6 @@ void draw()
   textFont(fontB);
   text("This is a bold font", 20, 200);
   println("Done");
-  exit();
+//  exit();
 }
 

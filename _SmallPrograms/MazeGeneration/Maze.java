@@ -9,7 +9,7 @@ public class Maze implements Iterable
   /** The number of columns. */
   private int colNb;
   /** The cells. */
-  Cell[][] cells;
+  Cell[] cells;
 
   public Maze(int rn, int cn)
   {
@@ -21,15 +21,18 @@ public class Maze implements Iterable
   public void InitMaze()
   {
     // Create the cells, make room for the borders
-    cells = new Cell[rowNb + 2][colNb + 2];
+    cells = new Cell[(rowNb + 2) * (colNb + 2)];
     for (int r = 0; r < rowNb+1; r++)
     {
       for (int c = 0; c < colNb+1; c++)
       {
-        cells[r][c] = new Cell(r, c);
+        cells[r * (colNb + 2) + c] = new Cell(this, r, c);
       }
     }
   }
+
+  public int getRowNb() { return rowNb; }
+  public int getColNb() { return colNb; }
 
   @Override public Iterator<Cell> iterator()
   {
@@ -66,7 +69,7 @@ public class Maze implements Iterable
     {
       try
       {
-        Cell next = cells[cursorRow][cursorCol++];
+        Cell next = cells[cursorRow * colNb + cursorCol++];
         if (cursorCol > colNb)
         {
           cursorCol = 0;
@@ -78,7 +81,7 @@ public class Maze implements Iterable
         }
         return next;
 	    }
-      catch (IndexOutOfBoundsException e)
+      catch (ArrayIndexOutOfBoundsException e)
       {
         throw new NoSuchElementException();
 	    }

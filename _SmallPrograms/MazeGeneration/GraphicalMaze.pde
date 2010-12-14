@@ -35,5 +35,9 @@ class GraphicalMaze
 
   public void display()
   {
+    for (Cell cell : maze.iterator())
+    {
+      CellDisplayer.display(cell);
+    }
   }
 }
