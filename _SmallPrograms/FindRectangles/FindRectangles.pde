@@ -1,3 +1,5 @@
+import java.awt.Rectangle;
+
 PImage rects;
 ArrayList foundRectangles = new ArrayList();
 int MARGIN = 50;

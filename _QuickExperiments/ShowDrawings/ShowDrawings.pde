@@ -1,4 +1,4 @@
-int drawingPhase;
+int drawingPhase = 1;
 String message;
 
 void setup()
