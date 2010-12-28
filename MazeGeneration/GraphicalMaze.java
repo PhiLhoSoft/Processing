@@ -44,6 +44,37 @@ public class GraphicalMaze
     cellDisplayer.setWallDisplayer(wd);
   }
 
+  public int getTopLeftX(Cell cell)
+  {
+    return cell.getColumn() * cellSize;
+  }
+  public int getTopLeftY(Cell cell)
+  {
+    return cell.getRow() * cellSize;
+  }
+  public int getWallWidth(Wall wall)
+  {
+    if (wall.getKind() == Wall.TOP)
+    {
+      return cellSize;
+    }
+    else
+    {
+      return wallThickness;
+    }
+  }
+  public int getWallHeight(Wall wall)
+  {
+    if (wall.getKind() == Wall.TOP)
+    {
+      return wallThickness;
+    }
+    else
+    {
+      return cellSize;
+    }
+  }
+
   public void display()
   {
     for (Cell cell : maze)

@@ -22,15 +22,13 @@ public class ColoredCellDrawer implements CellDisplayer
     wallDisplayer = wd;
   }
 
-  //@Override
+//  @Override
   public void display(Cell cell)
   {
-    int x = cell.getColumn() * maze.getCellSize();
-    int y = cell.getRow() * maze.getCellSize();
-    int s = maze.getCellSize();
-    pa.fill(cell.isCellBorder() ? pa.color(255, 100, 100) : pa.color(100, 200, 255));
+    pa.fill(cell.isCellBorder() ? pa.color(255, 100, 100, 64) : pa.color(100, 200, 255, 64));
     pa.noStroke();
-    pa.rect(x, y, s, s);
+    pa.rect(maze.getTopLeftX(cell), maze.getTopLeftY(cell),
+        maze.getCellSize(), maze.getCellSize());
 
     wallDisplayer.display(cell, cell.getTopWall());
     wallDisplayer.display(cell, cell.getLeftWall());

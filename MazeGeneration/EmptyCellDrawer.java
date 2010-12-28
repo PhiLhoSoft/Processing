@@ -22,7 +22,7 @@ public class EmptyCellDrawer implements CellDisplayer
     wallDisplayer = wd;
   }
 
-  //@Override
+//  @Override
   public void display(Cell cell)
   {
     wallDisplayer.display(cell, cell.getTopWall());

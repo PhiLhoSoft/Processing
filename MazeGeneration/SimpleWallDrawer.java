@@ -15,7 +15,7 @@ public class SimpleWallDrawer implements WallDisplayer
     maze = m;
   }
 
-  //@Override
+//  @Override
   public void display(Cell cell, Wall wall)
   {
     if (wall == null)
@@ -23,23 +23,19 @@ public class SimpleWallDrawer implements WallDisplayer
     if (!wall.isUp())
       return; // Don't draw a down wall
 
-    int x = cell.getColumn() * maze.getCellSize();
-    int y = cell.getRow() * maze.getCellSize();
-    int w = 0;
-    int h = 0;
+    pa.fill(10, 0, 50);
+    pa.noStroke();
+    float wt = maze.getWallThickness();
     if (wall.getKind() == Wall.TOP)
     {
-      w = maze.getCellSize();
-      h = maze.getWallThickness();
+      pa.rect(maze.getTopLeftX(cell), maze.getTopLeftY(cell),
+          maze.getWallWidth(wall) + wt, maze.getWallHeight(wall));
     }
     else
     {
-      w = maze.getWallThickness();
-      h = maze.getCellSize();
+      pa.rect(maze.getTopLeftX(cell), maze.getTopLeftY(cell),
+          maze.getWallWidth(wall), maze.getWallHeight(wall));
     }
-    pa.fill(wall.getKind() == Wall.TOP ? pa.color(255, 200, 128) : pa.color(255, 255, 255));
-    pa.stroke(128, 128);
-    pa.rect(x, y, w, h);
   }
 }
 

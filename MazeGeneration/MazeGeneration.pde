@@ -18,7 +18,9 @@ Copyright (c) 2010 Philippe Lhoste / PhiLhoSoft
 final int MAZE_WIDTH = 16;
 final int MAZE_HEIGHT = 12;
 final int CELL_SIZE = 30;
-final int WALL_WIDTH = 5;
+final int WALL_WIDTH = 7;
+
+boolean bDebug = true;
 
 GraphicalMaze maze;
 
@@ -29,9 +31,16 @@ void setup()
   maze = new GraphicalMaze(MAZE_WIDTH, MAZE_HEIGHT);
   maze.setCellSize(CELL_SIZE);
   maze.setWallThickness(WALL_WIDTH);
-//~   maze.setCellDisplayer(new EmptyCellDrawer(this, maze));
-  maze.setCellDisplayer(new ColoredCellDrawer(this, maze));
-  maze.setWallDisplayer(new SimpleWallDrawer(this, maze));
+  if (bDebug)
+  {
+    maze.setCellDisplayer(new ColoredCellDrawer(this, maze));
+    maze.setWallDisplayer(new ColoredWallDrawer(this, maze));
+  }
+  else
+  {
+    maze.setCellDisplayer(new EmptyCellDrawer(this, maze));
+    maze.setWallDisplayer(new SimpleWallDrawer(this, maze));
+  }
 }
 
 void draw()
