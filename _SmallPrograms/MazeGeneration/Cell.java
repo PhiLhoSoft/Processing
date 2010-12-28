@@ -23,23 +23,41 @@ public class Cell
   {
     row = r;
     column = c;
-    if (r != 0 && c != 0 && c != m.getColNb())
+    if (r != 0 && c != 0 && c != m.getColNb()+1)
     {
-      topWall = new Wall(true);
+      topWall = new Wall(Wall.TOP);
     }
-    if (c != 0 && r != 0 && r != m.getRowNb())
+    if (c != 0 && r != 0 && r != m.getRowNb()+1)
     {
-      leftWall = new Wall(false);
+      leftWall = new Wall(Wall.LEFT);
     }
   }
 
   public boolean isCellBorder()
   {
-    return topWall != null && leftWall != null;
+    return topWall == null || leftWall == null;
+  }
+
+  public Wall getTopWall()
+  {
+    return topWall;
+  }
+  public Wall getLeftWall()
+  {
+    return leftWall;
+  }
+
+  public int getRow()
+  {
+    return row;
+  }
+  public int getColumn()
+  {
+    return column;
   }
 
   @Override public String toString()
   {
-    return "Cell (" + r + ", " + c + ") [" + topWall + "; " + leftWall + "]";
+    return "Cell (" + row + ", " + column + ") [" + topWall + "; " + leftWall + "]";
   }
 }

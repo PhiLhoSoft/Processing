@@ -5,5 +5,6 @@
  */
 public interface CellDisplayer
 {
-  void display();
+  void setWallDisplayer(WallDisplayer wd);
+  void display(Cell c);
 }

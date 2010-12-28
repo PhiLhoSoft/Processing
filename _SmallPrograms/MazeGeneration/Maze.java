@@ -1,20 +1,21 @@
 // Maze generation
 import java.util.Iterator;
+import java.util.NoSuchElementException;
 
 /** The rectangular maze. */
-public class Maze implements Iterable
+public class Maze implements Iterable<Cell>
 {
-  /** The number of rows. */
-  private int rowNb;
-  /** The number of columns. */
+  /** The number of visible columns. */
   private int colNb;
+  /** The number of visible rows. */
+  private int rowNb;
   /** The cells. */
   Cell[] cells;
 
-  public Maze(int rn, int cn)
+  public Maze(int cn, int rn)
   {
-    rowNb = rn;
     colNb = cn;
+    rowNb = rn;
     InitMaze();
   }
 
@@ -22,9 +23,9 @@ public class Maze implements Iterable
   {
     // Create the cells, make room for the borders
     cells = new Cell[(rowNb + 2) * (colNb + 2)];
-    for (int r = 0; r < rowNb+1; r++)
+    for (int r = 0; r <= rowNb+1; r++)
     {
-      for (int c = 0; c < colNb+1; c++)
+      for (int c = 0; c <= colNb+1; c++)
       {
         cells[r * (colNb + 2) + c] = new Cell(this, r, c);
       }
@@ -34,12 +35,15 @@ public class Maze implements Iterable
   public int getRowNb() { return rowNb; }
   public int getColNb() { return colNb; }
 
-  @Override public Iterator<Cell> iterator()
+// Processing seems to use a Java 1.5 compiler, not accepting override annotation for interface methods
+//  @Override 
+  public Iterator<Cell> iterator()
   {
     return new CellIterator();
   }
 
-  @Override public String toString()
+  @Override 
+  public String toString()
   {
     return "Maze (" + rowNb + ", " + colNb + ")";
   }
@@ -60,34 +64,37 @@ public class Maze implements Iterable
     {
     }
 
-    @Override public boolean hasNext()
+//    @Override 
+    public boolean hasNext()
     {
-      return cursor != rowNb * colNb;
+      return !bAtEnd;
     }
 
-    @Override public Cell next()
+//    @Override 
+    public Cell next() throws NoSuchElementException
     {
       try
       {
-        Cell next = cells[cursorRow * colNb + cursorCol++];
-        if (cursorCol > colNb)
+        Cell next = cells[cursorRow * (colNb + 2) + cursorCol++];
+        if (cursorCol > colNb + 1)
         {
           cursorCol = 0;
           cursorRow++;
-          if (cursorRow > rowNb)
+          if (cursorRow > rowNb + 1)
           {
             bAtEnd = true;
           }
         }
         return next;
-	    }
+      }
       catch (ArrayIndexOutOfBoundsException e)
       {
         throw new NoSuchElementException();
-	    }
+      }
     }
 
-    @Override public void remove()
+//    @Override 
+    public void remove()
     {
       throw new UnsupportedOperationException();
     }

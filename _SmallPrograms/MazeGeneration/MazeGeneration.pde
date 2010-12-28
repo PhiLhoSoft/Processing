@@ -15,20 +15,23 @@ Copyright (c) 2010 Philippe Lhoste / PhiLhoSoft
 */
 // Maze Generation
 
-final int MAZE_WIDTH = 50;
-final int MAZE_HEIGHT = 75;
-final int CELL_SIZE = 20;
-final int WALL_WIDTH = 3;
+final int MAZE_WIDTH = 16;
+final int MAZE_HEIGHT = 12;
+final int CELL_SIZE = 30;
+final int WALL_WIDTH = 5;
 
-GrapicalMaze maze;
+GraphicalMaze maze;
 
 void setup()
 {
   size(600, 600);
   smooth();
-  maze = new GrapicalMaze(MAZE_WIDTH, MAZE_HEIGHT);
+  maze = new GraphicalMaze(MAZE_WIDTH, MAZE_HEIGHT);
   maze.setCellSize(CELL_SIZE);
-  maze.setWallWidth(WALL_WIDTH);
+  maze.setWallThickness(WALL_WIDTH);
+//~   maze.setCellDisplayer(new EmptyCellDrawer(this, maze));
+  maze.setCellDisplayer(new ColoredCellDrawer(this, maze));
+  maze.setWallDisplayer(new SimpleWallDrawer(this, maze));
 }
 
 void draw()
@@ -36,3 +39,4 @@ void draw()
   background(255);
   maze.display();
 }
+

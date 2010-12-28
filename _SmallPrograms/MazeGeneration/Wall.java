@@ -3,33 +3,38 @@
 /** A generic simple wall of the maze. */
 public class Wall
 {
+  // An enum is a bit overkill here...
+  public static final int TOP = 1;
+  public static final int LEFT = 2;
+  /** A wall is either a top wall or a left wall. */
+  private int kind;
   /** State of wall. */
   private boolean bIsUp = true;
-  /** A wall is either a top wall or a left wall. */
-  private boolean bIsTop;
 
-  public Wall(boolean bTopWall)
+  public Wall(int kindOfWall)
   {
-    bIsTop = bTopWall;
+    assert kindOfWall == TOP || kindOfWall == LEFT;
+    kind = kindOfWall;
   }
 
-  public isUp()
+  public boolean isUp()
   {
     return bIsUp;
   }
 
-  public bringDown()
+  public void bringDown()
   {
     bIsUp = false;
   }
 
-  public isTop()
+  public int getKind()
   {
-    return bIsTop;
+    return kind;
   }
 
   @Override public String toString()
   {
-    return "Wall: T=" + bIsTop + " U=" + bIsUp;
+    return "Wall: K=" + (kind == TOP ? "TOP" : "LEFT") + " U=" + bIsUp;
   }
 }
+
