@@ -10,6 +10,8 @@ public class Wall
   private int kind;
   /** State of wall. */
   private boolean bIsUp = true;
+  /** Hard wall? If so, not to bring down in normal operations. */
+  private boolean bIsHard;
 
   public Wall(int kindOfWall)
   {
@@ -21,7 +23,6 @@ public class Wall
   {
     return bIsUp;
   }
-
   public void bringDown()
   {
     bIsUp = false;
@@ -31,10 +32,23 @@ public class Wall
   {
     return kind;
   }
+  public boolean isTop()
+  {
+    return kind == TOP;
+  }
+
+  public boolean isHard()
+  {
+    return bIsHard;
+  }
+  public void setAsHard()
+  {
+    bIsHard = true;
+  }
 
   @Override public String toString()
   {
-    return "Wall: K=" + (kind == TOP ? "TOP" : "LEFT") + " U=" + bIsUp;
+    return "Wall: " + (kind == TOP ? "TOP" : "LEFT") + (bIsUp ? " and up" : " and down");
   }
 }
 

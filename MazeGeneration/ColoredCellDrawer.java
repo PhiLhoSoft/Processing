@@ -25,7 +25,7 @@ public class ColoredCellDrawer implements CellDisplayer
 //  @Override
   public void display(Cell cell)
   {
-    pa.fill(cell.isCellBorder() ? pa.color(255, 100, 100, 64) : pa.color(100, 200, 255, 64));
+    pa.fill(cell.isBorderCell() ? pa.color(255, 100, 100, 64) : pa.color(100, 200, 255, 64));
     pa.noStroke();
     pa.rect(maze.getTopLeftX(cell), maze.getTopLeftY(cell),
         maze.getCellSize(), maze.getCellSize());

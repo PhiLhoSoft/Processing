@@ -27,7 +27,8 @@ public class Maze implements Iterable<Cell>
     {
       for (int c = 0; c <= colNb+1; c++)
       {
-        cells[r * (colNb + 2) + c] = new Cell(this, r, c);
+        Cell cell = new Cell(this, r, c);
+        cells[r * (colNb + 2) + c] = cell;
       }
     }
   }
@@ -36,13 +37,13 @@ public class Maze implements Iterable<Cell>
   public int getColNb() { return colNb; }
 
 // Processing seems to use a Java 1.5 compiler, not accepting override annotation for interface methods
-//  @Override 
+//  @Override
   public Iterator<Cell> iterator()
   {
     return new CellIterator();
   }
 
-  @Override 
+  @Override
   public String toString()
   {
     return "Maze (" + rowNb + ", " + colNb + ")";
@@ -64,13 +65,13 @@ public class Maze implements Iterable<Cell>
     {
     }
 
-//    @Override 
+//    @Override
     public boolean hasNext()
     {
       return !bAtEnd;
     }
 
-//    @Override 
+//    @Override
     public Cell next() throws NoSuchElementException
     {
       try
@@ -93,7 +94,7 @@ public class Maze implements Iterable<Cell>
       }
     }
 
-//    @Override 
+//    @Override
     public void remove()
     {
       throw new UnsupportedOperationException();

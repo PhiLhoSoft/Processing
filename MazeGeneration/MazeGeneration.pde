@@ -20,7 +20,7 @@ final int MAZE_HEIGHT = 12;
 final int CELL_SIZE = 30;
 final int WALL_WIDTH = 7;
 
-boolean bDebug = true;
+boolean bDebug = false;
 
 GraphicalMaze maze;
 

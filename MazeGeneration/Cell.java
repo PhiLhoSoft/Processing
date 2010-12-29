@@ -19,21 +19,29 @@ public class Cell
   /** Left wall. */
   private Wall leftWall;
 
-  public Cell(Maze m, int r, int c)
+  public Cell(Maze maze, int r, int c)
   {
     row = r;
     column = c;
-    if (r != 0 && c != 0 && c != m.getColNb()+1)
+    if (r != 0 && c != 0 && c != maze.getColNb()+1)
     {
       topWall = new Wall(Wall.TOP);
+      if (r == 1 || r == maze.getRowNb()+1)
+      {
+        topWall.setAsHard();
+      }
     }
-    if (c != 0 && r != 0 && r != m.getRowNb()+1)
+    if (c != 0 && r != 0 && r != maze.getRowNb()+1)
     {
       leftWall = new Wall(Wall.LEFT);
+      if (c == 1 || c == maze.getColNb()+1)
+      {
+        leftWall.setAsHard();
+      }
     }
   }
 
-  public boolean isCellBorder()
+  public boolean isBorderCell()
   {
     return topWall == null || leftWall == null;
   }

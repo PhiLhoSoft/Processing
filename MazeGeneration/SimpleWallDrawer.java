@@ -23,10 +23,17 @@ public class SimpleWallDrawer implements WallDisplayer
     if (!wall.isUp())
       return; // Don't draw a down wall
 
-    pa.fill(10, 0, 50);
+    if (wall.isHard())
+    {
+      pa.fill(10, 0, 50);
+    }
+    else
+    {
+      pa.fill(50, 20, 180);
+    }
     pa.noStroke();
     float wt = maze.getWallThickness();
-    if (wall.getKind() == Wall.TOP)
+    if (wall.isTop())
     {
       pa.rect(maze.getTopLeftX(cell), maze.getTopLeftY(cell),
           maze.getWallWidth(wall) + wt, maze.getWallHeight(wall));
