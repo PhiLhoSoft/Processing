@@ -23,11 +23,14 @@ final int WALL_WIDTH = 7;
 boolean bDebug = false;
 
 GraphicalMaze maze;
+CarveAlgorithm carver;
 
 void setup()
 {
   size(600, 600);
   smooth();
+  frameRate(15);
+
   maze = new GraphicalMaze(MAZE_WIDTH, MAZE_HEIGHT);
   maze.setCellSize(CELL_SIZE);
   maze.setWallThickness(WALL_WIDTH);
@@ -41,11 +44,18 @@ void setup()
     maze.setCellDisplayer(new EmptyCellDrawer(this, maze));
     maze.setWallDisplayer(new SimpleWallDrawer(this, maze));
   }
+  carver = new AlgoRecursiveBacktracker(maze.getMaze());
 }
 
 void draw()
 {
   background(255);
   maze.display();
+  if (!carver.carveMaze())
+  {
+    println("Done!");
+    maze.getMaze().carveEntries();
+    noLoop();
+  }
 }
 

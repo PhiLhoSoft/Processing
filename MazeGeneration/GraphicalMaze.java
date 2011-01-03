@@ -16,6 +16,10 @@ public class GraphicalMaze
   {
     maze = new Maze(cn, rn);
   }
+  public Maze getMaze()
+  {
+    return maze;
+  }
 
   public void setCellSize(int cs)
   {

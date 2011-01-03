@@ -18,25 +18,40 @@ public class Cell
   private Wall topWall;
   /** Left wall. */
   private Wall leftWall;
+  /** The maze the cell belongs to. Allows to access neighbor cells. */
+  private Maze maze;
+  /** An integer "state", whose value will depend on the algorithm (eg. virgin vs. visited) */
+  private int state;
+  // The base states
+  public static final int STATE_VIRGIN = 0;
+  public static final int STATE_BORDER = -1;
 
-  public Cell(Maze maze, int r, int c)
+  public Cell(Maze m, int r, int c)
   {
+    maze = m;
     row = r;
     column = c;
-    if (r != 0 && c != 0 && c != maze.getColNb()+1)
+    if (r == 0 || r == maze.getRowNb()+1 || c == 0 || c == maze.getColNb()+1)
     {
-      topWall = new Wall(Wall.TOP);
-      if (r == 1 || r == maze.getRowNb()+1)
-      {
-        topWall.setAsHard();
-      }
+      state = STATE_BORDER;
     }
-    if (c != 0 && r != 0 && r != maze.getRowNb()+1)
+    if (r != 0 && c != 0)
     {
-      leftWall = new Wall(Wall.LEFT);
-      if (c == 1 || c == maze.getColNb()+1)
+      if (c != maze.getColNb()+1)
       {
-        leftWall.setAsHard();
+        topWall = new Wall(Wall.TOP);
+        if (r == 1 || r == maze.getRowNb()+1)
+        {
+          topWall.setAsHard();
+        }
+      }
+      if (r != maze.getRowNb()+1)
+      {
+        leftWall = new Wall(Wall.LEFT);
+        if (c == 1 || c == maze.getColNb()+1)
+        {
+          leftWall.setAsHard();
+        }
       }
     }
   }
@@ -44,6 +59,23 @@ public class Cell
   public boolean isBorderCell()
   {
     return topWall == null || leftWall == null;
+  }
+
+  public Cell getLeftCell()
+  {
+    return maze.getCell(column-1, row);
+  }
+  public Cell getRightCell()
+  {
+    return maze.getCell(column+1, row);
+  }
+  public Cell getTopCell()
+  {
+    return maze.getCell(column, row-1);
+  }
+  public Cell getBottomCell()
+  {
+    return maze.getCell(column, row+1);
   }
 
   public Wall getTopWall()
@@ -54,6 +86,14 @@ public class Cell
   {
     return leftWall;
   }
+  public Wall getBottomWall()
+  {
+    return getBottomCell().getTopWall();
+  }
+  public Wall getRightWall()
+  {
+    return getRightCell().getLeftWall();
+  }
 
   public int getRow()
   {
@@ -62,6 +102,74 @@ public class Cell
   public int getColumn()
   {
     return column;
+  }
+
+  public int getState()
+  {
+    return state;
+  }
+  public void setState(int s)
+  {
+    state = s;
+  }
+
+  public Wall getRandomSoftWall()
+  {
+    Wall[] upWalls = new Wall[4];
+    int count = 0;
+    if (!topWall.isUpAndSoft())
+    {
+      upWalls[count++] = topWall;
+    }
+    if (!leftWall.isUpAndSoft())
+    {
+      upWalls[count++] = leftWall;
+    }
+    Wall bottomWall = getBottomWall();
+    if (!bottomWall.isUpAndSoft())
+    {
+      upWalls[count++] = bottomWall;
+    }
+    Wall rightWall = getRightWall();
+    if (!rightWall.isUpAndSoft())
+    {
+      upWalls[count++] = rightWall;
+    }
+    int n = Maze.getRandom(0, count-1);
+    return upWalls[n]; // Can be null
+  }
+
+  /**
+   * Get the wall between this cell and the given neighbor cell.
+   */
+  public Wall getWallWith(Cell neighbor)
+  {
+    if (row == neighbor.getRow())
+    {
+      // Cell is on left or on right
+      if (column == neighbor.getColumn()+1)
+      {
+        return leftWall;
+      }
+      if (column == neighbor.getColumn()-1)
+      {
+        return neighbor.getLeftWall();
+      }
+    }
+    else if (column == neighbor.getColumn())
+    {
+      // Cell is on top or on bottom
+      if (row == neighbor.getRow()+1)
+      {
+        return topWall;
+      }
+      if (row == neighbor.getRow()-1)
+      {
+        return neighbor.getTopWall();
+      }
+    }
+    assert false : "Cell " + neighbor + " isn't a neighbor of cell " + this;
+    return null;
   }
 
   @Override public String toString()

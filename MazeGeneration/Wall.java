@@ -46,9 +46,14 @@ public class Wall
     bIsHard = true;
   }
 
+  public boolean isUpAndSoft()
+  {
+    return !bIsHard && bIsUp;
+  }
+
   @Override public String toString()
   {
-    return "Wall: " + (kind == TOP ? "TOP" : "LEFT") + (bIsUp ? " and up" : " and down");
+    return "Wall: " + (kind == TOP ? "TOP" : "LEFT") + (bIsUp ? " is up" : " is down");
   }
 }
 

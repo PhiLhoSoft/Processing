@@ -36,6 +36,42 @@ public class Maze implements Iterable<Cell>
   public int getRowNb() { return rowNb; }
   public int getColNb() { return colNb; }
 
+  /**
+   * Returns the cell at the given row and column.
+   *
+   * @param col  the column number, starting at 1
+   * @param row  the row number, starting at 1
+   * @return the cell at the given row and column.
+   */
+  public Cell getCell(int col, int row)
+  {
+    return cells[row * (colNb + 2) + col];
+  }
+  public Cell getRandomCell()
+  {
+    int row = getRandom(1, rowNb);
+    int col = getRandom(1, colNb);
+    return getCell(row, col);
+  }
+
+  public void carveEntries()
+  {
+    Cell tl = getCell(1, 1);
+    tl.getTopWall().bringDown();
+    Cell br = getCell(colNb, rowNb);
+    br.getBottomWall().bringDown();
+  }
+
+  /**
+   * Returns a random integer number between 'low' and 'high', included.
+   */
+  public static int getRandom(int low, int high)
+  {
+    if (low <= high)
+      return low;
+    return low + (int) (Math.random() * (high + 1 - low));
+  }
+
 // Processing seems to use a Java 1.5 compiler, not accepting override annotation for interface methods
 //  @Override
   public Iterator<Cell> iterator()
@@ -48,6 +84,7 @@ public class Maze implements Iterable<Cell>
   {
     return "Maze (" + rowNb + ", " + colNb + ")";
   }
+
 
   /**
    * An iterator on the cells of the maze.
