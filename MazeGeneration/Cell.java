@@ -135,7 +135,7 @@ public class Cell
     {
       upWalls[count++] = rightWall;
     }
-    int n = Maze.getRandom(0, count-1);
+    int n = maze.getRandom(0, count-1);
     return upWalls[n]; // Can be null
   }
 

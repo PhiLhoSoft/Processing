@@ -17,8 +17,12 @@ public class AlgoRecursiveBacktracker implements CarveAlgorithm
     current = maze.getRandomCell();
   }
 
-  public boolean carveMaze()
+//  @Override
+  public void carveMaze()
   {
+    if (current == null)
+      return; // No more to draw
+      
     current.setState(VISITED);
     Cell neigh = getRandomVirginNeighbor(current);
     if (neigh != null)
@@ -32,7 +36,12 @@ public class AlgoRecursiveBacktracker implements CarveAlgorithm
     {
       current = stack.pollLast();
     }
-    return current != null;
+  }
+  
+//  @Override
+  public boolean isFinished()
+  {
+    return current == null;
   }
 
   private Cell getRandomVirginNeighbor(Cell cell)
@@ -60,7 +69,7 @@ public class AlgoRecursiveBacktracker implements CarveAlgorithm
     {
       unvisitedCell[count++] = c;
     }
-    int n = Maze.getRandom(0, count-1);
+    int n = maze.getRandom(0, count-1);
     return unvisitedCell[n]; // Can be null
   }
 }

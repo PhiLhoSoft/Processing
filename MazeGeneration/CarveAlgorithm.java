@@ -6,5 +6,7 @@
 public interface CarveAlgorithm
 {
   /** One step in the carving process. Returns false if it is the last step. */
-  boolean carveMaze();
+  void carveMaze();
+  /** Returns true if the maze is completely carved. */
+  boolean isFinished();
 }

@@ -15,8 +15,8 @@ Copyright (c) 2010 Philippe Lhoste / PhiLhoSoft
 */
 // Maze Generation
 
-final int MAZE_WIDTH = 16;
-final int MAZE_HEIGHT = 12;
+final int MAZE_WIDTH = 32;
+final int MAZE_HEIGHT = 24;
 final int CELL_SIZE = 30;
 final int WALL_WIDTH = 7;
 
@@ -27,9 +27,9 @@ CarveAlgorithm carver;
 
 void setup()
 {
-  size(600, 600);
+  size(1100, 800);
   smooth();
-  frameRate(15);
+//  frameRate(15);
 
   maze = new GraphicalMaze(MAZE_WIDTH, MAZE_HEIGHT);
   maze.setCellSize(CELL_SIZE);
@@ -51,11 +51,14 @@ void draw()
 {
   background(255);
   maze.display();
-  if (!carver.carveMaze())
+  if (!carver.isFinished())
   {
-    println("Done!");
-    maze.getMaze().carveEntries();
-    noLoop();
+    carver.carveMaze();
+    if (carver.isFinished())
+    {
+      println("Done!");
+      maze.getMaze().carveEntries();
+    }
   }
 }
 

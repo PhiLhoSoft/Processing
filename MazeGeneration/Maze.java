@@ -1,4 +1,5 @@
 // Maze generation
+import java.util.Random;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
 
@@ -11,6 +12,8 @@ public class Maze implements Iterable<Cell>
   private int rowNb;
   /** The cells. */
   Cell[] cells;
+  /** Random number generator. */
+  Random randy = new Random(System.nanoTime());
 
   public Maze(int cn, int rn)
   {
@@ -51,7 +54,7 @@ public class Maze implements Iterable<Cell>
   {
     int row = getRandom(1, rowNb);
     int col = getRandom(1, colNb);
-    return getCell(row, col);
+    return getCell(col, row);
   }
 
   public void carveEntries()
@@ -65,11 +68,11 @@ public class Maze implements Iterable<Cell>
   /**
    * Returns a random integer number between 'low' and 'high', included.
    */
-  public static int getRandom(int low, int high)
+  public int getRandom(int low, int high)
   {
-    if (low <= high)
+    if (low >= high)
       return low;
-    return low + (int) (Math.random() * (high + 1 - low));
+    return low + randy.nextInt(high + 1 - low);
   }
 
 // Processing seems to use a Java 1.5 compiler, not accepting override annotation for interface methods
