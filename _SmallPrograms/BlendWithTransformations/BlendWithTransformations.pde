@@ -277,7 +277,7 @@ void ShowBlendChoices()
     posY += CHOICE_SPACING;
   }
   textFont(fontHelp);
-  String help = "b=activate blend; c=clear;\nDraw:\n  i=inverted;\n  r=reflected;\n  s=shifted";
+  String help = "b=activate blend; c=clear;\nDraw:\n  i=inverted;\n  r=reflected;\n  s=shifted;\n  t=rotated";
   text(help, CHOICE_L / 2, posY);
 }
 
