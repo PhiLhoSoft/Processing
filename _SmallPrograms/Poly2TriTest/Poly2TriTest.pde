@@ -15,7 +15,6 @@ import org.poly2tri.geometry.polygon.*;
 import org.poly2tri.*;
 
 boolean bShowTriangulation;
-//~ ArrayList<TriangulationPoint> points = new ArrayList<TriangulationPoint>();
 ArrayList<PolygonPoint> points = new ArrayList<PolygonPoint>();
 List<DelaunayTriangle> triangles;
 
@@ -44,7 +43,7 @@ void draw()
   beginShape();
   for (PolygonPoint point : points)
   {
-//~ println("ShPt: " + point);
+//println("ShPt: " + point);
     float x = point.getXf();
     float y = point.getYf();
     vertex(x, y);
@@ -54,19 +53,23 @@ void draw()
   if (bShowTriangulation && triangles != null)
   {
     stroke(#FF7777);
-    strokeWeight(1);
+    strokeWeight(2);
     for (DelaunayTriangle triangle : triangles)
     {
 //~ println("Tr: " + triangle);
+      float fx = 0, fy = 0;
       float px = 0, py = 0;
       boolean bFirst = true;
       for (TriangulationPoint point : triangle.points)
       {
+        if (!IsPointInShape(point))
+          continue;  // Skip this one
 //~ println("TrPt: " + point);
         float x = point.getXf();
         float y = point.getYf();
         if (bFirst)
         {
+          fx = x; fy = y;
           bFirst = false;
         }
         else
@@ -75,6 +78,7 @@ void draw()
         }
         px = x; py = y;
       }
+      line(px, py, fx, fy);
     }
   }
 }
@@ -97,6 +101,12 @@ void keyReleased()
     triangles = null;
     bShowTriangulation = false;
     break;
+  case 's':
+    SavePoints();
+    break;
+  case 'l':
+    LoadPoints();
+    break;
   }
 }
 
@@ -105,6 +115,10 @@ void DoTriangulation()
   if (points.size() < 3)
     return;
 
+/*
+  polygonSet.add(new Polygon(points));
+  Poly2Tri.triangulate(polygonSet);
+*/
   // Only DTSweep  algorithm available
   TriangulationContext<?> context = Poly2Tri.createContext(TriangulationAlgorithm.DTSweep);
 //~   context.addPoints(points);
@@ -118,3 +132,54 @@ void DoTriangulation()
 
   bShowTriangulation = true;
 }
+
+boolean IsPointInShape(TriangulationPoint point)
+{
+  float px = point.getXf();
+  float py = point.getYf();
+  for (PolygonPoint shapePoint : points)
+  {
+//println("ShPt: " + point);
+    float x = shapePoint.getXf();
+    float y = shapePoint.getYf();
+    if (px == x && py == y) // Shouldn't compare floats, but they are really ints
+      return true; // Found, stop here
+  }
+  return false;
+}
+
+void SavePoints()
+{
+  String savePath = selectOutput();
+  if (savePath == null)
+    return;  // Cancelled
+    
+  String[] lines = new String[points.size()];
+  int c = 0;
+  for (PolygonPoint point : points)
+  {
+//println("ShPt: " + point);
+    float x = point.getXf();
+    float y = point.getYf();
+    lines[c++] = x + "\t" + y;
+  }
+  saveStrings(savePath, lines);
+}
+
+void LoadPoints()
+{
+  String loadPath = selectInput();
+  if (loadPath == null)
+    return;  // Cancelled
+    
+  points.clear();
+  String[] lines = loadStrings(loadPath);
+  for (String line : lines)
+  {
+    String[] values = line.split("\t");
+    float x = float(values[0]);
+    float y = float(values[1]);
+    points.add(new PolygonPoint(x, y));
+  }
+}
+
