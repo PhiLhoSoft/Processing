@@ -16,7 +16,12 @@ import org.poly2tri.*;
 
 boolean bShowTriangulation;
 ArrayList<PolygonPoint> points = new ArrayList<PolygonPoint>();
+ArrayList<TriangulationPoint> steinerPoints = new ArrayList<TriangulationPoint>();
 List<DelaunayTriangle> triangles;
+
+final String REGULAR_POINT = "RP";
+final String STEINER_POINT = "SP";
+final String SEP = "\t";
 
 void setup()
 {
@@ -27,19 +32,21 @@ void setup()
 void draw()
 {
   background(128);
+
   fill(255);
   stroke(#0044FF);
-  strokeWeight(4);
   if (points.size() < 3)
   {
-    for (TriangulationPoint point : points)
+    for (PolygonPoint point : points)
     {
       float x = point.getXf();
       float y = point.getYf();
-      ellipse(x, y, 3, 3);
+      ellipse(x, y, 5, 5);
     }
     return;
   }
+
+  strokeWeight(4);
   beginShape();
   for (PolygonPoint point : points)
   {
@@ -49,6 +56,19 @@ void draw()
     vertex(x, y);
   }
   endShape(CLOSE);
+
+  fill(#AAFF00);
+  stroke(#888800);
+  strokeWeight(1);
+  if (steinerPoints.size() > 0)
+  {
+    for (TriangulationPoint point : steinerPoints)
+    {
+      float x = point.getXf();
+      float y = point.getYf();
+      ellipse(x, y, 7, 7);
+    }
+  }
 
   if (bShowTriangulation && triangles != null)
   {
@@ -84,7 +104,14 @@ void draw()
 void mousePressed()
 {
   PolygonPoint point = new PolygonPoint((float) mouseX, (float) mouseY);
-  points.add(point);
+  if (mouseButton == LEFT)
+  {
+    points.add(point);
+  }
+  else
+  {
+    steinerPoints.add(point);
+  }
 }
 
 void keyReleased()
@@ -96,6 +123,7 @@ void keyReleased()
     break;
   case 'c':
     points.clear();
+    steinerPoints.clear();
     triangles = null;
     bShowTriangulation = false;
     break;
@@ -114,6 +142,10 @@ void DoTriangulation()
     return;
 
   Polygon polygon = new Polygon(points);
+  if (steinerPoints.size() > 0)
+  {
+    polygon.addSteinerPoints(steinerPoints);
+  }
   Poly2Tri.triangulate(polygon);
 
   triangles = polygon.getTriangles();
@@ -127,15 +159,22 @@ void SavePoints()
   String savePath = selectOutput();
   if (savePath == null)
     return;  // Cancelled
-    
-  String[] lines = new String[points.size()];
+
+  String[] lines = new String[points.size() + steinerPoints.size()];
   int c = 0;
   for (PolygonPoint point : points)
   {
 //println("ShPt: " + point);
     float x = point.getXf();
     float y = point.getYf();
-    lines[c++] = x + "\t" + y;
+    lines[c++] = REGULAR_POINT + SEP + x + SEP + y;
+  }
+  for (TriangulationPoint point : steinerPoints)
+  {
+//println("ShPt: " + point);
+    float x = point.getXf();
+    float y = point.getYf();
+    lines[c++] = STEINER_POINT + SEP + x + SEP + y;
   }
   saveStrings(savePath, lines);
 }
@@ -145,15 +184,23 @@ void LoadPoints()
   String loadPath = selectInput();
   if (loadPath == null)
     return;  // Cancelled
-    
+
   points.clear();
   String[] lines = loadStrings(loadPath);
   for (String line : lines)
   {
-    String[] values = line.split("\t");
-    float x = float(values[0]);
-    float y = float(values[1]);
-    points.add(new PolygonPoint(x, y));
+    String[] values = line.split(SEP);
+    float x = float(values[1]);
+    float y = float(values[2]);
+    PolygonPoint point = new PolygonPoint(x, y);
+    if (values[0].equals(STEINER_POINT))
+    {
+      steinerPoints.add(point);
+    }
+    else
+    {
+      points.add(point);
+    }
   }
 }
 
