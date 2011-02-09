@@ -62,8 +62,6 @@ void draw()
       boolean bFirst = true;
       for (TriangulationPoint point : triangle.points)
       {
-        if (!IsPointInShape(point))
-          continue;  // Skip this one
 //~ println("TrPt: " + point);
         float x = point.getXf();
         float y = point.getYf();
@@ -115,37 +113,13 @@ void DoTriangulation()
   if (points.size() < 3)
     return;
 
-/*
-  polygonSet.add(new Polygon(points));
-  Poly2Tri.triangulate(polygonSet);
-*/
-  // Only DTSweep  algorithm available
-  TriangulationContext<?> context = Poly2Tri.createContext(TriangulationAlgorithm.DTSweep);
-//~   context.addPoints(points);
   Polygon polygon = new Polygon(points);
-  context.prepareTriangulation(polygon);
-  Poly2Tri.triangulate(context);
+  Poly2Tri.triangulate(polygon);
 
-  triangles = context.getTriangles();
+  triangles = polygon.getTriangles();
 //~ println("DT: " + triangles);
-//~   context.clear(); // Remove the points
 
   bShowTriangulation = true;
-}
-
-boolean IsPointInShape(TriangulationPoint point)
-{
-  float px = point.getXf();
-  float py = point.getYf();
-  for (PolygonPoint shapePoint : points)
-  {
-//println("ShPt: " + point);
-    float x = shapePoint.getXf();
-    float y = shapePoint.getYf();
-    if (px == x && py == y) // Shouldn't compare floats, but they are really ints
-      return true; // Found, stop here
-  }
-  return false;
 }
 
 void SavePoints()
