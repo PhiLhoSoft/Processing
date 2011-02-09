@@ -1,7 +1,22 @@
-// http://forum.processing.org/topic/delauney-diagram-inside-a-blob
-// http://code.google.com/p/poly2tri
-// http://code.google.com/p/poly2tri/source/browse/?repo=java#hg/repository/snapshots
-// http://www.slf4j.org/download.html
+/**
+Doing Delaunay diagram inside a polygon.
+
+by Philippe Lhoste <PhiLho(a)GMX.net> http://Phi.Lho.free.fr & http://PhiLho.deviantART.com
+
+http://forum.processing.org/topic/delauney-diagram-inside-a-blob
+http://code.google.com/p/poly2tri
+http://code.google.com/p/poly2tri/source/browse/?repo=java#hg/repository/snapshots
+http://www.slf4j.org/download.html
+*/
+/* File/Project history:
+ 1.01.000 -- 2011/02/09 (PL) -- Cleaned up version, with Steiner points.
+ 1.00.000 -- 2011/02/05 (PL) -- First version.
+*/
+/* Copyright notice: For details, see the following file:
+http://Phi.Lho.free.fr/softwares/PhiLhoSoft/PhiLhoSoftLicense.txt
+This program is distributed under the zlib/libpng license.
+Copyright (c) 2011 Philippe Lhoste / PhiLhoSoft
+*/
 
 import org.poly2tri.triangulation.point.*;
 import org.poly2tri.triangulation.util.*;
@@ -14,7 +29,6 @@ import org.poly2tri.triangulation.*;
 import org.poly2tri.geometry.polygon.*;
 import org.poly2tri.*;
 
-boolean bShowTriangulation;
 ArrayList<PolygonPoint> points = new ArrayList<PolygonPoint>();
 ArrayList<TriangulationPoint> steinerPoints = new ArrayList<TriangulationPoint>();
 List<DelaunayTriangle> triangles;
@@ -58,7 +72,7 @@ void draw()
   endShape(CLOSE);
 
   fill(#AAFF00);
-  stroke(#888800);
+  stroke(#44FF00);
   strokeWeight(1);
   if (steinerPoints.size() > 0)
   {
@@ -70,7 +84,7 @@ void draw()
     }
   }
 
-  if (bShowTriangulation && triangles != null)
+  if (triangles != null)
   {
     stroke(#FF7777);
     strokeWeight(2);
@@ -125,7 +139,6 @@ void keyReleased()
     points.clear();
     steinerPoints.clear();
     triangles = null;
-    bShowTriangulation = false;
     break;
   case 's':
     SavePoints();
@@ -150,8 +163,6 @@ void DoTriangulation()
 
   triangles = polygon.getTriangles();
 //~ println("DT: " + triangles);
-
-  bShowTriangulation = true;
 }
 
 void SavePoints()
