@@ -8,19 +8,19 @@ void setup()
   size(800, 800);
   smooth();
 
-  bot = loadShape("bot1.svg");
-  usa = loadShape("usa-wikipedia.svg");
+  bot = LoadSVG("bot1.svg");
+  usa = LoadSVG("usa-wikipedia.svg");
   // Chess shapes from Wikipedia
-  chessboard = loadShape("Chess_Board.svg");
+  chessboard = LoadSVG("Chess_Board.svg");
   // This one is modified so it doesn't appear all black
   // Change "black" to "#000000" and "white" to "#FFFFFF"
-  chessK = loadShape("Chess_klt45+.svg");
+  chessK = LoadSVG("Chess_klt45+.svg");
 //  PShape chessB = loadShape("Chess_blt45.svg"); // Uses unsupported arc
-  circles = loadShape("ThreeCircles.svg");
+  circles = LoadSVG("ThreeCircles.svg");
   // Custom personal shape
-  check = loadShape("Check.svg");
+  check = LoadSVG("Check.svg");
   // Idem, with gradient
-  checkGR = loadShape("Check_gr.svg");
+  checkGR = LoadSVG("Check_gr.svg");
 
   DrawEverything();
 }
@@ -52,6 +52,14 @@ void mousePressed()
     resetMatrix();
     DrawEverything();
   }
+}
+
+PShape LoadSVG(String name)
+{
+  File path = new File(sketchPath);
+  // data path common to several sketches
+  String dataPath = path.getParent() + File.separator + "data" + File.separator + name;
+  return loadShape(dataPath);
 }
 
 void DrawEverything()

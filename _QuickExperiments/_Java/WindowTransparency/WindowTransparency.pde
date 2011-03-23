@@ -22,8 +22,9 @@ void setup()
   size(900, 600);
   smooth();
   ellipseMode(CENTER);
-  com.sun.awt.AWTUtilities.setWindowOpaque(frame, false); 
-//  com.sun.awt.AWTUtilities.setWindowOpacity(frame, 0.1f);
+  com.sun.awt.AWTUtilities.setWindowOpaque(frame, false);
+  // Works well in Windows 7, less in Windows XP
+  com.sun.awt.AWTUtilities.setWindowOpacity(frame, 0.9f);
 
   loadPixels();
   for (int i = 0; i < pixels.length; i++) pixels[i] = 0;
