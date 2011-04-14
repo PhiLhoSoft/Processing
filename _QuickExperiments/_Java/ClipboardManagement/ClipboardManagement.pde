@@ -1,3 +1,5 @@
+import java.awt.image.BufferedImage;
+
 import java.awt.datatransfer.Clipboard;
 import java.awt.datatransfer.Transferable;
 import java.awt.datatransfer.DataFlavor;
@@ -9,21 +11,27 @@ PImage pastedImage;
 void setup()
 {
   size(800, 200);
-  PFont f = createFont("Arial", 12);
+  PFont f = createFont("Arial", 15);
   textFont(f);
 }
 
 void draw()
 {
   background(255);
+  for (int i = 0; i < width; i += 2)
+  {
+    float noiseVal = noise((i + mouseX) * 0.02, mouseY * 0.01);
+    stroke(noiseVal * 256);
+    line(i, 0, i, height);
+  }
   if (pastedImage != null)
   {
-    image(pastedImage, 5, 5);
+    image(pastedImage, mouseX, mouseY);
   }
   if (pastedMessage != null)
   {
     fill(#008800);
-    text(pastedMessage, 5, 15);
+    text(pastedMessage, mouseX, mouseY);
   }
 }
 
@@ -33,6 +41,10 @@ void keyPressed()
   {
     pastedMessage = GetTextFromClipboard();
     pastedImage = GetImageFromClipboard();
+  }
+  else if (key == 0x03) // Ctrl+c
+  {
+    SetImageToClipboard((BufferedImage) g.image);
   }
 }
 
@@ -77,3 +89,44 @@ Object GetFromClipboard(DataFlavor flavor)
   }
   return obj;
 }
+
+void SetImageToClipboard(Image image)
+{
+  ImageSelection imgSel = new ImageSelection(image);
+  java.awt.Toolkit.getDefaultToolkit().getSystemClipboard().setContents(imgSel, null);
+}
+
+// http://www.exampledepot.com/egs/java.awt.datatransfer/ToClipImg.html
+public static class ImageSelection implements Transferable 
+{
+  private Image m_image;
+
+  public ImageSelection(Image image) 
+  {
+    m_image = image;
+  }
+
+  // Returns supported flavors
+  public DataFlavor[] getTransferDataFlavors() 
+  {
+    return new DataFlavor[] { DataFlavor.imageFlavor };
+  }
+
+  // Returns true if flavor is supported
+  public boolean isDataFlavorSupported(DataFlavor flavor) 
+  {
+    return DataFlavor.imageFlavor.equals(flavor);
+  }
+
+  // Returns image
+  public Object getTransferData(DataFlavor flavor) throws UnsupportedFlavorException, IOException 
+  {
+    if (!isDataFlavorSupported(flavor)) 
+    {
+      throw new UnsupportedFlavorException(flavor);
+    }
+    return m_image;
+  }
+}
+
+
