@@ -5,8 +5,8 @@ class TestClass
 {
   String x = XMLConstants.DEFAULT_NS_PREFIX;
 
-void TestFun()
-{
-  Rectangle r = new Rectangle(5, 10, 15, 20);
-}
+  void TestFun()
+  {
+    Rectangle r = new Rectangle(5, 10, 15, 20);
+  }
 }
