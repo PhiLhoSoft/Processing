@@ -31,7 +31,8 @@ data/
 Processing-revisions-0135-20080208.txt
 application.*
 plKeyStore
+Tablet/code+
 _SmallPrograms/DelaunayTriangles/co-de
-_3rdPartyHelp/proto_type
-_3rdPartyHelp/TextInput
+_3rdPartyHelp/_WithData/proto_type
+_3rdPartyHelp/_WithData/TextInput
 Processing-revisions-1.0.5.txt

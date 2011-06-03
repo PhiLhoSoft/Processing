@@ -21,14 +21,13 @@ void setup() {
   for (int i=0; i<numNodesX; ++i) {
     for (int j=0; j<numNodesY; ++j) {
       // make a vector
-      PVector tmpPos = new PVector(i*xInc+xMargin, j*yInc+yMargin);
+      PVector pos = new PVector(i*xInc+xMargin, j*yInc+yMargin);
       // make a particle
-      Node newN = new Node(tmpPos);
+      Node newN = new Node(pos);
       nodeList[i][j] = newN;
     }
   }
 }
-
 
 void draw() {
   background(250);
@@ -42,20 +41,18 @@ void draw() {
   stroke(180);
   strokeWeight(1);
   noFill();
+  drawVerticalLine(0);
   for (int i=1; i<numNodesX; ++i) {
     for (int j=0; j<numNodesY; ++j) {
 
-        Node n1 = nodeList[i][j];
-        Node n2 = nodeList[i-1][j];
+      Node n1 = nodeList[i][j];
+      Node n2 = nodeList[i-1][j];
 
-        line(n1.pos.x, n1.pos.y, n2.pos.x, n2.pos.y);
+      drawLine(n1, n2);
 
     }
 
-	Node n1 = nodeList[i][0];
-	Node n2 = nodeList[i][numNodesY-1];
-
-	line(n1.pos.x, n1.pos.y, n2.pos.x, n2.pos.y);
+    drawVerticalLine(i);
   }
 }
 
@@ -73,3 +70,16 @@ class Node {
     point(pos.x, pos.y);
   }
 }
+
+// The following functions assume drawing parameters are already set
+
+void drawLine(Node n1, Node n2) {
+  line(n1.pos.x, n1.pos.y, n2.pos.x, n2.pos.y);
+}
+
+void drawVerticalLine(int n) {
+  Node n1 = nodeList[n][0];
+  Node n2 = nodeList[n][numNodesY-1];
+  drawLine(n1, n2);
+}
+
