@@ -1,0 +1,5 @@
+I consider all sketches using such contributed library belonging there because one needs the library to be able to run your code, even if the question isn't related directly to the library. It can be argued over, but I think if your question isn't dependent on the said library, you should make a simpler version without it, so that people can concentrate on the problem itself.
+
+Programming Questions section is to ask questions about a precise code.
+Generic questions, like "Is it possible to do this in Processing?" go to the General Questions section.
+When answered and some code is tried, you can then ask more precise questions in the Programming Questions section.
