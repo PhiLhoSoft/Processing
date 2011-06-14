@@ -16,10 +16,18 @@ void drawTwoBars(int pos)
   rect(0, pos * BAR_INTERVAL, SHORT_BAR_WIDTH, BAR_HEIGHT);
   rect(SHORT_BAR_WIDTH + SHORT_BAR_INTERVAL, pos * BAR_INTERVAL, SHORT_BAR_WIDTH, BAR_HEIGHT);
 }
-void drawYiKing(int posX, int posY, int[] types)
+void drawYiKing(int posX, int posY, int angle, int... types)
 {
+  // Save transformation state
   pushMatrix();
+  // Put in place
   translate(posX, posY);
+  // Do the rotation
+  rotate(radians(angle));
+  // Compensate to rotate relative to the center
+  translate(-LONG_BAR_WIDTH / 2, -(BAR_HEIGHT * 3 + BAR_INTERVAL * 2));
+
+  // Draw the figure
   for (int i = 0; i < types.length; i++)
   {
     if (types[i] == LONG_BAR)
@@ -31,20 +39,23 @@ void drawYiKing(int posX, int posY, int[] types)
       drawTwoBars(i);
     }
   }
+
+  // Restore transformation state
   popMatrix();
 }
 
 void setup()
 {
   size(600, 400);
+  background(255);
   fill(0);
   // first
-  drawYiKing(40, 40, new int[] { LONG_BAR, LONG_BAR, LONG_BAR });
+  drawYiKing(170, 120, -60, LONG_BAR, LONG_BAR, LONG_BAR);
   // second
-  drawYiKing(400, 40, new int[] { TWO_BARS, LONG_BAR, TWO_BARS });
+  drawYiKing(420, 120, 60, TWO_BARS, LONG_BAR, TWO_BARS);
   // third
-  drawYiKing(40, 300, new int[] { LONG_BAR, TWO_BARS, LONG_BAR });
+  drawYiKing(170, 280, -120, LONG_BAR, TWO_BARS, LONG_BAR);
   // fourth
-  drawYiKing(400, 300, new int[] { TWO_BARS, TWO_BARS, TWO_BARS });
+  drawYiKing(420, 280, 120, TWO_BARS, TWO_BARS, TWO_BARS);
 }
 
