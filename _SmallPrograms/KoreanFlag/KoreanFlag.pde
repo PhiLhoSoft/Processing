@@ -20,8 +20,9 @@ final int BOTTOM_LEFT = 3;
 final int BOTTOM_RIGHT = 4;
 
 final float baseAngle = atan(2.0 / 3.0);
+int flagCenterX, flagCenterY;
 
-final boolean DEBUG = true;
+final boolean DEBUG = false;
 
 // Draw bars with origin point at 0, 0 (top-left)
 void drawLongBar(int pos)
@@ -39,7 +40,6 @@ void drawTrigram(int trigramPosition, int... types)
   pushMatrix();
 
   float angle = 0;
-  int possX = 0, possY = 0;
   switch (trigramPosition)
   {
   case TOP_LEFT:
@@ -57,10 +57,8 @@ void drawTrigram(int trigramPosition, int... types)
   default:
     assert false : "Bad trigram position!";
   }
-//  println(degrees(angle));
-//  println(cos(angle) + " " + sin(angle));
-  final float posX = width  / 2 + DISTANCE_TRIGRAM_CENTER * sin(angle);
-  final float posY = height / 2 - DISTANCE_TRIGRAM_CENTER * cos(angle);
+  final float posX = flagCenterX + DISTANCE_TRIGRAM_CENTER * sin(angle);
+  final float posY = flagCenterY - DISTANCE_TRIGRAM_CENTER * cos(angle);
   if (DEBUG)
   {
     println(degrees(angle));
@@ -92,13 +90,47 @@ void drawTrigram(int trigramPosition, int... types)
   popMatrix();
 }
 
+void drawTaegeuk()
+{
+  color red = #C60C30; // Official red
+  color blue = #003478; // Official blue
+
+  pushMatrix();
+
+  translate(flagCenterX, flagCenterY);
+  rotate(baseAngle);
+
+  fill(blue);
+  arc(0, 0, BASE, BASE, 0, PI);
+  fill(red);
+  arc(0, 0, BASE, BASE, -PI, 0);
+  fill(blue);
+  ellipse(BASE / 4, 0, BASE / 2, BASE / 2);
+  fill(red);
+  ellipse(-BASE / 4, 0, BASE / 2, BASE / 2);
+
+  popMatrix();
+}
+
 void setup()
 {
-  size(3 * BASE, 2 * BASE); // Official ratio: 2 x 3
-  background(255);
+  size(800, 600);
+  background(100);
   smooth();
 
+  flagCenterX = width / 2;
+  flagCenterY = height / 2;
+
+  // Official ratio: 2 x 3
+  int flagWidth  = 3 * BASE;
+  int flagHeight = 2 * BASE;
+
+  int posX = flagCenterX - flagWidth / 2;
+  int posY = flagCenterY - flagHeight / 2;
+
   noStroke();
+  fill(255);
+  rect(posX, posY, flagWidth, flagHeight);
   fill(0);
   // first
   drawTrigram(TOP_LEFT, LONG_BAR, LONG_BAR, LONG_BAR);
@@ -108,37 +140,14 @@ void setup()
   drawTrigram(BOTTOM_LEFT, LONG_BAR, TWO_BARS, LONG_BAR);
   // fourth
   drawTrigram(BOTTOM_RIGHT, TWO_BARS, TWO_BARS, TWO_BARS);
-
-  int cx = width / 2;
-  int cy = height / 2;
-  int RADIUS = BASE / 2;
-  float A = BASE * 0.28; // Amount of control to approximate a circle
   // Center
-  fill(#C60C30); // Official red
-  ellipse(cx, cy, BASE, BASE);
-  fill(#003478); // Official blue
-  // Bézier curve
-  beginShape();
-  // Anchor point (left)
-  vertex(cx - BASE / 2, cy);
-  // Go from left, down to bottom
-  bezierVertex(
-      cx - RADIUS, cy + A,	// Downward control vector
-      cx - A, cy + RADIUS,	// Leftward control vector
-      cx, cy + RADIUS);         // Arrival
-  // Go from bottom, up to right
-  bezierVertex(
-      cx + A, cy + RADIUS,	// Rightward control vector
-      cx + RADIUS, cy + A,	// Downward control vector
-      cx + RADIUS, cy);
-
-  endShape();
+  drawTaegeuk();
 
   if (DEBUG)
   {
     stroke(#FF8800);
-    line(0, 0, width -1, height - 1);
-    line(0, height - 1, width -1, 0);
+    line(posX, posY, posX + flagWidth - 1, posY + flagHeight - 1);
+    line(posX,  posY + flagHeight - 1, posX + flagWidth - 1, posY);
   }
 }
 
