@@ -57,6 +57,8 @@ void drawTrigram(int trigramPosition, int... types)
   default:
     assert false : "Bad trigram position!";
   }
+//  println(degrees(angle));
+//  println(cos(angle) + " " + sin(angle));
   final float posX = width  / 2 + DISTANCE_TRIGRAM_CENTER * sin(angle);
   final float posY = height / 2 - DISTANCE_TRIGRAM_CENTER * cos(angle);
   if (DEBUG)
@@ -94,6 +96,7 @@ void setup()
 {
   size(3 * BASE, 2 * BASE); // Official ratio: 2 x 3
   background(255);
+  smooth();
 
   noStroke();
   fill(0);
@@ -106,11 +109,30 @@ void setup()
   // fourth
   drawTrigram(BOTTOM_RIGHT, TWO_BARS, TWO_BARS, TWO_BARS);
 
+  int cx = width / 2;
+  int cy = height / 2;
+  int RADIUS = BASE / 2;
+  float A = BASE * 0.28; // Amount of control to approximate a circle
   // Center
   fill(#C60C30); // Official red
-  ellipse(width / 2, height / 2, BASE, BASE);
+  ellipse(cx, cy, BASE, BASE);
   fill(#003478); // Official blue
   // Bézier curve
+  beginShape();
+  // Anchor point (left)
+  vertex(cx - BASE / 2, cy);
+  // Go from left, down to bottom
+  bezierVertex(
+      cx - RADIUS, cy + A,	// Downward control vector
+      cx - A, cy + RADIUS,	// Leftward control vector
+      cx, cy + RADIUS);         // Arrival
+  // Go from bottom, up to right
+  bezierVertex(
+      cx + A, cy + RADIUS,	// Rightward control vector
+      cx + RADIUS, cy + A,	// Downward control vector
+      cx + RADIUS, cy);
+
+  endShape();
 
   if (DEBUG)
   {

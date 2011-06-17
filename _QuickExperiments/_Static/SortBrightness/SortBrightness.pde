@@ -5,10 +5,10 @@ boolean bSortOnHue;
 
 void setup()
 {
-  size(500, 500);
+  size(1000, 800);
   noLoop();
 
-  niceImage = loadImage("D:/Dev/PhiLhoSoft/images/me.png");
+  niceImage = loadImage("G:/Images/backdrop.png");
 
   image(niceImage, 0, 0);
 }
@@ -37,7 +37,7 @@ void mousePressed()
     sortedImage.pixels[i] = colors[i].originalColor;
   }
   sortedImage.updatePixels();
-  image(sortedImage, 100, 100);
+  image(sortedImage, width - sortedImage.width, height - sortedImage.height);
   println("Done");
   redraw();
 }
@@ -60,10 +60,9 @@ class ColorComparator implements Comparator<SortableColor>
 {
   int compare(SortableColor sc1, SortableColor sc2)
   {
-    if (!bSortOnHue || sc1.brightness != sc2.brightness)
-      return int(sc1.brightness - sc2.brightness);
-    // Same brightness, we do a secondary sort on hue
-    return int(sc1.hue - sc2.hue);
+    if (bSortOnHue)
+      return int(sc1.hue - sc2.hue);
+    return int(sc1.brightness - sc2.brightness);
   }
 }
 

@@ -3,3 +3,6 @@ I consider all sketches using such contributed library belonging there because o
 Programming Questions section is to ask questions about a precise code.
 Generic questions, like "Is it possible to do this in Processing?" go to the General Questions section.
 When answered and some code is tried, you can then ask more precise questions in the Programming Questions section.
+
+Problems specific to a given system belongs more to Integration & Hardware. Although it is a bit arbitrary in this case, Serial is sitting half-way between software & hardware. But this is clearly not a direct issue with the library itself.
+I also tend to move here topics about exported sketches (as, again, it doesn't seem to be a programming issue).
