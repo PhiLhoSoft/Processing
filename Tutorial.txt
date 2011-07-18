@@ -37,3 +37,4 @@ GeomVector v = new GeomVector(10.0, 5.0, PI/4, 20.0);[/code]
 Note that the constructor has the same name as the class and no return value. I prefer to distinguish the parameters from the class fields, but they can have the same name. In this case, the init looks like: this.x = x; etc.
 You can add convenience functions to the class. A usual idiom, sometime overkill in Processing, is to declare the class fields as private (no direct access) and create accessors, ie. getters and setters, methods allowing to set and read the values in the class.
 Other possible methods for this class could be a translation method (pass a vector as parameter, move (recomputer) x and y along this vector) and a rotation one (pass an angle, change vector's angle accordingly), etc.
+

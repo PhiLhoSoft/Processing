@@ -6,3 +6,25 @@ When answered and some code is tried, you can then ask more precise questions in
 
 Problems specific to a given system belongs more to Integration & Hardware. Although it is a bit arbitrary in this case, Serial is sitting half-way between software & hardware. But this is clearly not a direct issue with the library itself.
 I also tend to move here topics about exported sketches (as, again, it doesn't seem to be a programming issue).
+
+
+
+Note that most of us cannot use your large code to try and experiment, as it needs a specific library, errr, lot of libraries, and a Twitter account, and a developer key, etc.
+Your problem somehow belongs to Programming Questions, but because of the nature of the code, it ends to Contributes Questions because of the issue above.
+I know it is time consuming, but perhaps you can make a smaller sketch with no dependencies (taking a few strings from an array for example), that can be run easily, and allowing to concentrate on the specific problem.
+
+BTW, try and make more descriptive (but terse) subject lines (think: "newspaper headline"). All messages in Xxx Questions sections of the forum ask for help, imagine searching a given thread in a forum made moslty of messages like "Help me", "Heeelp" or similar...
+
+
+
+https://forum.processing.org/topic/help-with-my-fish-game-thank-you
+Also, the deletion of such threads was motivated by the fact, as often in this case, that it is a school work, and the person was afraid to get a bad grade for asking for help here.
+I believe there are two kind of homework help asked here:
+- the bad way, pasting the homework text and asking (more or less directly) to do the job for them. Of course, this is usually declined, in favor of asking to do some work first, and offering help on the difficult parts;
+- the good way, as here, making most of the job, being blocked on some parts, asking for help on these parts.
+It seems legitimate here, it is similar to ask for help for co-students or co-workers, it is part of real life coding activity.
+Now, I recommend to ask the teacher first, perhaps giving similar explanations. If the teacher is firmly opposed to this practice... just don't do it, perhaps as to co-students. But I believe teachers shouldn't prohibit such behavior. But they can ask to see the threads...
+
+
+
+http://wiki.processing.org/w/How_do_I_display_a_message_for_a_few_seconds%3F
