@@ -9,7 +9,7 @@ void setup()
   smooth();
   
   PFont f = createFont("Arial", 48);
-  textFont(f, 48);
+  textFont(f);
 
   ball = new Ball(20, 50, -4, 3, 24, #002277);
 }
@@ -20,8 +20,9 @@ void draw()
   if (bDisplayMessage)
   {
     fill(#FFAA88);
-    text("You got it!", 50, height / 2);
-    if (millis() - startTime > DISPLAY_DURATION) {
+    text("You got it!", 150, height / 2);
+    if (millis() - startTime > DISPLAY_DURATION) 
+    {
       bDisplayMessage = false;
     }
   }
