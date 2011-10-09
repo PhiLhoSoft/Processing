@@ -1,6 +1,6 @@
 PImage imgC, imgBW;
 // Size of transparency area around the mouse
-int HALF_HOLE_SIZE = 7;
+int HALF_HOLE_SIZE = 20;
 // Change to true to avoid restoring opacity (ie. paint with background image)
 boolean bPersist = false;
 
@@ -8,9 +8,9 @@ void setup()
 {
   size(300, 400);
   // Load a color image
-  imgC = loadImage("D:/_PhiLhoSoft/images/me.jpg");
+  imgC = loadImage("H:/PhiLhoSoft/images/me.jpg");
   // Load a black & white image (the same)
-  imgBW = loadImage("D:/_PhiLhoSoft/images/me_BW.jpg");
+  imgBW = loadImage("H:/PhiLhoSoft/images/me_BW.jpg");
   // Indicate we need transparency on this image
   imgBW.format = ARGB;
   noStroke();
@@ -45,6 +45,7 @@ void ChangePixels(int x, int y, boolean bMakeOpaque)
   {
     for (int j = y - HALF_HOLE_SIZE; j <= y + HALF_HOLE_SIZE; j++)
     {
+      if (dist(i, j, x, y) > HALF_HOLE_SIZE) continue;
       if (bMakeOpaque)
       {
         imgBW.pixels[i + j * imgBW.width] |= 0xFF000000;
