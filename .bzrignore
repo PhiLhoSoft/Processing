@@ -28,6 +28,7 @@ tools/
 applet*/
 data/
 
+ConnectionInformation.properties
 Processing-revisions-0135-20080208.txt
 application.*
 plKeyStore

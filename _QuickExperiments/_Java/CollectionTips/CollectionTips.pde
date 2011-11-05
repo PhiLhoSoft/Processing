@@ -4,7 +4,7 @@ String[] data = { "Processing", "is", "cool", "so", "is", "Java" };
 // But fast, use a simple wrapper, no copy of data
 List<String> al1 = Arrays.asList(data);
 
-// This one is flexible, but copy the data
+// This one is flexible, but copies the data
 ArrayList<String> al2 = new ArrayList<String>(al1); 
 
 // Similar to al2
