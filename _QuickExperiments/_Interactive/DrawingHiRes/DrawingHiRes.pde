@@ -1,16 +1,16 @@
-PGraphics drawingSurface;
 ArrayList<Stroke> strokes = new ArrayList<Stroke>();
 boolean bNewLine = true;
+final int scaleFactor = 4;
 
 void setup()
 {
   size(360, 480);
-  background(255);
   smooth();
 }
 
 void draw()
 {
+  background(255);
   if (mousePressed)
   {
     Stroke s; // Declare to the interface
@@ -30,12 +30,17 @@ void draw()
     bNewLine = true;
   }
 
+  drawOn(g);
+}
+
+void drawOn(PGraphics surface)
+{
   Stroke ps = null;
   for (Stroke s : strokes)
   {
     if (!s.startsNewLine())
     {
-      line(ps.getX(), ps.getY(), s.getX(), s.getY());
+      surface.line(ps.getX(), ps.getY(), s.getX(), s.getY());
     }
     // Else, don't draw a line from the previous stroke
 
@@ -44,6 +49,27 @@ void draw()
   }
 }
 
+void keyPressed()
+{
+  if (key == 's')
+  {
+    PGraphics drawingSurface = createGraphics(width * scaleFactor, height * scaleFactor, JAVA2D);
+  }
+  else if (key == 'u') // undo
+  {
+    for (int i = strokes.size() - 1; i >= 0; i--)
+    {
+      Stroke s = strokes.get(i);
+      strokes.remove(i);
+      if (s.startsNewLine())
+        break; // Found the start of the current line, we don't delete further
+    }
+  }
+}
+
+// The interface defines what methods MUST be implemented by the classes using it
+// If we define an array list storing Stroke, we can put in it anything implementing this interface,
+// and be confident we can use these methods on these objects.
 interface Stroke
 {
   /** @return true if we need to start a new, disconnected line from here. */
