@@ -1,3 +1,5 @@
+// https://forum.processing.org/topic/saveframe-in-high-resolution
+
 ArrayList<Stroke> strokes = new ArrayList<Stroke>();
 boolean bNewLine = true;
 final int scaleFactor = 4;
@@ -54,6 +56,13 @@ void keyPressed()
   if (key == 's')
   {
     PGraphics drawingSurface = createGraphics(width * scaleFactor, height * scaleFactor, JAVA2D);
+    drawingSurface.beginDraw();
+    drawingSurface.smooth();
+    drawingSurface.scale(scaleFactor);
+    drawOn(drawingSurface);
+    drawingSurface.endDraw();
+
+    drawingSurface.save("Big.png");
   }
   else if (key == 'u') // undo
   {
