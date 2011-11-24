@@ -12,8 +12,9 @@ public class SimpleProject extends PApplet
 	public void setup()
 	{
 		// Better give full path, or use selectOutput()
-		size(400, 400, PDF, "H:/Temp/filename.pdf");
+		size(400, 400, PDF, sketchPath + "/../output/filename.pdf");
 
+		println(sketchPath);
 //		File f = new File("bar");
 	}
 
