@@ -2,6 +2,15 @@ final int BALL_NB = 1000;
 final int MARGIN = 50;
 Ball[] balls = new Ball[BALL_NB];
 
+java.awt.Image back;
+
+public void paint(java.awt.Graphics g)
+{
+  java.awt.Graphics fg = frame.getGraphics();
+  fg.drawImage(back, 0, 0, null);
+  super.paint(g);
+}
+
 void setup()
 {
   size(800, 800);
@@ -14,6 +23,9 @@ void setup()
     color c = color(random(50, 150), random(100, 200), random(150, 255));
     balls[i] = new Ball(x, y, c);
   }
+  
+  PImage backImg = loadImage("G:/Images/backdrop.png");
+  back = backImg.getImage();
 }
 
 void draw()
