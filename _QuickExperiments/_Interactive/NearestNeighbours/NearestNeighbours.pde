@@ -1,3 +1,6 @@
+// Displays big and small circles.
+// If big ones are hovered, it shows the n closest small points around it.
+
 int PLAIN_NODE_NB = 100;
 int PLAIN_NODE_RADIUS = 8;
 int MASTER_NODE_NB = 7;
