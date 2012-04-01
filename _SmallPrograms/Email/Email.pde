@@ -22,11 +22,11 @@ void setup()
       params.getProperty("AuthUserName"),
       params.getProperty("AuthPassword"));
 
-  // Function to check mail
-  checkMail();
-
   // Function to send mail
   sendMail();
+
+  // Function to check mail
+  checkMail();
 
   exit();
 }

@@ -90,7 +90,7 @@ void sendMail()
     MimeMessage message = new MimeMessage(session);
 
     // Who is this message from
-    message.setFrom(new InternetAddress(params.getProperty("MessageFrom"), "Fake Example Account"));
+    message.setFrom(new InternetAddress(params.getProperty("MessageFrom"), params.getProperty("MessageFromFullName")));
 
     // Who is this message to (we could do fancier things like make a list or add CC's)
     message.setRecipients(
@@ -100,8 +100,8 @@ void sendMail()
     // message.addRecipient(Message.RecipientType.TO, new InternetAddress(toAddress));
 
     // Subject and body
-    message.setSubject("Hello World!");
-    message.setText("Wow, I finally did it!\nCool...");
+    message.setSubject("Processing can send mails");
+    message.setText("This is an interesting message\nrunning on several lines\n\n-- \nSignature");
 
     // We can do more here, set the date, the headers, etc.
     // For un-authenticated mail
