@@ -1,3 +1,5 @@
+// Illustration of http://wiki.processing.org/w/How_do_I_display_a_message_for_a_few_seconds%3F
+
 Ball ball;
 boolean bDisplayMessage;
 int startTime;

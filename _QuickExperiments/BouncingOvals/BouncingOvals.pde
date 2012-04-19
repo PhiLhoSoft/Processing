@@ -1,3 +1,4 @@
+// Oval balls with a direction, bouncing off the walls
 Ball ball1, ball2;
 
 void setup()

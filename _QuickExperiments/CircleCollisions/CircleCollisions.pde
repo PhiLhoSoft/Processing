@@ -1,15 +1,18 @@
+// Growing balls
+
 final int BALL_NB = 1000;
 final int MARGIN = 50;
 Ball[] balls = new Ball[BALL_NB];
 
-java.awt.Image back;
+// Failed experiment?
+//java.awt.Image back;
 
-public void paint(java.awt.Graphics g)
-{
-  java.awt.Graphics fg = frame.getGraphics();
-  fg.drawImage(back, 0, 0, null);
-  super.paint(g);
-}
+//public void paint(java.awt.Graphics g)
+//{
+//  java.awt.Graphics fg = frame.getGraphics();
+//  fg.drawImage(back, 0, 0, null);
+//  super.paint(g);
+//}
 
 void setup()
 {
@@ -24,8 +27,8 @@ void setup()
     balls[i] = new Ball(x, y, c);
   }
   
-  PImage backImg = loadImage("G:/Images/backdrop.png");
-  back = backImg.getImage();
+//  PImage backImg = loadImage("G:/Images/foret_0003_1024.jpg");
+//  back = backImg.getImage();
 }
 
 void draw()
@@ -59,8 +62,8 @@ void draw()
   }
   for (int i = 0; i < BALL_NB; i++)
   {
-    balls[i].Grow();
-    balls[i].Display();
+    balls[i].grow();
+    balls[i].display();
   }
 }
 
@@ -77,7 +80,7 @@ class Ball
     ballColor = c;
   }
 
-  void Grow()
+  void grow()
   {
     if (bCanGrow)
     {
@@ -85,7 +88,7 @@ class Ball
     }
   }
 
-  void Display()
+  void display()
   {
     noStroke();
     fill(ballColor);
