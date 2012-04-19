@@ -1,7 +1,7 @@
-// 
+// http://wiki.processing.org/w/From_several_variables_to_arrays,_from_several_arrays_to_classes
 
 // Ball handling
-final int BALL_NB = 10;
+final int BALL_NB = 5;
 // Positions
 float[] posX = new float[BALL_NB];
 float[] posY = new float[BALL_NB];
@@ -9,30 +9,23 @@ float[] posY = new float[BALL_NB];
 float[] speedX = new float[BALL_NB];
 float[] speedY = new float[BALL_NB];
 // Radius of the balls
-int[] radius = new int[BALL_NB];
+int[] radius = { 8, 16, 24, 32, 48 };
 // And the colors
-color[] ballColor = new color[BALL_NB];
+color[] ballColor = { #DDEE55, #AA44EE, #22BBAA, #0022FF, #00FF22 };
  
 void setup()
 {
   size(600, 400);
   smooth();
  
-  // Initialize the ball's data
-  posX[0] = 120;
-  posY[0] = 50;
-  speedX[0] = -2;
-  speedY[0] = 3;
-  radius[0] = 24;
-  ballColor[0] = #002277;
-
-  // Initialize the other ball's data
-  posX[1] = 220;
-  posY[1] = 150;
-  speedX[1] = 2;
-  speedY[1] = -3;
-  radius[1] = 32;
-  ballColor[1] = #007722;
+  // Initialize the balls' data
+  for (int i = 0; i < BALL_NB; i++)
+  {
+    posX[i] = random(radius[i], width - radius[i]);
+    posY[i] = random(radius[i], height - radius[i]);
+    speedX[i] = random(-7, 7);
+    speedY[i] = random(-7, 7);
+  }
 }
  
 void draw()
@@ -75,5 +68,8 @@ void displayBall(int n)
   noStroke();
   fill(ballColor[n]);
   ellipse(posX[n], posY[n], radius[n] * 2, radius[n] * 2);
+  fill(#FF0000);
+  text(str(n), posX[n], posY[n]);
 }
 
+void mousePressed() { noLoop(); }
