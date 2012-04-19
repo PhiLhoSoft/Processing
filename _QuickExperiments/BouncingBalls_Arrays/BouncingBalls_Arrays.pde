@@ -1,4 +1,4 @@
-// http://wiki.processing.org/w/From_several_variables_to_arrays,_from_several_arrays_to_classes
+// http://wiki.processing.org/w/From_several_variables_to_arrays
 
 // Ball handling
 final int BALL_NB = 5;
@@ -72,4 +72,6 @@ void displayBall(int n)
   text(str(n), posX[n], posY[n]);
 }
 
-void mousePressed() { noLoop(); }
+boolean bStopped;
+void mousePressed() { if (bStopped) loop(); else noLoop(); bStopped = !bStopped; }
+
