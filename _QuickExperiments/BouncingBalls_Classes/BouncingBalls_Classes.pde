@@ -25,41 +25,10 @@ void draw()
   for (int i = 0; i < BALL_NB; i++)
   {
     // Compute the new ball position
-    moveBall(i);
+    balls[i].moveBall();
     // And display it
-    displayBall(i);
+    balls[i].displayBall();
   }
-}
- 
-void moveBall(int n)
-{
-  // Move by the amount determined by the speed
-  balls[n].posX += balls[n].speedX;
-  // Check the horizontal position against the bounds of the sketch
-  if (balls[n].posX < balls[n].radius || balls[n].posX > width - balls[n].radius)
-  {
-    // We went out of the area, we invert the h. speed (moving in the opposite direction)
-    // and put back the ball inside the area
-    balls[n].speedX = -balls[n].speedX;
-    balls[n].posX += balls[n].speedX;
-  }
-  // Idem for the vertical speed/position
-  balls[n].posY += balls[n].speedY;
-  if (balls[n].posY < balls[n].radius || balls[n].posY > height - balls[n].radius)
-  {
-    balls[n].speedY = -balls[n].speedY;
-    balls[n].posY += balls[n].speedY;
-  }
-}
- 
-void displayBall(int n)
-{
-  // Simple filled circle
-  noStroke();
-  fill(balls[n].ballColor);
-  ellipse(balls[n].posX, balls[n].posY, balls[n].radius * 2, balls[n].radius * 2);
-  fill(#FF0000);
-  text(str(n), balls[n].posX, balls[n].posY);
 }
 
 boolean bStopped;
@@ -86,6 +55,35 @@ class Ball
     speedY = sy;
     radius = r;
     ballColor = c;
+  }
+ 
+  void moveBall()
+  {
+    // Move by the amount determined by the speed
+    posX += speedX;
+    // Check the horizontal position against the bounds of the sketch
+    if (posX < radius || posX > width - radius)
+    {
+      // We went out of the area, we invert the h. speed (moving in the opposite direction)
+      // and put back the ball inside the area
+      speedX = -speedX;
+      posX += speedX;
+    }
+    // Idem for the vertical speed/position
+    posY += speedY;
+    if (posY < radius || posY > height - radius)
+    {
+      speedY = -speedY;
+      posY += speedY;
+    }
+  }
+   
+  void displayBall()
+  {
+    // Simple filled circle
+    noStroke();
+    fill(ballColor);
+    ellipse(posX, posY, radius * 2, radius * 2);
   }
 }
 

@@ -7,40 +7,41 @@ class Bubble
   Bubble()
   {
     diam = random(80);
-    x = diam / 2 + random(width - diam);
+    x = random(diam / 2, width - diam / 2);
     y = height / 2;
   }    
   void draw() // Not the global draw!
   {
-    fill(132, 22, 88, 6);
+    fill(88, 22, 133, 6);
     ellipse(x, y, diam, diam);
   }
 }
  
-ArrayList bubbles;
+ArrayList<Bubble> bubbles = new ArrayList<Bubble>();
  
-void setup() {
+void setup() 
+{
   size(200, 100);
   background(255);
   smooth();
- 
-  bubbles = new ArrayList();
 }
  
-void draw() {
+void draw() 
+{
   background(255);
   if (frameCount % 4 == 0)
   {
+    // Add a new bubble every 4 frames
     bubbles.add(new Bubble());
   }
-  Iterator it = bubbles.iterator();
-  while (it.hasNext())
+  for (Bubble bubble : bubbles)
   {
-    Bubble b = (Bubble) it.next();
-    b.draw();
+    bubble.draw();
   }
-  if (bubbles.size() > 10 && frameCount % 4 == 0)
+  if (bubbles.size() > 10 && frameCount % 4 == 2)
   {
+    // Once we have enough bubbles, start removing them,
+    // removing the oldest one every 4 frames
     bubbles.remove(0);
   }
 } 
