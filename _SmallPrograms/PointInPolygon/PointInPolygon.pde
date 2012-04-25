@@ -1,8 +1,11 @@
+// Based on classical Paul Bourke geometry articles
 // http://paulbourke.net/geometry/lineline2d/
 // http://paulbourke.net/geometry/insidepoly/
 
-ArrayList<PVector> polygonPoints = new ArrayList<PVector>();
-ArrayList<PVector> holePoints = new ArrayList<PVector>();
+List<PVector> polygonPoints = new ArrayList<PVector>();
+List<PVector> holePoints = new ArrayList<PVector>();
+
+final color BG_COLOR = #DDEEFF;
 
 final String POLYGON_POINT = "PP";
 final String HOLE_POINT = "HP";
@@ -16,29 +19,28 @@ void setup()
 
 void draw()
 {
-  background(128);
+  background(BG_COLOR);
 
   fill(255);
   stroke(#0044FF);
-  if (polygonPoints.size() < 3)
-  {
-    for (PVector point : polygonPoints)
-    {
-      float x = point.x;
-      float y = point.y;
-      ellipse(x, y, 5, 5);
-    }
-    return;
-  }
-
   strokeWeight(4);
+
   beginShape();
   for (PVector point : polygonPoints)
   {
-//println("ShPt: " + point);
-    float x = point.x;
-    float y = point.y;
-    vertex(x, y);
+    vertex(point.x, point.y);
+  }
+  if (polygonPoints.size() > 2 && holePoints.size() > 0)
+  {
+    // Close shape
+    PVector firstPoint = polygonPoints.get(0);
+    vertex(firstPoint.x, firstPoint.y);
+    // Start the hole (works only in Java2D!)
+    breakShape();
+    for (PVector point : holePoints)
+    {
+      vertex(point.x, point.y);
+    }
   }
   endShape(CLOSE);
 }
