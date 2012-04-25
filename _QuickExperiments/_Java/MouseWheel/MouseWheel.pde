@@ -15,10 +15,16 @@ void setup()
   }); 
 }
  
+int lastFrame;
 void mouseWheel(int delta) 
 {
   println("Mouse has moved by " + delta + " units.");
-  hasMoved = true;
+  if (frameCount - lastFrame > 3) // You can ajust the number, higher to take in account slow scrolls
+  {
+    // We had a frame without mouse move, we can say it is a new event
+    hasMoved = true;
+  }
+  lastFrame = frameCount;
 }
  
 void draw() 
