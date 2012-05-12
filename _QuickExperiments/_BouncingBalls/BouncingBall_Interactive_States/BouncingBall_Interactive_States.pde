@@ -70,7 +70,7 @@ void draw()
  
 void mousePressed()
 {
-  // Check if we haven't started yet, and the click is within the button bounds
+  // Check if we haven't started yet, and if the click is within the button bounds
   if (!bStarted && isMouseOverPlayButton())
   {
     // Now, we can start!

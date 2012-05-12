@@ -1,6 +1,6 @@
 int w = 200;
 final static int INCR = 50;
-Insets insets;
+java.awt.Insets insets;
 
 void setup()
 {
@@ -37,7 +37,7 @@ void draw()
 
 void mousePressed()
 {
-  w = w + INCR;
+  w += INCR;
   // Change internal canvas size
   setSize(w, height);
   // width variable isn't updated yet, will be on draw()

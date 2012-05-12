@@ -47,7 +47,7 @@ char[] demoChars =
   // The 10 most frequently used kanji (according to kanjidic)
   0x65E5, 0x4E00, 0x4EBA, 0x56FD, 0x4F1A, 0x5E74, 0x5927, 0x5341, 0x4E8C, 0x672C,
   // Semi-randomly chosen chars
-  0x98DF, '\u9762', 0x96FB, 38588
+  0x98DF, 0x96FB, 38588, 0x9762 // Was '\u9762' but Processing 1.5.1 doesn't recognize this anymore
 };
 
 void draw()

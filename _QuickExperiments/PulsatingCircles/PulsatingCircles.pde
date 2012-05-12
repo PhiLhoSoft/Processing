@@ -1,3 +1,5 @@
+import processing.opengl.*;
+
 int radius1 = 5;
 int rMove1 = +1;
 int minRadius1 = 5, maxRadius1 = 100;
@@ -12,7 +14,7 @@ int yPos2 = 200;
 
 void setup()
 {
-  size(400, 400);
+  size(400, 400, OPENGL);
 //  frameRate(10);
 }
 
