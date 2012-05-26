@@ -54,7 +54,7 @@ void draw()
 
 void keyReleased()
 {
-  int number = int(key) - int('0');
+  int number = key - '0';
   if (number > 0)
   {
     println(number);
