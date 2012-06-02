@@ -10,7 +10,7 @@ void setup()
   noStroke();
   background(0);
 
-  PImage niceImage = loadImage("D:/_PhiLhoSoft/Processing/me.png");
+  PImage niceImage = loadImage("me.png");
   int niW  = niceImage.width;
   int niH = niceImage.height;
   int imgW = niW + 10;
