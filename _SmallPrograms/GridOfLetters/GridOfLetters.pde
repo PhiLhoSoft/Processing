@@ -6,6 +6,10 @@ Grid grid;
 
 int MARGIN = 10;
 
+Cell draggedCell;
+int dragX, dragY;
+boolean dragging;
+
 void setup()
 {
   size(800, 800);
@@ -21,6 +25,16 @@ void draw()
   background(255);
   
   grid.draw();
+  
+  if (dragging)
+  {
+    pushMatrix();
+    int col = grid.getPos(mouseX);
+    int row = grid.getPos(mouseY);
+    translate(mouseX - dragX, mouseY - dragY);
+    draggedCell.draw();
+    popMatrix();
+  }
 }
 
 void mousePressed()
@@ -32,6 +46,15 @@ void mousePressed()
     
   if (mouseButton == LEFT)
   {
+    if (!dragging)
+    {
+      dragging = true;
+      int col = grid.getPos(mouseX);
+      int row = grid.getPos(mouseY);
+      dragX = mouseX - grid.getCoord(col);
+      dragY = mouseY - grid.getCoord(row);
+      draggedCell = cell;
+    }
   }
   else // Right click
   {
@@ -47,5 +70,10 @@ void mousePressed()
     }
     loop();
   }
+}
+
+void mouseReleased()
+{
+  dragging = false;
 }
 

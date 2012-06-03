@@ -44,6 +44,7 @@ class Grid
 
   void draw()
   {
+    pushMatrix();
     // Take in account the margin and the initial translation
     translate(MARGIN - cellSize, MARGIN - cellSize);
     // To come back at the initial margin
@@ -69,6 +70,7 @@ class Grid
     }
     // Keep the push/pop number equals
     popMatrix();
+    popMatrix();
   }
   
   // Return the cell at the given pixel position
@@ -81,15 +83,23 @@ class Grid
       return null;
     }
     
-    posX -= MARGIN;
-    posY -= MARGIN;
-    int col = posX / cellSize;
-    int row = posY / cellSize;
+    int col = getPos(posX);
+    int row = getPos(posY);
     
     if (col >= size || row >= size)
       return null; // No cell there!
       
     return cells[row][col];
+  }
+  
+  int getPos(int coord)
+  {
+    return (coord - MARGIN) / cellSize;
+  }
+  
+  int getCoord(int pos)
+  {
+    return MARGIN + pos * cellSize;
   }
 }
 
