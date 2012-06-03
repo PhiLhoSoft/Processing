@@ -44,33 +44,26 @@ class Grid
 
   void draw()
   {
-    pushMatrix();
-    // Take in account the margin and the initial translation
-    translate(MARGIN - cellSize, MARGIN - cellSize);
-    // To come back at the initial margin
-    pushMatrix();
+    // Take in account the margin
+    int x = MARGIN;
+    int y = MARGIN;
     // Draw each row
     for (int row = 0; row < size; row++)
     {
-      // Go back to the left margin
-      popMatrix();
-      // Move one cell down
-      translate(0, cellSize);
-      // And memorize the start point of the row
-      pushMatrix();
       // For each column
       for (int col = 0; col < size; col++) // Starts at 1!
       {
-        // Move to the next column
-        translate(cellSize, 0);
         Cell c = cells[row][col];
         // And draw the cell there
-        c.draw();
+        c.draw(x, y);
+        // Move to the next column
+        x += cellSize;
       }
+      // Move one cell down
+      y += cellSize;
+      // And reset the column position
+      x = MARGIN;
     }
-    // Keep the push/pop number equals
-    popMatrix();
-    popMatrix();
   }
   
   // Return the cell at the given pixel position

@@ -33,29 +33,29 @@ class Cell
     letter = String.valueOf(c);
   }
   
-  void draw()
+  void draw(int x, int y)
   {
     // Draw the background and the border
     if (readOnly)
     {
-      fill(#FDFAFC);
+      fill(#FEFAFE);
     }
     else
     {
       fill(#FAFAFA);
     }
     stroke(#225577);
-    rect(0, 0, size, size);
+    rect(x, y, size, size);
     // Then the letter
     if (readOnly)
     {
-      fill(#228855);
+      fill(#448855);
     }
     else
     {
       fill(#227755);
     }
-    text(letter, size / 2, size / 2);
+    text(letter, x + size / 2, y + size / 2);
   }
 }
 

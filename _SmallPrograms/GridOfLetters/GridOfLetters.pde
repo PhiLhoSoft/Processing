@@ -28,12 +28,9 @@ void draw()
   
   if (dragging)
   {
-    pushMatrix();
     int col = grid.getPos(mouseX);
     int row = grid.getPos(mouseY);
-    translate(mouseX - dragX, mouseY - dragY);
-    draggedCell.draw();
-    popMatrix();
+    draggedCell.draw(mouseX - dragX, mouseY - dragY);
   }
 }
 
@@ -42,7 +39,6 @@ void mousePressed()
   Cell cell = grid.getCell(mouseX, mouseY);
   if (cell == null)
     return; // Invalid, ignore it
-  println(cell.letter + " " + cell.readOnly);
     
   if (mouseButton == LEFT)
   {
@@ -75,5 +71,14 @@ void mousePressed()
 void mouseReleased()
 {
   dragging = false;
+  // Find where the cell has been dropped
+  Cell cell = grid.getCell(mouseX, mouseY);
+  if (cell == null)
+    return; // Invalid, ignore it
+
+  if (cell.readOnly)
+    return; // Cannot be changed, ignore the drop
+    
+  cell.setLetter(draggedCell.letter.charAt(0));
 }
 
