@@ -4,79 +4,150 @@ int TANK_RIGHT;
 int TANK_TOP;
 int TANK_BOTTOM;
 int WATER_TOP;
- 
+
+
 Fish[] fishes; // For global variables, explicit longer names are better
- 
+
 class Fish { // Be consistent in your naming conventions!
   int x, y, w, h, dir, r, g, b;
   float speed, boost;
-  Bubble[] bub = new Bubble[5];
- 
-  Fish(int p1, int p2, int p3, int p4, int p5, int p6, int p7, int p8, float p9 ) {
- 
-    x = p1;
-    y = p2;
-    w = p3;
-    h = p4;
-    dir = p5;
-    r = p6;
-    b = p8;
-    speed = p9;
-    boost = 0; //initially zero
-    for (int i = 0; i < bub.length; i++) {
+  Bubble[] bubbles = new Bubble[5];
+
+  Fish() {
+    //generate random values
+    w = (int) random (20, 50);
+    h = (int)random(w-20, w);
+    dir = (int)(random(360));
+    x = (int)random(TANK_LEFT+w, TANK_RIGHT-w);
+    y = (int)random(WATER_TOP, TANK_BOTTOM-h/2);
+    r = (int)random(0, 256);
+    g = (int)random(0, 256);
+    b = (int)random(0, 256);
+    speed = random(3) + 3;
+    // boost remains at 0
+
+    for (int i = 0; i < bubbles.length; i++) {
       // posX and posY are relative to the fish's x and y
-      int posX = 0; // or int(random(-3, 3)); // Put a little randomness in the bubble positions
-      int posY = -2 - 5*i; // or -2 - int(5 * i * random(1, 2));
-      // this is a reference to the current fish
-      bub[i] = new Bubble(this, posX, posY, 5, 5);
+      int posX = int(random(-3, 3)); // Put a little randomness in the bubble positions
+      int posY = -2 - int(5 * i * random(1, 2));
+      bubbles[i] = new Bubble(posX, posY, 5, 5);
     }
   }
-}
- 
-class Bubble {
-  Fish f; // The fish producing the bubbles
-  int x, y, w, h;
-  int disp; // displacement
- 
-  Bubble(Fish bf, int b1, int b2, int b3, int b4) {
-    f = bf;
-    x = b1;
-    y = b2;
-    w = b3;
-    h = b4;
+
+  /* Updates the location of a given fish based on
+   the bouncing ball mechanics discussed in class
+  */
+  void move() { // Was moveFish()
+    x += (int)((speed+boost)*cos(radians(dir)));
+    y += (int)((speed+boost)*sin(radians(dir)));
+    boost *= 0.96;
+
+    if (x-w/2 <= TANK_LEFT) {
+      dir = (180-dir) % 360;
+      x = TANK_LEFT+w;
+    }
+    if (x+w/2 >= TANK_RIGHT) {
+      dir = (180-dir) % 360;
+      x = TANK_RIGHT - w;
+    }
+    if (y <= WATER_TOP) {
+      dir = -dir;
+      y = WATER_TOP;
+    }
+    if (y+h/2 >= TANK_BOTTOM) {
+      dir = -dir;
+      y = TANK_BOTTOM - h/2;
+    }
   }
- 
-  void draw() {
-    fill(0, 200, 220, 120); // Green-blue with transparency
-    int posX;
-    if (isFacingRight(f)) {
-      posX = f.x + f.w/2 + 5;
-    } 
+
+  void draw() { // Was drawFish()
+    stroke(0);
+    fill(r, g, b);
+    ellipse(x, y, w, h);
+
+    int tail;
+    if (isFacingRight()) {
+      tail = -w/2;
+
+      fill(255);
+      ellipse(x+w*0.25, y-h*0.25, 10, 10);
+      fill(0);
+      ellipse(x+w*0.25, y-h*0.25, 5, 5);
+    }
     else {
-      posX = f.x - f.w/2 - 5;
+      tail = w/2;
+      fill(255);
+      ellipse(x-w*0.25, y-h*0.25, 10, 10);
+      fill(0);
+      ellipse(x-w*0.25, y-h*0.25, 5, 5);
     }
- 
-    ellipse(posX + x, f.y + y + disp, w, h);
-    disp -= 1;
-    if (disp < -25) {
-      disp = 0; // Like a new bubble
-      // For a more realistic effect, shift the bubble positions in the array...
+    fill(r, g, b);
+    triangle(x+tail, y, x+2*tail, y+h/2, x+2*tail, y-h/2);
+    
+    // Don't forget to draw the bubbles!
+    for (Bubble bubble : bubbles) {
+      bubble.draw();
+    }
+  }
+
+  /* Turns the given fish away from the mouse, and gives it
+   a boost to its speed.
+   */
+  void scare() {
+    float tapDir = atan2(mouseY-y, mouseX-x);
+    dir = (int)(degrees(tapDir) + 180) % 360;
+    boost = speed;
+  }
+  
+  boolean isFacingRight() {
+    int adir = abs(dir);
+    return adir <= 90 || adir >= 270;
+  }
+
+  // I put this class inside the Fish one since it isn't used elsewhere.
+  // Thus, a bubble accesses the fish parameters without needing a reference to it.
+  class Bubble {
+    int bx, by, bw, bh; // But we need a means to distinguish the bubble's variables from the fish's one
+    int disp; // displacement
+
+    Bubble (int b1, int b2, int b3, int b4) {
+      bx = b1;
+      by = b2;
+      bw = b3;
+      bh = b4;
+    }
+
+    void draw() { // Was drawBubble()
+      fill(0, 200, 220, 120); // Green-blue with transparency
+      // Use x and y from Fish
+      int posX;
+      if (isFacingRight()) {
+        posX = x + w/2 + 5;
+      } else {
+        posX = x - w/2 - 5;
+      }
+      
+      ellipse(posX + bx, y + by + disp, bw, bh);
+      disp -= 1;
+      if (disp < -25) {
+        disp = 0; // Like a new bubble
+        // For a more realistic effect, shift the bubble positions in the array...
+      }
     }
   }
 }
- 
- 
+
 void setup() {
   size(800, 600); //feel free to change this, all the code will change relative to it
-//  frameRate(200);
+  frameRate(200);
   setConstants(); //initialize the tank size
   fishes = new Fish[10];
   for (int i = 0; i < fishes.length; i++) {
-    fishes[i] = makeFish();
+    fishes[i] = new Fish();
   }
 }
- 
- 
+
+
 /*The setConstants() method sets the size of the tank
  relative to the size of the canvas. If the canvas is
  too small the program exits with a warning message*/
@@ -91,18 +162,21 @@ void setConstants() {
   TANK_TOP = height - TANK_BOTTOM;
   WATER_TOP = TANK_TOP + int((TANK_BOTTOM-TANK_TOP)*.2);
 }
- 
+
 /*The draw method is the simulation loop of our program. It
  simply moves the fish, and then redraws the scene*/
 void draw() {
   drawBackground();
-  for (int i = 0; i < fishes.length; i++) {
-    moveFish(fishes[i]);
-    drawFish(fishes[i]);
+  // Shortcut for :
+  // for (int i = 0; i < fishes.length; i++) { Fish fish = fishes[i];
+  // Use whatever form you want
+  for (Fish fish : fishes) {
+    fish.move();
+    fish.draw();
   }
   drawForeground();
 }
- 
+
 /*mousePressed() is an event handler called by Processing whenever
  the user clicks the mouse. If the location of the mouse is within
  the bounds of the aquarium's front face, a simulation of tapping
@@ -114,107 +188,11 @@ void mousePressed() {
     noFill();
     stroke(255);
     ellipse(mouseX, mouseY, 25, 25);
- 
+
     for (Fish fish : fishes)
-      scareFish(fish);
+      fish.scare();
   }
 }
- 
-/*scareFish is a wrapper method to clean the repitition of
- code five times with different fish variables.
- It turns the given fish away from the mouse, and gives it
- a boost to it's speed.
- Parameters:
- Fish f - the fish to scare*/
-void scareFish(Fish f) {
-  float tapDir = atan2(mouseY-f.y, mouseX-f.x);
-  f.dir = (int)(degrees(tapDir) + 180) % 360;
-  f.boost = f.speed;
-}
- 
- 
- 
-/*The makeFish() method generates some random values, and then
- creates a fish object based on those values. 
- Returns:
- Fish - A fish object with randomized parameters*/
-Fish makeFish() {
-  //generate random values
-  int randw = (int) random (20, 50);
-  int randh = (int)random(randw-20, randw);
-  int randD = (int)(random(360)); 
-  int randx = (int)random(TANK_LEFT+randw, TANK_RIGHT-randw);
-
-  int randy = (int)random(WATER_TOP, TANK_BOTTOM-(randh/2));
-  int randr = (int)random(0, 256);
-  int randg = (int)random(0, 256);
-  int randb = (int)random(0, 256);
- 
-  float randSpeed = random(3) + 3;
-  //call the constructor, and return the Fish object it returns  
-  return new Fish(randx, randy, randw, randh, randD, randr, randg, randb, randSpeed);
-}
- 
-boolean isFacingRight(Fish f) {
-  int adir = abs(f.dir);
-  return adir <= 90 || adir >= 270;
-}
- 
-void moveFish(Fish f) {
- 
-  f.x = f.x + (int)((f.speed+f.boost)*cos(radians(f.dir)));
-  f.y = f.y + (int)((f.speed+f.boost)*sin(radians(f.dir)));
-  f.boost = f.boost*0.96;
- 
-  if (f.x-(f.w/2) <= TANK_LEFT) {
-    f.dir = (180-f.dir) % 360;
-    f.x = TANK_LEFT+f.w;
-  }
-  if (f.x+(f.w/2) >= TANK_RIGHT) {
-    f.dir = (180-f.dir) % 360;  
-    f.x = TANK_RIGHT - f.w;
-  }
-  if (f.y <= WATER_TOP) {
-    f.dir = -f.dir;
-    f.y=WATER_TOP;
-  }
-  if (f.y+(f.h/2) >= TANK_BOTTOM) {
-    f.dir = -f.dir;
-    f.y=TANK_BOTTOM - f.h/2;
-  }
-}
- 
- 
-void drawFish(Fish f) {
-  stroke(0);
-  fill(f.r, f.g, f.b);
-  ellipse(f.x, f.y, f.w, f.h);
- 
-  int tail;
-  if (isFacingRight(f)) { //right
-    tail = -(f.w/2);
- 
-    fill(255);
-    ellipse(f.x+(f.w*0.25), f.y-(f.h*0.25), 10, 10);
-    fill(0);
-    ellipse(f.x+(f.w*0.25), f.y-(f.h*0.25), 5, 5);
-  }
-  else {
-    tail = (f.w/2);
-    fill(255);
-    ellipse(f.x-(f.w*0.25), f.y-(f.h*0.25), 10, 10);
-    fill(0);
-    ellipse(f.x-(f.w*0.25), f.y-(f.h*0.25), 5, 5);
-  }
-  fill(f.r, f.g, f.b);
-  triangle(f.x+tail, f.y, (f.x+(2*tail)), (f.y+(f.h/2)), (f.x+(2*tail)), (f.y-(f.h/2)));
- 
-  for (Bubble bubble : f.bub) {
-    bubble.draw();
-  }
-}
-
-
 
 /*drawBackground() organizes any background drawing that must
  be done*/
