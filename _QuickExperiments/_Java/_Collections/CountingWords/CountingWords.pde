@@ -1,6 +1,6 @@
-String[] stopWordList = { "all", "and", "are", "as", "at", "be", "but", "by", "do", "done,", 
+String[] stopWordList = { "all", "and", "are", "as", "at", "be", "but", "by", "do", "done,",
   "for", "from", "he", "her", "him", "in", "is", "it", "of", "or", "our", "me", "my", "no", "not", "on",
-  "she", "so", "that", "the", "there", "they", "this", "to", "too", "you", "your" 
+  "she", "so", "that", "the", "there", "they", "this", "to", "too", "you", "your"
 }; // And so on...
 
 void setup()
@@ -41,50 +41,65 @@ class WordList
     {
       w = s;
     }
+
+    // Allows to get a human readable string out of the object
+    String toString()
+    {
+      return w + ": " + count;
+    }
   }
 
+  // List of words and their count, with unicity guarantee
   HashMap<String, Word> words = new HashMap<String, Word>();
+  // List of stop words, with quick check if a given string is part of this list
   HashSet<String> stopWords = new HashSet<String>();
 
   WordList()
   {
+    // Build the stop word structure
     stopWords.addAll(Arrays.asList(stopWordList));
+    // Simple check...
     println(stopWords);
   }
 
-  void add(String s)
+  // Add a word
+  void add(String w)
   {
-    if (s.length() < 2)
+    if (w.length() < 2)
       return; // Exclude 0 or 1 sized words
-    if (stopWords.contains(s))
+    if (stopWords.contains(w))
       return; // Exclude known stop words
-      
-    Word word = words.get(s);
+
+    Word word = words.get(w); // Get it from the list
     if (word == null) // Not found
     {
       // Create a new word
-      word = new Word(s);
-      words.put(s, word);
+      word = new Word(w);
+      words.put(w, word);
     }
     else
     {
-      word.count++; // Update it directly in the hash map
+      // Update it directly in the hash map
+      word.count++;
     }
- }
+  }
 
+  // Print out the list on the console
   void print()
   {
+    // List of the values
     Collection<Word> values = words.values();
     for (Word word : values)
     {
       // Print frequent words
       if (word.count > 1)
       {
-        println(word.w + ": " + word.count);
+        println(word); // Calls toString() automatically
       }
     }
   }
 
+  // Export the list to a file
   void export(String file)
   {
     Collection<Word> values = words.values();
@@ -95,11 +110,12 @@ class WordList
     {
       if (word.count > 1)
       {
-        allWordList[c++] = word.w + ": " + word.count;
+        allWordList[c++] = word.toString(); // Must call explicitly here
       }
     }
+    // Make a copy of the array, truncated to the real size
     String[] out = Arrays.copyOf(allWordList, c);
+    // and save it to the file
     saveStrings(file, out);
   }
 }
-

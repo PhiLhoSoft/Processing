@@ -26,7 +26,6 @@ study: 2
 who: 4
 more: 2
 when: 2
-be: 3
 philosophy: 2
 learn: 2
 comes: 2
