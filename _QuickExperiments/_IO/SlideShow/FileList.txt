@@ -1,0 +1,20 @@
+Name: map_with_transparency2.png
+Size: 12649
+Last Modified: 2012-06-16 12:03:12
+-----------------------
+Name: bloc_touches_h_2.gif
+Size: 4195
+Last Modified: 2004-10-08 10:39:50
+-----------------------
+Name: map_with_transparency2.gif
+Size: 4238
+Last Modified: 2012-06-16 12:03:12
+-----------------------
+Name: frog.jpg
+Size: 2064
+Last Modified: 2005-04-21 23:46:14
+-----------------------
+Name: Philippe-Lhoste.png
+Size: 143265
+Last Modified: 2007-07-05 10:43:22
+-----------------------

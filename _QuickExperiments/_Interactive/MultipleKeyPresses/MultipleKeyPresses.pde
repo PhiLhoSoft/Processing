@@ -15,31 +15,45 @@ void draw()
   background(255);
   fill(#55AAFF);
   ellipse(x, y, 20, 20);
-  if (kh) x--;
-  if (kl) x++;
-  if (kj) y++;
-  if (kk) y--;
-}
-
-boolean kh, kj, kk, kl;
-void keyPressed()
-{
-  switch (key)
+  if (kL) x--;
+  if (kR) x++;
+  if (kD) y++;
+  if (kU) y--;
+  if (kF)
   {
-    case 'h': kh = true; break;
-    case 'j': kj = true; break;
-    case 'k': kk = true; break;
-    case 'l': kl = true; break;
+    stroke(#FFAA88);
+    line(x, y, width / 2, height / 2);
   }
 }
+
+boolean kL, kD, kU, kR, kF;
+void keyPressed()
+{
+  if (key == CODED)
+  {
+    switch (keyCode)
+    {
+      case LEFT: kL = true; break;
+      case DOWN: kD = true; break;
+      case UP: kU = true; break;
+      case RIGHT: kR = true; break;
+      case CONTROL: kF = true; break;
+    }
+  }
+}
+
 void keyReleased()
 {
-  switch (key)
+  if (key == CODED)
   {
-    case 'h': kh = false; break;
-    case 'j': kj = false; break;
-    case 'k': kk = false; break;
-    case 'l': kl = false; break;
+    switch (keyCode)
+    {
+      case LEFT: kL = false; break;
+      case DOWN: kD = false; break;
+      case UP: kU = false; break;
+      case RIGHT: kR = false; break;
+      case CONTROL: kF = false; break;
+    }
   }
 }
 

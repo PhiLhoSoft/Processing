@@ -26,32 +26,32 @@ public class Logger
 
   public void log(String line)
   {
-    CreatePrintWriter();
-    PrintLN(line);
-    DestroyPrintWriter();
+    createPrintWriter();
+    printLN(line);
+    destroyPrintWriter();
   }
 
   public void log(String[] lines)
   {
-    CreatePrintWriter();
+    createPrintWriter();
     if (m_pw != null && lines != null)
     {
       for (int i = 0; i < lines.length; i++)
       {
-        PrintLN(lines[i]);
+        printLN(lines[i]);
       }
     }
-    DestroyPrintWriter();
+    destroyPrintWriter();
   }
 
   public void log(String errorMessage, Exception ex)
   {
-    CreatePrintWriter();
+    createPrintWriter();
     if (m_pw == null)
       return;
     if (ex == null)
     {
-      PrintLN(errorMessage);
+      printLN(errorMessage);
       return;
     }
     StackTraceElement[] ste = ex.getStackTrace();
@@ -63,11 +63,11 @@ public class Logger
           .append(ste[i].getMethodName()).append("(")
           .append(ste[i].getFileName()).append(":").append(ste[i].getLineNumber()).append(")\n");
     }
-    PrintLN(sb.toString());
-    DestroyPrintWriter();
+    printLN(sb.toString());
+    destroyPrintWriter();
   }
 
-  private void CreatePrintWriter()
+  private void createPrintWriter()
   {
     if (m_fileName != null)
     {
@@ -93,10 +93,10 @@ public class Logger
     }
   }
 
-  private void DestroyPrintWriter()
+  private void destroyPrintWriter()
   {
     // Don't close if using an OutputStream
-    // as it would close the stream, which is the responsibility
+    // as it would close the stream, which has the responsibility
     // of the logger user (and thus we avoid closing System.out, for example!).
     if (m_pw != null && m_fileName != null)
     {
@@ -105,7 +105,7 @@ public class Logger
     m_pw = null;
   }
 
-  private void PrintLN(String line)
+  private void printLN(String line)
   {
     if (m_pw == null)
       return;
