@@ -3,17 +3,20 @@ PImage niceImage;
 
 void setup()
 {
-  size(500, 800);
+  size(1000, 800);
   smooth();
   noLoop();
 
-  niceImage = loadImage("D:/_PhiLhoSoft/images/Globe.png");
+  niceImage = loadImage("H:/PhiLhoSoft/images/Globe.png");
   image(niceImage, 0, 0, niceImage.width, niceImage.height);
 
   // Dimension to image size
   //size(niceImage.width,  niceImage.height);
-  DrawTint(niceImage);
-  DrawGray(niceImage);
+//~   drawTint(niceImage);
+//~   drawGray(niceImage);
+  drawInverted(niceImage);
+  translate(niceImage.width, 0);
+  drawReflected(niceImage);
 
 /*
   // Display whole image
@@ -41,7 +44,7 @@ void setup()
 */
 }
 
-void DrawInverted(PImage img)
+void drawInverted(PImage img)
 {
   pushMatrix();
   translate(img.width, img.height * 2);
@@ -50,7 +53,7 @@ void DrawInverted(PImage img)
   popMatrix();
 }
 
-void DrawReflected(PImage img)
+void drawReflected(PImage img)
 {
   pushMatrix();
   translate(0, img.height);
@@ -59,7 +62,7 @@ void DrawReflected(PImage img)
   popMatrix();
 }
 
-void DrawGray(PImage img)
+void drawGray(PImage img)
 {
   PGraphics gr = createGraphics(img.width, img.height, P2D);
   gr.beginDraw();
@@ -75,7 +78,7 @@ void DrawGray(PImage img)
   popMatrix();
 }
 
-void DrawTint(PImage img)
+void drawTint(PImage img)
 {
   PGraphics gr = createGraphics(img.width, img.height, P2D);
   gr.beginDraw();

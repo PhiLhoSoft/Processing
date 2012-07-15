@@ -73,7 +73,7 @@ class WordAnalysis
   // Print out the list on the console
   void show()
   {
-    for (Word word : words) 
+    for (Word word : words)
     {
       print(word.toString());
       print(" ");
@@ -83,8 +83,8 @@ class WordAnalysis
   // Export the list to a file
   void export(String file)
   {
-    PrintWriter output = createWriter(file); 
-    for (Word word : words) 
+    PrintWriter output = createWriter(file);
+    for (Word word : words)
     {
       output.print(word.toString());
       output.print(" ");

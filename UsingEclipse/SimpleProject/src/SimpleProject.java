@@ -3,6 +3,8 @@
 import processing.core.PApplet;
 import processing.core.PImage;
 
+import processing.opengl.*;
+
 // Here, import processing.pdf.*; isn't needed
 
 @SuppressWarnings("serial") // The warning isn't important here
@@ -16,7 +18,7 @@ public class SimpleProject extends PApplet
 		// Better give full path, or use selectOutput()
 //		size(400, 400, PDF, sketchPath + "/../output/filename.pdf");
 //		size(1366, 768);
-		size(350, 403);
+		size(350, 403, OPENGL);
 
 		println(sketchPath);
 //		bg = loadImage("../data/smileBkg.png");

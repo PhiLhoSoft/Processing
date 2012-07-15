@@ -5,5 +5,12 @@
 	<classpathentry kind="lib" path="C:/Java/processing-1.5.1/modes/java/libraries/pdf/library/itext.jar"/>
 	<classpathentry kind="lib" path="C:/Java/processing-1.5.1/modes/java/libraries/pdf/library/pdf.jar"/>
 	<classpathentry kind="lib" path="C:/Java/processing-1.5.1/lib/core.jar"/>
+	<classpathentry kind="lib" path="C:/Java/processing-1.5.1/modes/java/libraries/opengl/library/gluegen-rt.jar"/>
+	<classpathentry kind="lib" path="C:/Java/processing-1.5.1/modes/java/libraries/opengl/library/jogl.jar">
+		<attributes>
+			<attribute name="org.eclipse.jdt.launching.CLASSPATH_ATTR_LIBRARY_PATH_ENTRY" value="C:/Java/processing-1.5.1/modes/java/libraries/opengl/library/windows32"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="C:/Java/processing-1.5.1/modes/java/libraries/opengl/library/opengl.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
