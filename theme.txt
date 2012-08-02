@@ -16,8 +16,7 @@ header.text.unselected.color = #ffffff
 header.text.font = Georgia,plain,14
 
 # GUI - CONSOLE
-console.font = Monospaced,plain,11
-console.font.macosx = Monaco,plain,10
+# Code and console font are handled by preferences, since size/etc is modifiable
 console.color = #AABBDD
 console.output.color = #333333
 console.error.color = #FF3000
@@ -29,7 +28,7 @@ buttons.status.color = #AAFFAA
 
 # GUI - MODE
 mode.button.bgcolor = #9ca6b0
-mode.button.font = SansSerif,plain,9
+mode.button.font = Georgia,plain,9
 mode.button.color = #4a545e
 
 # GUI - LINESTATUS
@@ -49,6 +48,7 @@ editor.linehighlight=true
 
 # caret blinking and caret color
 editor.caret.color = #0000FF
+editor.caret.blink=false
 
 # color to be used for background when 'external editor' enabled
 editor.external.bgcolor = #c8d2dc

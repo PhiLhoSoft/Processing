@@ -1,0 +1,17 @@
+G:\3rdPartyCode\Processing\processing\core\src\processing\data\XML.java
+<<<
+  public XML[] getChildren(String name) {
+    if (name.indexOf('/') != -1) {
+      return getChildrenRecursive(PApplet.split(name, '/'), 0);
+    }
+---
+  public XML[] getChildren(String name) {
+    if (name == null || name.length == 0) // Don't stop on bad input
+	  return null;
+    if (name.startsWith("/"))
+	  name = name.substring(1); // Skip initial slash
+    if (name.indexOf('/') != -1) {
+      return getChildrenRecursive(PApplet.split(name, '/'), 0);
+    }
+>>>
+Idem for getChild()

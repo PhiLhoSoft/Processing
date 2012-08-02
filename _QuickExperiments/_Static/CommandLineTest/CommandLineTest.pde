@@ -1,3 +1,4 @@
+// https://forum.processing.org/topic/using-an-application-written-in-processing-to-open-up-a-file
 // Based on http://wiki.processing.org/w/Setting_width/height_dynamically
 
 // Static to be accessed by main()
