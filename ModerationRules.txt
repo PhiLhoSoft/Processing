@@ -29,3 +29,58 @@ Now, I recommend to ask the teacher first, perhaps giving similar explanations. 
 
 
 http://wiki.processing.org/w/How_do_I_display_a_message_for_a_few_seconds%3F
+
+
+
+Request to be an Administrator
+
+I send this letter to a number of chosen Processing forum users (using the PM because Zoho doesn't allow to see the real e-mail addresses, even for administrators...). Sorry for making a generic letter...
+
+You have been chosen because of your activity on the forum. Not only you are often posting answers there, with the will to help people, but also you (probably) reported spam regularly.
+Presence, willing to help and to keep the forum "clean" are good criterions to be an administrator...
+
+- Why do we recruit several adminstrators?
+Currently, most of the spam is managed by two persons: Casey Reas and myself, Philippe Lhoste (PhiLho).
+Some other admins are busy elsewhere and help more sporadically.
+That's not a big amount of work, but with real work, other hobbies, family, sleep, etc., we cannot be present 24/24 7/7 on the forum, so some spam can remain unattended for 12 hours or more.
+Not to mention periods of time were we cannot connect, taken by other duties or even plain old holidays far from Internet!
+Having more administrators would allow a better continuous presence of people able to remove spam and attend the forum, whatever the occupations of each individual.
+
+- What are the advantages of this status?
+Concretely? None! Well, some, like the pleasure to delete spam yourself instead of just reporting it, and to keep the forum tidy.
+
+- What are the obligations of this status?
+Well, given the "advantages" we give, I would say... none too!
+Clearly, we don't ask you to go everyday on the forum. That's precisely the reason why we want several administrators! If you are too busy, or just don't feel like going there, no problem.
+Now, if you accept this status, it means you are willing to fight spam (and to manage/moderate messages), of course, when you visit the forum and see a need. Even if it is only from time to time, it helps already.
+
+- What an adminstrator must do?
+In short: delete spam, block spammers, moderate the forum.
+
+The way I do it: I generally inspect the Recent Topics list.
+I can often spot a spam from the subject itself, obviously off-topic (Olympics or movies live streams are commonplace these days) or using fragments of sentences. Spammers often send burst of messages in a short time, too.
+So I don't even spend time going to the topic, I directly click on the user name, to see their profile.
+When in doubt, I click on the first + to expand a post and check the content.
+Then I can delete all the message the spammer posted at once. I also check that there isn't any Response.
+Then I block the user. We chose to block instead of deleting them to keep track of them.
+Another task is to inspect the e-mail notifications of spam. Users often report obvious spam that I already deleted (main threads), but some answers to existing topics might come unnoticed, so these messages are helpful.
+Also I check the automated spam reports from Zoho: 9 times out of 10, these are false positives and must be marked as not being spam!
+
+Other administrator tasks (again, not mandatory):
+- Delete duplicate messages. Some are accidents (or because user posted in a wrong section and post again elsewhere), some are not.
+- Restore threads deleted by users. Not all of them, it is OK if it is deleted before they got an answer, but some threads had lot of responses and must be restored (generally when requested, as the Zoho list doesn't show if a topic had answers or not, alas).
+- Move messages obviously in the wrong section. I wrote some rules, but if you are in doubt, just leave the message where it is...
+
+That's most of it.
+
+If you are interested by this task, contact Casey Reas, he will grant you the administrator powers...
+
+Thanks for reading!
+
+
+amnon.owed
+calsign
+asimes
+quarks
+kooogy
+tfguy44

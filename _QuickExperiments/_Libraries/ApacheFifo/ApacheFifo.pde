@@ -1,38 +1,62 @@
-import org.apache.commons.collections.keyvalue.*;
-import org.apache.commons.collections.comparators.*;
-import org.apache.commons.collections.set.*;
-import org.apache.commons.collections.iterators.*;
 import org.apache.commons.collections.buffer.*;
-import org.apache.commons.collections.map.*;
-import org.apache.commons.collections.bag.*;
-import org.apache.commons.collections.list.*;
-import org.apache.commons.collections.bidimap.*;
-import org.apache.commons.collections.collection.*;
-import org.apache.commons.collections.*;
-import org.apache.commons.collections.functors.*;
 
-int SIZE = 2000;
-CircularFifoBuffer buffer = new CircularFifoBuffer(SIZE);
-Ball[] balls = new Ball[SIZE];
+boolean bUseFifo = true;
+boolean bDynamicArray = true;
+final int SIZE = 2000;
+CircularFifoBuffer buffer;
+Ball[] balls;
 
 void setup()
 {
-  size(800, 800);
-  for (int i = 0; i < SIZE; i++)
+  size(800, 800, P2D);
+  if (bUseFifo)
   {
-    Ball b = new Ball();
-    balls[i] = b;
+    buffer = new CircularFifoBuffer(SIZE);
+  }
+  else
+  {
+    balls = new Ball[SIZE];
+    for (int i = 0; i < SIZE; i++)
+    {
+      balls[i] = new Ball();
+    }
   }
 }
 
 void draw()
 {
   background(255);
-  for (int i = 0; i < SIZE; i++)
+  if (bUseFifo)
   {
-    Ball b = balls[i];
-    b.display();
+    for (int i = 0; i < SIZE / 20; i++)
+    {
+      Ball b = new Ball();
+      buffer.add(b);
+    }
+    for (Iterator it = buffer.iterator(); it.hasNext(); )
+    {
+      Ball b = (Ball) it.next();
+      b.display();
+    }
   }
+  else
+  {
+    if (bDynamicArray)
+    {
+    for (int i = 0; i < SIZE / 20; i++)
+    {
+      Ball b = new Ball();
+      balls[int(random(SIZE))] = b;
+    }
+    }
+    for (int i = 0; i < SIZE; i++)
+    {
+      Ball b = balls[i];
+      b.display();
+    }
+  }
+  fill(0);
+  text("FC: " + frameRate, 10, 20);
 }
 
 class Ball
