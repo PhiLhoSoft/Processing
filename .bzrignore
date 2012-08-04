@@ -23,7 +23,7 @@
 *.java+
 *.java-
 
-libraries/
+libraries/*
 tools/
 
 applet*/
