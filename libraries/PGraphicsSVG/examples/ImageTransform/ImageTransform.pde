@@ -1,62 +1,53 @@
 import org.philhosoft.processing.svg.PGraphicsSVG;
-import org.philhosoft.processing.svg.PGraphicsSVG.FileFormat;
 
-// PImage testing
+/*
+PImage testing, using various transformations.
+Simple transforms like translate, scale or rotate are used directly in the SVG, reusing the original image.
+Bitmap-based transforms, like filter or blend (or mask) can currently be done only in an off-screen
+PGraphics, that Batik will export as a new image.
+*/
+
 PImage niceImage;
+color bgColor = #AAFFDD;
 
 void setup()
 {
-  size(1000, 800, "org.philhosoft.processing.svg.PGraphicsSVG", "Globes.svg");
-  
-  PGraphicsSVG pg = (PGraphicsSVG) g;
-  pg.setUseInlineCSS(false); // default is true
-  pg.setFileFormat(FileFormat.INTERNAL);
-  
-  smooth();
+  // Also display
+  size(1200, 800);
   noLoop();
 
+  // Start the recording
+  beginRecord("org.philhosoft.processing.svg.PGraphicsSVG", "ImageTransform.svg");
+  smooth();
+  background(bgColor);
+
+  // 393x500
   niceImage = loadImage("Globe.png");
+  niceImage.resize(400, 400);
   image(niceImage, 0, 0, niceImage.width, niceImage.height);
 
-  // Dimension to image size
-  //size(niceImage.width,  niceImage.height);
-//~   drawTint(niceImage);
-//~   drawGray(niceImage);
-  drawInverted(niceImage);
-  translate(niceImage.width, 0);
+  translate(0, niceImage.height);
   drawReflected(niceImage);
+  translate(niceImage.width, 0);
+  drawInverted(niceImage);
 
-/*
-  // Display whole image
-  image(niceImage, 0, 0);
-  // Create a sub-image
-  int posX = int(niceImage.width * 0.2);
-  int posY = int(niceImage.height * 0.2);
-  int subWidth = int(niceImage.width * 0.6);
-  int subHeight = int(niceImage.height * 0.6);
+  translate(0, -niceImage.height);
+  drawTint(niceImage);
+  translate(niceImage.width, 0);
+  drawGray(niceImage);
+  translate(0, niceImage.height);
+  drawBlend(niceImage);
 
-  if (false)
-  {
-    PImage subImage = createImage(subWidth, subHeight, RGB);
-    subImage.copy(niceImage, posX, posY, subWidth, subHeight, 0, 0, subWidth, subHeight);
-    subImage.filter(INVERT);
-    image(subImage, posX, posY, subWidth, subHeight);
-  }
-  else
-  {
-    // Simpler
-    PImage subImage = get(posX, posY, subWidth, subHeight);
-    subImage.filter(INVERT);
-    set(posX, posY, subImage);
-  }
-*/
+  // End the recording
+  endRecord();
+  println("Done");
 }
 
 void drawInverted(PImage img)
 {
   pushMatrix();
-  translate(img.width, img.height * 2);
   rotate(PI);
+  translate(-img.width, -img.height);
   image(img, 0, 0, img.width, img.height);
   popMatrix();
 }
@@ -64,7 +55,6 @@ void drawInverted(PImage img)
 void drawReflected(PImage img)
 {
   pushMatrix();
-  translate(0, img.height);
   scale(1.00, -1.00);
   image(img, 0, -img.height, img.width, img.height);
   popMatrix();
@@ -72,31 +62,40 @@ void drawReflected(PImage img)
 
 void drawGray(PImage img)
 {
-  PGraphics gr = createGraphics(img.width, img.height, P2D);
+  PGraphics gr = createGraphics(img.width, img.height, JAVA2D);
   gr.beginDraw();
+  gr.background(bgColor);
   gr.image(img, 0, 0, img.width, img.height);
-  gr.resize(256, 256);
   gr.filter(GRAY);
   gr.filter(POSTERIZE, 4);
   gr.endDraw();
 
-  pushMatrix();
-  translate(0, img.height);
   image(gr, 0, 0);
-  popMatrix();
 }
 
 void drawTint(PImage img)
 {
-  PGraphics gr = createGraphics(img.width, img.height, P2D);
+  PGraphics gr = createGraphics(img.width, img.height, JAVA2D);
   gr.beginDraw();
+  gr.background(bgColor);
   gr.tint(255, 126);
   gr.image(img, 0, 0, img.width, img.height);
   gr.endDraw();
 
-  pushMatrix();
-  translate(0, img.height);
   image(gr, 0, 0);
-  popMatrix();
+}
+
+void drawBlend(PImage img)
+{
+  PGraphics gr = createGraphics(img.width, img.height, JAVA2D);
+  gr.beginDraw();
+  gr.background(bgColor);
+  gr.rotate(HALF_PI);
+  gr.translate(0, -img.height);
+  gr.image(img, 0, 0);
+  gr.blend(img, 0, 0, img.width, img.height, 0, 0, img.width, img.height, BLEND);
+  gr.endDraw();
+
+  image(gr, 0, 0);
 }
 

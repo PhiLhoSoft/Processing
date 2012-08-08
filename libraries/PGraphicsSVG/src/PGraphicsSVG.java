@@ -38,12 +38,14 @@ import org.apache.batik.svggen.SVGGeneratorContext;
 import org.apache.batik.svggen.ImageHandler;
 import org.apache.batik.svggen.GenericImageHandler;
 import org.apache.batik.svggen.CachedImageHandlerBase64Encoder;
-import org.apache.batik.svggen.ImageHandlerPNGEncoder;
-import org.apache.batik.svggen.ImageHandlerJPEGEncoder;
+import org.apache.batik.svggen.CachedImageHandlerPNGEncoder;
+import org.apache.batik.svggen.CachedImageHandlerJPEGEncoder;
 import org.apache.batik.dom.GenericDOMImplementation;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.DOMImplementation;
+import org.w3c.dom.Element;
+import org.w3c.dom.NodeList;
 
 import processing.core.PApplet;
 import processing.core.PImage;
@@ -59,7 +61,10 @@ public class PGraphicsSVG extends PGraphicsJava2D
 	/** OutputStream being written to. Created from file,
 	 * or with a provided OutputStream, eg. in save to Web. */
 	protected OutputStream output;
+	/** Avoid dispose() to write empty files. */
+	private boolean bHasDrawn;
 
+	private Document document;
 	private SVGGraphics2D svgG2D;
 
 	private boolean bUseInlineCSS = true; // We want to use CSS style attributes
@@ -107,6 +112,9 @@ PApplet.println("setPath " + path);
 	 */
 	public void setUseInlineCSS(boolean b)
 	{
+		if (bUseInlineCSS == b)
+			return;
+
 		bUseInlineCSS = b;
 
 		dispose();
@@ -114,13 +122,16 @@ PApplet.println("setPath " + path);
 	}
 
 	/**
-	 * @param ff  one of the FileFormat:<ul>
-	 *        <li>FileFormat.INTERNAL to embed the image in Base64 format in the SVG file (can make a big file!)
-	 *        <li>FileFormat.EXTERNAL_PNG to save them as PNG external file
-	 *        <li>FileFormat.EXTERNAL_JPEG to save them as Jpeg external file.</ul>
+	 * @param ff  one of the PGraphicsSVG.FileFormat:<ul>
+	 *        <li>PGraphicsSVG.FileFormat.INTERNAL to embed the image in Base64 format in the SVG file (can make a big file!)
+	 *        <li>PGraphicsSVG.FileFormat.EXTERNAL_PNG to save them as PNG external file
+	 *        <li>PGraphicsSVG.FileFormat.EXTERNAL_JPEG to save them as Jpeg external file.</ul>
 	 */
 	public void setFileFormat(FileFormat ff)
 	{
+		if (fileFormat == ff)
+			return;
+
 		fileFormat = ff;
 
 		dispose();
@@ -137,40 +148,17 @@ PApplet.println("setPath " + path);
 
 	public void beginDraw()
 	{
-PApplet.println("beginDraw");
-		try
-		{
-			if (file != null)
-			{
-				output = new BufferedOutputStream(new FileOutputStream(file), 16384);
-			}
-			else if (output == null)
-			{
-				throw new RuntimeException("PGraphicsSVG requires a path " +
-						"for the location of the output file.");
-			}
-		}
-		catch (IOException e)
-		{
-			e.printStackTrace();
-			throw new RuntimeException("Problem saving the SVG file.");
-		}
-
+//~ PApplet.println("beginDraw");
 		super.beginDraw();
 
-		// Also need to push the matrix since the matrix doesn't reset on each run
-		// http://dev.processing.org/bugs/show_bug.cgi?id=1227
-		pushMatrix();
+		bHasDrawn = true;
 	}
 
 	public void endDraw()
 	{
-PApplet.println("endDraw");
-		// Also need to pop the matrix since the matrix doesn't reset on each run
-		// http://dev.processing.org/bugs/show_bug.cgi?id=1227
-		popMatrix();
-
-		saveFile();
+//~ PApplet.println("endDraw");
+		// Don't call super.endDraw() (from PGraphicsJava2D) because it calls loadPixels.
+		// http://dev.processing.org/bugs/show_bug.cgi?id=1169
 	}
 
 	/**
@@ -212,7 +200,7 @@ PApplet.println("createGraphics");
         DOMImplementation domImpl = GenericDOMImplementation.getDOMImplementation();
 
         // Create an instance of org.w3c.dom.Document.
-        Document document = domImpl.createDocument("http://www.w3.org/2000/svg", "svg", null);
+        document = domImpl.createDocument("http://www.w3.org/2000/svg", "svg", null);
 
 PApplet.println("SVGGeneratorContext.createDefault " + document);
         // Create an instance of the SVG Generator.
@@ -241,38 +229,36 @@ PApplet.println("SVGGeneratorContext.createDefault " + document);
 PApplet.println("ImageHandler " + fileFormat);
 		try
 		{
+			GenericImageHandler ihandler = null;
 			switch (fileFormat)
 			{
 				case INTERNAL:
 				{
 					// Reuse our embedded base64-encoded image data.
-					GenericImageHandler ihandler = new CachedImageHandlerBase64Encoder();
-					ctx.setGenericImageHandler(ihandler);
+					ihandler = new CachedImageHandlerBase64Encoder();
 					break;
 				}
 				case EXTERNAL_PNG:
 				{
 					// Don't embed images, save to the pointed directory
-					String path = file.getParent();
-					ImageHandler ihandler = new ImageHandlerPNGEncoder(path, null);
-					ctx.setImageHandler(ihandler);
+					ihandler = new CachedImageHandlerPNGEncoder(getPath(), ".");
 					break;
 				}
 				case EXTERNAL_JPEG:
 				{
 					// Don't embed images, save to the pointed directory
-					String path = file.getParent();
-					ImageHandler ihandler = new ImageHandlerJPEGEncoder(path, null);
-					ctx.setImageHandler(ihandler);
+					ihandler = new CachedImageHandlerJPEGEncoder(getPath(), ".");
 					break;
 				}
 				default:
 					assert false : "Update this switch with the FileFormat enum!";
 			}
+			ctx.setGenericImageHandler(ihandler);
 		}
 		catch (org.apache.batik.svggen.SVGGraphics2DIOException e) // For EXTERNAL_XXX options
 		{
-			e.printStackTrace();
+			PApplet.println("PGraphicsSVG error: Cannot create image handler: " + e.getMessage());
+//			e.printStackTrace();
 			// Fall back to internal case
 			GenericImageHandler ihandler = new CachedImageHandlerBase64Encoder();
 			ctx.setGenericImageHandler(ihandler);
@@ -285,10 +271,54 @@ PApplet.println("SVGGraphics2D " + ctx);
 		return svgG2D;
 	}
 
+	private String getPath()
+	{
+		if (file != null)
+			return file.getParent();
+
+		return parent.sketchPath;
+	}
+
+	/** Throw away the current drawing. */
+	public void discard()
+	{
+PApplet.println("discard");
+		bHasDrawn = false;
+		dispose();
+
+		// Erase the current content of the document
+		Element root = svgG2D.getRoot();
+        NodeList children = root.getChildNodes();
+//~ PApplet.println(children);
+		if (children != null)
+		{
+			for (int i = 0; i < children.getLength(); i++)
+			{
+//~ PApplet.println("> " + children.item(i));
+				root.removeChild(children.item(i));
+			}
+		}
+ 	}
+
 	public void dispose()
 	{
 PApplet.println("dispose");
 		g2.dispose();
+
+		if (bHasDrawn)
+		{
+			save();
+		}
+		svgG2D.dispose();
+	}
+
+	/** Equivalent to endRecord and save to the given file name. */
+	public void endRecord(String filename)
+	{
+PApplet.println("save " + filename);
+		setPath(filename);
+		endDraw();
+		dispose(); // Save if has drawn
 	}
 
 	/**
@@ -299,20 +329,36 @@ PApplet.println("dispose");
 		return false;
 	}
 
-	protected void saveFile()
+	public boolean isRecording()
 	{
+		return false;
+	}
+
+	public void save()
+	{
+PApplet.println("save");
 		boolean success = false;
 
 		Writer out = null;
 		try
 		{
+			if (file != null)
+			{
+				output = new BufferedOutputStream(new FileOutputStream(file), 16384);
+			}
+			else if (output == null)
+			{
+				throw new RuntimeException("PGraphicsSVG requires a path " +
+						"for the location of the output file.");
+			}
 			out = new OutputStreamWriter(output, "UTF-8");
 			svgG2D.stream(out, bUseInlineCSS);
 			success = true;
 		}
 		catch (IOException e)
 		{
-			e.printStackTrace();
+			showIOException(e);
+//			e.printStackTrace();
 			success = false;
 		}
 		finally
@@ -325,19 +371,52 @@ PApplet.println("dispose");
 				}
 				catch (IOException e)
 				{
-					e.printStackTrace();
+					PApplet.println("PGraphicsSVG error: Cannot close output: " + e.getMessage());
+//					e.printStackTrace();
 					success = false;
 				}
 			}
-		}
-		if (!success)
-		{
-			throw new RuntimeException("Error while saving SVG image.");
+			if (!success)
+			{
+				throw new RuntimeException("PGraphicsSVG error: Cannot save SVG image.");
+			}
+			bHasDrawn = false;
 		}
 	}
 
-	//////////////////////////////////////////////////////////////
+	private void showIOException(IOException e)
+	{
+		if (file != null)
+		{
+			PApplet.println("PGraphicsSVG error: Cannot write to file '" +
+					file.getAbsolutePath() + "': " + e.getMessage());
+		}
+		else
+		{
+			PApplet.println("PGraphicsSVG error: Cannot write to output: " + e.getMessage());
+		}
+	}
 
+/*
+	public void image(PImage image, float x, float y)
+	{
+PApplet.println("image " + image);
+		if (image instanceof PGraphicsSVG)
+		{
+			PApplet.println("Drawing image " + image);
+			// Perhaps someday we will insert the Dom of the image into the current Dom...
+		}
+		else
+		{
+			super.image(image, x, y);
+		}
+	}
+	public void image(PImage image, float x, float y, float c, float d) { nope("image"); }
+	public void image(PImage image, float a, float b, float c, float d,
+			int u1, int v1, int u2, int v2) { nope("image"); }
+*/
+
+	//////////////////////////////////////////////////////////////
 
 	public void loadPixels() { nope("loadPixels"); }
 	public void updatePixels() { nope("updatePixels"); }
@@ -348,7 +427,8 @@ PApplet.println("dispose");
 	public PImage get() { nope("get"); return null; }
 	public void set(int x, int y, int argb) { nope("set"); }
 	public void set(int x, int y, PImage image) { nope("set"); }
-	//
+
+	// Perhaps make versions specific to SVG
 	public void mask(int alpha[]) { nope("mask"); }
 	public void mask(PImage alpha) { nope("mask"); }
 	//
@@ -362,9 +442,9 @@ PApplet.println("dispose");
 	public void blend(PImage src, int sx, int sy, int dx, int dy, int mode) { nope("blend"); }
 	public void blend(int sx1, int sy1, int sx2, int sy2, int dx1, int dy1, int dx2, int dy2, int mode) { nope("blend"); }
 	public void blend(PImage src, int sx1, int sy1, int sx2, int sy2, int dx1, int dy1, int dx2, int dy2, int mode) { nope("blend"); }
+
 	//
-//~ 	public void save(String filename) { nope("save"); }
-	//
+
 	protected void nope(String function)
 	{
 		throw new RuntimeException("No " + function + "() for PGraphicsSVG");

@@ -1,22 +1,30 @@
 // PImage testing
 PImage niceImage;
+color bgColor = #AAFFDD;
 
 void setup()
 {
-  size(1000, 800);
+  size(1200, 800);
   smooth();
   noLoop();
+  background(bgColor);
 
-  niceImage = loadImage("H:/PhiLhoSoft/images/Globe.png");
+  // 393x500
+  niceImage = loadImage("Globe.png");
+  niceImage.resize(400, 400);
   image(niceImage, 0, 0, niceImage.width, niceImage.height);
 
-  // Dimension to image size
-  //size(niceImage.width,  niceImage.height);
-//~   drawTint(niceImage);
-//~   drawGray(niceImage);
-  drawInverted(niceImage);
-  translate(niceImage.width, 0);
+  translate(0, niceImage.height);
   drawReflected(niceImage);
+  translate(niceImage.width, 0);
+  drawInverted(niceImage);
+
+  translate(0, -niceImage.height);
+  drawTint(niceImage);
+  translate(niceImage.width, 0);
+  drawGray(niceImage);
+  translate(0, niceImage.height);
+  drawBlend(niceImage);
 
 /*
   // Display whole image
@@ -47,8 +55,8 @@ void setup()
 void drawInverted(PImage img)
 {
   pushMatrix();
-  translate(img.width, img.height * 2);
   rotate(PI);
+  translate(-img.width, -img.height);
   image(img, 0, 0, img.width, img.height);
   popMatrix();
 }
@@ -56,39 +64,50 @@ void drawInverted(PImage img)
 void drawReflected(PImage img)
 {
   pushMatrix();
-  translate(0, img.height);
   scale(1.00, -1.00);
   image(img, 0, -img.height, img.width, img.height);
   popMatrix();
 }
 
+// Except tint(), these alterations are not available directly in the renderer,
+// but it will take in account images generated in another buffer.
+
 void drawGray(PImage img)
 {
   PGraphics gr = createGraphics(img.width, img.height, P2D);
   gr.beginDraw();
+  gr.background(bgColor);
   gr.image(img, 0, 0, img.width, img.height);
-  gr.resize(256, 256);
   gr.filter(GRAY);
   gr.filter(POSTERIZE, 4);
   gr.endDraw();
 
-  pushMatrix();
-  translate(0, img.height);
   image(gr, 0, 0);
-  popMatrix();
 }
 
 void drawTint(PImage img)
 {
   PGraphics gr = createGraphics(img.width, img.height, P2D);
   gr.beginDraw();
+  gr.background(bgColor);
   gr.tint(255, 126);
   gr.image(img, 0, 0, img.width, img.height);
   gr.endDraw();
 
-  pushMatrix();
-  translate(0, img.height);
   image(gr, 0, 0);
-  popMatrix();
+}
+
+void drawBlend(PImage img)
+{
+  PGraphics gr = createGraphics(img.width, img.height, P2D);
+  gr.beginDraw();
+  gr.background(bgColor);
+  gr.rotate(HALF_PI);
+  gr.translate(0, -img.height);
+  gr.image(img, 0, 0);
+  gr.blend(img, 0, 0, img.width, img.height, 0, 0, img.width, img.height, BLEND);
+  gr.endDraw();
+
+  image(gr, 0, 0);
 }
 
