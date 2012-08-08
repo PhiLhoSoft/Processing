@@ -79,6 +79,10 @@ public class PGraphicsSVG extends PGraphicsJava2D
 	}
 	private FileFormat fileFormat = FileFormat.EXTERNAL_PNG;
 
+	/**
+	 * Constructor, mostly for internal use.
+	 * Use createGraphics() instead.
+	 */
 	public PGraphicsSVG()
 	{
 		debugPrint("PGraphicsSVG");
@@ -87,6 +91,10 @@ public class PGraphicsSVG extends PGraphicsJava2D
 		hint(ENABLE_NATIVE_FONTS);
 	}
 
+	/**
+	 * Sets the save path to the given absolute file path.
+	 * The .svg extension is added if not present.
+	 */
 	public void setPath(String path)
 	{
 		debugPrint("setPath " + path);
@@ -149,7 +157,7 @@ public class PGraphicsSVG extends PGraphicsJava2D
 	}
 
 	/**
-	 * Set the library to write to an output stream instead of a file.
+	 * Sets the library to write to an output stream instead of a file.
 	 */
 	public void setOutput(OutputStream output)
 	{
@@ -314,6 +322,9 @@ public class PGraphicsSVG extends PGraphicsJava2D
 		}
  	}
 
+	/**
+	 * Clean up and save if there is something drawn.
+	 */
 	public void dispose()
 	{
 		debugPrint("dispose");
@@ -350,6 +361,9 @@ public class PGraphicsSVG extends PGraphicsJava2D
 		return false;
 	}
 
+	/**
+	 * Saves the current image to the current path (or output stream).
+	 */
 	public void save()
 	{
 		debugPrint("save");
