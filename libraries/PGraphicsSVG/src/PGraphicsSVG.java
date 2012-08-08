@@ -69,6 +69,8 @@ public class PGraphicsSVG extends PGraphicsJava2D
 
 	private boolean bUseInlineCSS = true; // We want to use CSS style attributes
 
+	private boolean bDebug; // Alllows to see some details on inner workings
+
 	public enum FileFormat
 	{
 		INTERNAL,
@@ -79,14 +81,16 @@ public class PGraphicsSVG extends PGraphicsJava2D
 
 	public PGraphicsSVG()
 	{
-PApplet.println("PGraphicsSVG");
+		debugPrint("PGraphicsSVG");
+
 		// SVG always likes native fonts. Always.
 		hint(ENABLE_NATIVE_FONTS);
 	}
 
 	public void setPath(String path)
 	{
-PApplet.println("setPath " + path);
+		debugPrint("setPath " + path);
+
 		// From PGraphics
 		this.path = path;
 		if (path != null)
@@ -107,6 +111,8 @@ PApplet.println("setPath " + path);
 	}
 
 	/**
+	 * Sets the way attributes are generated in the SVG file.
+	 *
 	 * @param b  if true (default), the generated CSS will use CSS to define properties,
 	 *        otherwise, the properties will be defined by XML attributes.
 	 */
@@ -122,12 +128,16 @@ PApplet.println("setPath " + path);
 	}
 
 	/**
+	 * Sets the way bitmap images are managed within the SVG file.
+	 * Can be internal in Base64 (can grow a lot the file),
+	 * external in PNG format (preserves transparency) or in Jpeg format (smaller).
+	 *
 	 * @param ff  one of the PGraphicsSVG.FileFormat:<ul>
 	 *        <li>PGraphicsSVG.FileFormat.INTERNAL to embed the image in Base64 format in the SVG file (can make a big file!)
 	 *        <li>PGraphicsSVG.FileFormat.EXTERNAL_PNG to save them as PNG external file
 	 *        <li>PGraphicsSVG.FileFormat.EXTERNAL_JPEG to save them as Jpeg external file.</ul>
 	 */
-	public void setFileFormat(FileFormat ff)
+	public void setImageFileFormat(FileFormat ff)
 	{
 		if (fileFormat == ff)
 			return;
@@ -148,7 +158,7 @@ PApplet.println("setPath " + path);
 
 	public void beginDraw()
 	{
-//~ PApplet.println("beginDraw");
+//~ 		debugPrint("beginDraw");
 		super.beginDraw();
 
 		bHasDrawn = true;
@@ -156,13 +166,14 @@ PApplet.println("setPath " + path);
 
 	public void endDraw()
 	{
-//~ PApplet.println("endDraw");
+//~ 		debugPrint("endDraw");
 		// Don't call super.endDraw() (from PGraphicsJava2D) because it calls loadPixels.
 		// http://dev.processing.org/bugs/show_bug.cgi?id=1169
 	}
 
 	/**
 	 * Changes the textMode() to either SHAPE or MODEL.
+	 * Since JAVA2D renderer wants only SCREEN or MODEL, use SCREEN as synonym of SHAPE...
 	 * <p>
 	 * This resets all renderer settings, and therefore must
 	 * be called <em>before</em> any other commands that set the fill()
@@ -172,8 +183,7 @@ PApplet.println("setPath " + path);
 	public void textMode(int mode)
 	{
 		if (mode == SCREEN)
-			// Quick exit!
-			throw new RuntimeException("textMode(SCREEN) not supported with SVG");
+			mode = SHAPE;
 		if (mode != SHAPE && mode != MODEL)
 			throw new RuntimeException("textMode(" + mode + ") does not exist");
 
@@ -189,20 +199,22 @@ PApplet.println("setPath " + path);
 	// Called by PGraphics.setSize()
 	protected void allocate()
 	{
-PApplet.println("allocate");
+		debugPrint("allocate");
+
 		g2 = createGraphics();
 	}
 
 	protected Graphics2D createGraphics()
 	{
-PApplet.println("createGraphics");
+		debugPrint("createGraphics");
+
         // Get a DOMImplementation.
         DOMImplementation domImpl = GenericDOMImplementation.getDOMImplementation();
 
         // Create an instance of org.w3c.dom.Document.
         document = domImpl.createDocument("http://www.w3.org/2000/svg", "svg", null);
 
-PApplet.println("SVGGeneratorContext.createDefault " + document);
+		debugPrint("SVGGeneratorContext.createDefault " + document);
         // Create an instance of the SVG Generator.
         SVGGeneratorContext ctx = SVGGeneratorContext.createDefault(document);
 
@@ -214,11 +226,13 @@ PApplet.println("SVGGeneratorContext.createDefault " + document);
 		{
 			// Save the shape of each letter in the SVG file
 			ctx.setEmbeddedFontsOn(true);
+			debugPrint("textMode SHAPE");
 		}
 		else if (textMode == MODEL)
 		{
 			// Just use the system's font, if installed
 			ctx.setEmbeddedFontsOn(false);
+			debugPrint("textMode MODEL");
 		}
 		else
 		{
@@ -226,7 +240,7 @@ PApplet.println("SVGGeneratorContext.createDefault " + document);
 		}
 
         // Image options
-PApplet.println("ImageHandler " + fileFormat);
+		debugPrint("ImageHandler " + fileFormat);
 		try
 		{
 			GenericImageHandler ihandler = null;
@@ -264,7 +278,7 @@ PApplet.println("ImageHandler " + fileFormat);
 			ctx.setGenericImageHandler(ihandler);
 		}
 
-PApplet.println("SVGGraphics2D " + ctx);
+		debugPrint("SVGGraphics2D " + ctx);
 		// Create an instance of the SVG Generator
         svgG2D = new SVGGraphics2D(ctx, false);
         svgG2D.setSVGCanvasSize(new java.awt.Dimension(width, height));
@@ -282,19 +296,19 @@ PApplet.println("SVGGraphics2D " + ctx);
 	/** Throw away the current drawing. */
 	public void discard()
 	{
-PApplet.println("discard");
+		debugPrint("discard");
 		bHasDrawn = false;
 		dispose();
 
 		// Erase the current content of the document
 		Element root = svgG2D.getRoot();
         NodeList children = root.getChildNodes();
-//~ PApplet.println(children);
+//~ 		debugPrint(children);
 		if (children != null)
 		{
 			for (int i = 0; i < children.getLength(); i++)
 			{
-//~ PApplet.println("> " + children.item(i));
+//~ 				debugPrint("> " + children.item(i));
 				root.removeChild(children.item(i));
 			}
 		}
@@ -302,7 +316,8 @@ PApplet.println("discard");
 
 	public void dispose()
 	{
-PApplet.println("dispose");
+		debugPrint("dispose");
+
 		g2.dispose();
 
 		if (bHasDrawn)
@@ -315,7 +330,8 @@ PApplet.println("dispose");
 	/** Equivalent to endRecord and save to the given file name. */
 	public void endRecord(String filename)
 	{
-PApplet.println("save " + filename);
+		debugPrint("save " + filename);
+
 		setPath(filename);
 		endDraw();
 		dispose(); // Save if has drawn
@@ -336,7 +352,8 @@ PApplet.println("save " + filename);
 
 	public void save()
 	{
-PApplet.println("save");
+		debugPrint("save");
+
 		boolean success = false;
 
 		Writer out = null;
@@ -400,10 +417,10 @@ PApplet.println("save");
 /*
 	public void image(PImage image, float x, float y)
 	{
-PApplet.println("image " + image);
+debugPrint("image " + image);
 		if (image instanceof PGraphicsSVG)
 		{
-			PApplet.println("Drawing image " + image);
+			debugPrint("Drawing image " + image);
 			// Perhaps someday we will insert the Dom of the image into the current Dom...
 		}
 		else
@@ -448,5 +465,14 @@ PApplet.println("image " + image);
 	protected void nope(String function)
 	{
 		throw new RuntimeException("No " + function + "() for PGraphicsSVG");
+	}
+
+	public void setDebug(boolean b) { bDebug = b; }
+	protected void debugPrint(String msg)
+	{
+		if (bDebug)
+		{
+			PApplet.println("PGraphicsSVG - " + msg);
+		}
 	}
 }

@@ -5,6 +5,7 @@ Try the various settings that can be used with PGraphicsSVG.
 */
 
 int hw, hh;
+PFont font;
 
 void setup()
 {
@@ -17,16 +18,43 @@ void setup()
   hw = width / 2;
   hh = height / 2;
   
-  PFont font = createFont("Times New Roman", 32);
+  font = createFont("Times New Roman", 32);
 
   PGraphicsSVG svg = (PGraphicsSVG) createGraphics(width, height, "org.philhosoft.processing.svg.PGraphicsSVG");
   beginRecord(svg);
   
-  textFont(font);
   drawImage();
   
   // Same as endRecord() but saves to given path
   svg.endRecord(sketchPath("Settings-1"));
+  
+
+  // A new one
+  svg = (PGraphicsSVG) createGraphics(width, height, "org.philhosoft.processing.svg.PGraphicsSVG");
+  // Uses attributes instead of CSS
+  svg.setUseInlineCSS(false); 
+  // Save the image(s) in Base64 directly in the file
+  svg.setImageFileFormat(PGraphicsSVG.FileFormat.INTERNAL);
+  beginRecord(svg);
+  
+  drawImage();
+  
+  svg.endRecord(sketchPath("Settings-2"));
+  
+
+  // A last one
+  svg = (PGraphicsSVG) createGraphics(width, height, "org.philhosoft.processing.svg.PGraphicsSVG");
+  // Save the image(s) as Jpeg file. Bad here as transparency is lost, OK for photos, for example.
+  svg.setImageFileFormat(PGraphicsSVG.FileFormat.EXTERNAL_JPEG);
+  // Store the letter shapes in the SVG file
+  svg.textMode(SHAPE);
+  beginRecord(svg);
+  
+  drawImage();
+  
+  svg.endRecord(sketchPath("Settings-3"));
+  
+  
   println("Done");
 }
 
@@ -62,6 +90,7 @@ void drawImage()
   popMatrix();
 
   // Show some text too
+  textFont(font);
   fill(#000055);
   text("PhiLhoSoft presents:", 0.333 * width, 3 * height / 5);
   fill(#000088);

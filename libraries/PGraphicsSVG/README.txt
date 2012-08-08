@@ -11,12 +11,15 @@ cannot be done with PGraphicsSVG because of a different way of handling
 recording events: if this sketch is used with PGraphicsSVG instead of PDF,
 only the last drawing events will be recorded.
 
+See the examples for examples of use.
 
-Note: there is a bug* in Batik 1.7, binary dated 2008-01-09. It has been fixed in the SVN trunk but not released.
+
+Note: there is a bug* in Batik 1.7, binary dated 2008-01-09.
+It has been fixed in the SVN trunk but not released in the binary version yet.
 Text size defined in inline CSS is written without unit, making it size to be ignored by some renderers (Firefox and Opera).
-A suggested workaround is to disable inline CSS.
+A suggested workaround is to disable inline CSS (setUseInlineCSS(false)).
 Another one is to hand-edit (or use automated replace) the generated SVG to add the missing unit.
-A regular expression like: /font-size:(\d+);/ -> font-size:\1px; can do the job.
+A regular expression like: /font-size:(\d+);/ -> /font-size:\1px;/ can do the job.
 
 * https://issues.apache.org/bugzilla/show_bug.cgi?id=50100
 
