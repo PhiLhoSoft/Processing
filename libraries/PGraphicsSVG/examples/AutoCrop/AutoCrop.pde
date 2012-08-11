@@ -18,7 +18,7 @@ void setup()
   hh = height / 2;
 
   // Start the recording
-  beginRecord("org.philhosoft.processing.svg.PGraphicsSVG", "AutoCrop.svg");
+  beginRecord(PGraphicsSVG.SVG, "AutoCrop.svg");
 }
 
 void draw()

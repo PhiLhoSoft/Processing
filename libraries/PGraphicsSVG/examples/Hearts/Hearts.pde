@@ -9,7 +9,8 @@ Heart h1, h2, h3;
 
 void setup()
 {
-  size(400, 400, "org.philhosoft.processing.svg.PGraphicsSVG", "Hearts.svg");
+  // Renders only on the SVG surface, no display
+  size(400, 400, PGraphicsSVG.SVG, "Hearts.svg");
   smooth();
   background(#88AAFF);
 
@@ -24,11 +25,12 @@ void draw()
   stroke(#FFFFCC);
   strokeWeight(20);
   ellipse(width / 2, height / 2, width * 0.75, height * 0.75);
-  
+
   h1.draw();
   h2.draw();
   h3.draw();
-  
-  // Mandatory, so that dispose() is called, saving the file
+
+  println("Done");
+  // Mandatory, so that proper cleanup is called, saving the file
   exit();
 }

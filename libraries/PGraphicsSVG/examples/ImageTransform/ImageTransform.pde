@@ -17,7 +17,7 @@ void setup()
   noLoop();
 
   // Start the recording
-  beginRecord("org.philhosoft.processing.svg.PGraphicsSVG", "ImageTransform.svg");
+  beginRecord(PGraphicsSVG.SVG, "ImageTransform.svg");
   smooth();
   background(bgColor);
 

@@ -1,19 +1,13 @@
 /*
-Inspired by the original SVGOut by Christian Riekoff <http://www.texone.org/prosvg/> (dead link!),
-and by the update by Konstantin Levinski <https://sites.google.com/site/kdlprosvg/>.
+PGraphicsSVG is to SVG what PGraphicsPDF is to PDF: a vector renderer for sketches,
+with output to the SVG format, via the Apache Batik library.
 
-Entirely rewritten to conform to modern (1.5) Processing PGraphics and in particular
-to use the same structure than PGraphicsPDF, since they are very similar:
-Both rely on a library (iText for PDF, Batik for SVG) that reuse the Java2D API, allowing
-to write vector files from regular Java programs with little changes.
-This leads to a simple and short implementation, allowing lot of flexibility.
-
-Now uses Batik 1.7 jars.
-Experimentally defining the minimal subset needed to generate static SVG files.
+Uses Batik 1.7 jars, experimentally defining the minimal subset needed to generate static SVG files.
 
 by Philippe Lhoste <PhiLho(a)GMX.net> http://Phi.Lho.free.fr & http://PhiLho.deviantART.com
 */
 /* File/Project history:
+ 1.01.000 -- 2012/08/08 (PL) -- Support of saveFrame and renaming of discard() to clear().
  1.00.000 -- 2012/08/04 (PL) -- Creation.
 */
 /* Copyright notice: For details, see the following file:
@@ -24,7 +18,6 @@ Copyright (c) 2012 Philippe Lhoste / PhiLhoSoft
 package org.philhosoft.processing.svg;
 
 import java.awt.Graphics2D;
-//~ import java.awt.image.BufferedImage;
 import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
@@ -56,31 +49,37 @@ import processing.core.PGraphicsJava2D;
  */
 public class PGraphicsSVG extends PGraphicsJava2D
 {
-	/** File being written, if it's a file. */
-	protected File file;
-	/** OutputStream being written to. Created from file,
-	 * or with a provided OutputStream, eg. in save to Web. */
-	protected OutputStream output;
-	/** Avoid dispose() to write empty files. */
-	private boolean bHasDrawn;
+	/** Shortcut to the fully qualified class name.	*/
+	// A bit rendundant, I fear, but consistent with the PDF name (I cannot change PConstants!)
+	public static final String SVG = "org.philhosoft.processing.svg.PGraphicsSVG";
 
-	private Document document;
-	private SVGGraphics2D svgG2D;
-
-	private boolean bUseInlineCSS = true; // We want to use CSS style attributes
-
-	private boolean bDebug; // Alllows to see some details on inner workings
-
-	public enum FileFormat
+	public enum ImageFileFormat
 	{
 		INTERNAL,
 		EXTERNAL_PNG,
 		EXTERNAL_JPEG,
 	}
-	private FileFormat fileFormat = FileFormat.EXTERNAL_PNG;
+
+	public int savedFrameCount;
+
+	/** File being written, if it is a file. */
+	protected File file;
+	/** OutputStream being written to. Created from file,
+	 * or with a provided OutputStream, eg. in save to Web. */
+	protected OutputStream output;
+
+	/** Avoid dispose() to write empty files. */
+	private boolean bHasDrawn;
+
+	private SVGGraphics2D svgG2D;
+
+	private boolean bUseInlineCSS = true; // We want to use CSS style attributes
+
+	private boolean bDebug; // Alllows to see some details on inner workings
+	private ImageFileFormat imageFileFormat = ImageFileFormat.EXTERNAL_PNG;
 
 	/**
-	 * Constructor, mostly for internal use.
+	 * Constructor, for internal use.
 	 * Use createGraphics() instead.
 	 */
 	public PGraphicsSVG()
@@ -91,32 +90,7 @@ public class PGraphicsSVG extends PGraphicsJava2D
 		hint(ENABLE_NATIVE_FONTS);
 	}
 
-	/**
-	 * Sets the save path to the given absolute file path.
-	 * The .svg extension is added if not present.
-	 */
-	public void setPath(String path)
-	{
-		debugPrint("setPath " + path);
-
-		// From PGraphics
-		this.path = path;
-		if (path != null)
-		{
-			if (!path.toLowerCase().endsWith(".svg"))
-			{
-				// if no .svg extension, add it..
-				path += ".svg";
-			}
-			file = new File(path);
-			if (!file.isAbsolute()) file = null;
-		}
-		if (file == null)
-		{
-			throw new RuntimeException("PGraphicsSVG requires an absolute path " +
-					"for the location of the output file.");
-		}
-	}
+	//===== The public API =====
 
 	/**
 	 * Sets the way attributes are generated in the SVG file.
@@ -140,54 +114,36 @@ public class PGraphicsSVG extends PGraphicsJava2D
 	 * Can be internal in Base64 (can grow a lot the file),
 	 * external in PNG format (preserves transparency) or in Jpeg format (smaller).
 	 *
-	 * @param ff  one of the PGraphicsSVG.FileFormat:<ul>
-	 *        <li>PGraphicsSVG.FileFormat.INTERNAL to embed the image in Base64 format in the SVG file (can make a big file!)
-	 *        <li>PGraphicsSVG.FileFormat.EXTERNAL_PNG to save them as PNG external file
-	 *        <li>PGraphicsSVG.FileFormat.EXTERNAL_JPEG to save them as Jpeg external file.</ul>
+	 * @param iff  one of the PGraphicsSVG.ImageFileFormat:<ul>
+	 *        <li>PGraphicsSVG.ImageFileFormat.INTERNAL to embed the image in Base64 format in the SVG file (can make a big file!)
+	 *        <li>PGraphicsSVG.ImageFileFormat.EXTERNAL_PNG to save them as PNG external file
+	 *        <li>PGraphicsSVG.ImageFileFormat.EXTERNAL_JPEG to save them as Jpeg external file.</ul>
 	 */
-	public void setImageFileFormat(FileFormat ff)
+	public void setImageFileFormat(ImageFileFormat iff)
 	{
-		if (fileFormat == ff)
+		if (imageFileFormat == iff)
 			return;
 
-		fileFormat = ff;
+		imageFileFormat = iff;
 
 		dispose();
 		allocate();
 	}
 
 	/**
-	 * Sets the library to write to an output stream instead of a file.
-	 */
-	public void setOutput(OutputStream output)
-	{
-		this.output = output;
-	}
-
-	public void beginDraw()
-	{
-//~ 		debugPrint("beginDraw");
-		super.beginDraw();
-
-		bHasDrawn = true;
-	}
-
-	public void endDraw()
-	{
-//~ 		debugPrint("endDraw");
-		// Don't call super.endDraw() (from PGraphicsJava2D) because it calls loadPixels.
-		// http://dev.processing.org/bugs/show_bug.cgi?id=1169
-	}
-
-	/**
-	 * Changes the textMode() to either SHAPE or MODEL.
+	 * Changes the textMode() to either SHAPE or MODEL (default).
 	 * Since JAVA2D renderer wants only SCREEN or MODEL, use SCREEN as synonym of SHAPE...
 	 * <p>
 	 * This resets all renderer settings, and therefore must
 	 * be called <em>before</em> any other commands that set the fill()
 	 * or the textFont() or anything. Unlike other renderers,
 	 * use textMode() directly after the size() command.
+	 *
+	 * @param mode  if SHAPE, the used font glyphs will be saved as SVG shapes in the file;
+	 *              if MODEL, the file will refer to the font name and will need the font to be
+	 *        installed in the system rendering the SVG for proper look. Smaller file but less portable.
 	 */
+	@Override // PGraphics
 	public void textMode(int mode)
 	{
 		if (mode == SCREEN)
@@ -204,7 +160,163 @@ public class PGraphicsSVG extends PGraphicsJava2D
 		allocate();
 	}
 
+	/** Throw away the current drawing, clear the document, ready for new content. */
+	public void clear()
+	{
+		debugPrint("clear");
+		bHasDrawn = false;
+		dispose();
+
+		// Erase the current content of the document
+		Element root = svgG2D.getRoot();
+        NodeList children = root.getChildNodes();
+//~ 		debugPrint(children);
+		if (children != null)
+		{
+			// Looks like there is only the comment and the main g element.
+			for (int i = 0; i < children.getLength(); i++)
+			{
+//~ 				debugPrint("> " + children.item(i));
+				root.removeChild(children.item(i));
+			}
+		}
+ 	}
+
+	/**
+	 * Sets the library to write to an output stream instead of a file.
+	 */
+	public void setOutput(OutputStream output)
+	{
+		this.output = output;
+	}
+
+	/**
+	 * Same as endRecord() (save the file) but first, set the path as given.
+	 */
+	public void endRecord(String filePath)
+	{
+		// Mostly there for symmetry with beginRecord()
+		save(filePath);
+	}
+
+	/**
+	 * Saves the current image to the existing path.
+	 */
+	public void save()
+	{
+		debugPrint("save");
+
+		endDraw();
+		dispose(); // Save if has drawn
+	}
+
+	/**
+	 * Sets the save path to the given absolute file path.
+	 * The .svg extension is added if not present.
+	 */
+	@Override // PGraphics
+	public void setPath(String path)
+	{
+		debugPrint("setPath " + path);
+
+		// From PGraphics
+		this.path = path;
+		if (path != null)
+		{
+			if (!path.toLowerCase().endsWith(".svg"))
+			{
+				// if no .svg extension, add it..
+				path += ".svg";
+			}
+			file = new File(path);
+			if (!file.isAbsolute())
+			{
+				path = parent.sketchPath(path);
+				file = new File(path);
+			}
+		}
+	}
+
+	/**
+	 * Saves the current image to the given path.
+	 */
+	@Override // PImage
+	public void save(String filePath)
+	{
+		debugPrint("save " + filePath);
+
+		setPath(filePath);
+		save();
+	}
+
+	/**
+	 * Grab an image of what's currently in the drawing area and save it as a .svg file,
+	 * replacing a ### sequence (minimum 2 #) to the .
+	 * <p>
+	 * Best used just before endDraw() at the end of your draw().
+	 */
+	public void saveFrame(String filePath)
+	{
+		save(insertFrameNumber(filePath));
+	}
+
+	@Override // PGraphics
+	public void beginDraw()
+	{
+//~ 		debugPrint("beginDraw");
+		super.beginDraw();
+
+		bHasDrawn = true;
+	}
+
+	@Override // PGraphics
+	public void endDraw()
+	{
+//~ 		debugPrint("endDraw");
+		// Don't call super.endDraw() (from PGraphicsJava2D) because it calls loadPixels.
+		// http://dev.processing.org/bugs/show_bug.cgi?id=1169
+	}
+
+	/**
+	 * Clean up and save if there is something drawn.
+	 */
+	@Override // PGraphics
+	public void dispose()
+	{
+		debugPrint("dispose");
+
+		// From PGraphicsJava2D
+		g2.dispose();
+
+		if (bHasDrawn)
+		{
+			saveSVG();
+		}
+		svgG2D.dispose();
+	}
+
+	/**
+	 * Don't open a window for this renderer, it won't be used.
+	 */
+	@Override // PGraphics
+	public boolean displayable()
+	{
+		return false;
+	}
+
+	/**
+	 * Doen't record shapes.
+	 */
+	@Override // PGraphics
+	public boolean isRecording()
+	{
+		return false;
+	}
+
+	//===== ProtectedAPI (and private methods) =====
+
 	// Called by PGraphics.setSize()
+	@Override // PGraphics
 	protected void allocate()
 	{
 		debugPrint("allocate");
@@ -212,15 +324,22 @@ public class PGraphicsSVG extends PGraphicsJava2D
 		g2 = createGraphics();
 	}
 
+	/**
+	 * Creates the drawing surface, using the previously set settings.
+	 * Creates the Dom document (XML), the SVG context (settings) and the SVG Graphics2D.
+	 * Called by allocate() when setSize() is called from PGraphics.
+	 */
 	protected Graphics2D createGraphics()
 	{
 		debugPrint("createGraphics");
+
+		savedFrameCount = 0;
 
         // Get a DOMImplementation.
         DOMImplementation domImpl = GenericDOMImplementation.getDOMImplementation();
 
         // Create an instance of org.w3c.dom.Document.
-        document = domImpl.createDocument("http://www.w3.org/2000/svg", "svg", null);
+        Document document = domImpl.createDocument("http://www.w3.org/2000/svg", "svg", null);
 
 		debugPrint("SVGGeneratorContext.createDefault " + document);
         // Create an instance of the SVG Generator.
@@ -248,11 +367,11 @@ public class PGraphicsSVG extends PGraphicsJava2D
 		}
 
         // Image options
-		debugPrint("ImageHandler " + fileFormat);
+		debugPrint("ImageHandler " + imageFileFormat);
 		try
 		{
 			GenericImageHandler ihandler = null;
-			switch (fileFormat)
+			switch (imageFileFormat)
 			{
 				case INTERNAL:
 				{
@@ -273,13 +392,13 @@ public class PGraphicsSVG extends PGraphicsJava2D
 					break;
 				}
 				default:
-					assert false : "Update this switch with the FileFormat enum!";
+					assert false : "Update this switch with the ImageFileFormat enum!";
 			}
 			ctx.setGenericImageHandler(ihandler);
 		}
 		catch (org.apache.batik.svggen.SVGGraphics2DIOException e) // For EXTERNAL_XXX options
 		{
-			PApplet.println("PGraphicsSVG error: Cannot create image handler: " + e.getMessage());
+			System.err.println("PGraphicsSVG error: Cannot create image handler: " + e.getMessage());
 //			e.printStackTrace();
 			// Fall back to internal case
 			GenericImageHandler ihandler = new CachedImageHandlerBase64Encoder();
@@ -293,78 +412,10 @@ public class PGraphicsSVG extends PGraphicsJava2D
 		return svgG2D;
 	}
 
-	private String getPath()
-	{
-		if (file != null)
-			return file.getParent();
-
-		return parent.sketchPath;
-	}
-
-	/** Throw away the current drawing. */
-	public void discard()
-	{
-		debugPrint("discard");
-		bHasDrawn = false;
-		dispose();
-
-		// Erase the current content of the document
-		Element root = svgG2D.getRoot();
-        NodeList children = root.getChildNodes();
-//~ 		debugPrint(children);
-		if (children != null)
-		{
-			for (int i = 0; i < children.getLength(); i++)
-			{
-//~ 				debugPrint("> " + children.item(i));
-				root.removeChild(children.item(i));
-			}
-		}
- 	}
-
-	/**
-	 * Clean up and save if there is something drawn.
-	 */
-	public void dispose()
-	{
-		debugPrint("dispose");
-
-		g2.dispose();
-
-		if (bHasDrawn)
-		{
-			save();
-		}
-		svgG2D.dispose();
-	}
-
-	/** Equivalent to endRecord and save to the given file name. */
-	public void endRecord(String filename)
-	{
-		debugPrint("save " + filename);
-
-		setPath(filename);
-		endDraw();
-		dispose(); // Save if has drawn
-	}
-
-	/**
-	 * Don't open a window for this renderer, it won't be used.
-	 */
-	public boolean displayable()
-	{
-		return false;
-	}
-
-	public boolean isRecording()
-	{
-		return false;
-	}
-
 	/**
 	 * Saves the current image to the current path (or output stream).
 	 */
-	public void save()
+	protected void saveSVG()
 	{
 		debugPrint("save");
 
@@ -392,6 +443,11 @@ public class PGraphicsSVG extends PGraphicsJava2D
 //			e.printStackTrace();
 			success = false;
 		}
+		catch (SecurityException se)
+		{
+			System.err.println("Can't save to a file when running in a browser, " +
+					"unless using a signed applet.");
+		}
 		finally
 		{
 			if (out != null)
@@ -402,7 +458,7 @@ public class PGraphicsSVG extends PGraphicsJava2D
 				}
 				catch (IOException e)
 				{
-					PApplet.println("PGraphicsSVG error: Cannot close output: " + e.getMessage());
+					System.err.println("PGraphicsSVG error: Cannot close output: " + e.getMessage());
 //					e.printStackTrace();
 					success = false;
 				}
@@ -415,17 +471,47 @@ public class PGraphicsSVG extends PGraphicsJava2D
 		}
 	}
 
-	private void showIOException(IOException e)
+	/**
+	 * Provides a path to save the bitmap images saved as files.
+	 * If no path (using output stream), use the sketch path.
+	 * Applets should use INLINE images...
+	 */
+	protected String getPath()
+	{
+		if (file != null)
+			return file.getParent();
+
+		return parent.sketchPath;
+	}
+
+	protected void showIOException(IOException e)
 	{
 		if (file != null)
 		{
-			PApplet.println("PGraphicsSVG error: Cannot write to file '" +
+			System.err.println("PGraphicsSVG error: Cannot write to file '" +
 					file.getAbsolutePath() + "': " + e.getMessage());
 		}
 		else
 		{
-			PApplet.println("PGraphicsSVG error: Cannot write to output: " + e.getMessage());
+			System.err.println("PGraphicsSVG error: Cannot write to output: " + e.getMessage());
 		}
+	}
+
+	protected String insertFrameNumber(String filePath)
+	{
+		int firstSharp = filePath.indexOf('#');
+		if (firstSharp == -1)
+			return filePath; // No sharp, nothing to change
+
+		int lastSharp = filePath.lastIndexOf('#');
+		if (firstSharp == lastSharp)
+			return filePath; // Only one sharp, nothing to change
+
+		int sharpNb = lastSharp - firstSharp + 1;
+		String before = filePath.substring(0, firstSharp);
+		String after = filePath.substring(lastSharp + 1);
+		// Maintain its own number of saved frames
+		return before + PApplet.nf(++savedFrameCount, sharpNb) + after;
 	}
 
 /*
@@ -449,30 +535,31 @@ debugPrint("image " + image);
 
 	//////////////////////////////////////////////////////////////
 
-	public void loadPixels() { nope("loadPixels"); }
-	public void updatePixels() { nope("updatePixels"); }
-	public void updatePixels(int x, int y, int c, int d) { nope("updatePixels"); }
+	@Override public void loadPixels() { nope("loadPixels"); }
+	@Override public void updatePixels() { nope("updatePixels"); }
+	@Override public void updatePixels(int x, int y, int c, int d) { nope("updatePixels"); }
 	//
-	public int get(int x, int y) { nope("get"); return 0; }
-	public PImage get(int x, int y, int c, int d) { nope("get"); return null; }
-	public PImage get() { nope("get"); return null; }
-	public void set(int x, int y, int argb) { nope("set"); }
-	public void set(int x, int y, PImage image) { nope("set"); }
+	@Override public int get(int x, int y) { nope("get"); return 0; }
+	@Override public PImage get(int x, int y, int c, int d) { nope("get"); return null; }
+	@Override public PImage get() { nope("get"); return null; }
+	@Override public void set(int x, int y, int argb) { nope("set"); }
+	@Override public void set(int x, int y, PImage image) { nope("set"); }
 
 	// Perhaps make versions specific to SVG
-	public void mask(int alpha[]) { nope("mask"); }
-	public void mask(PImage alpha) { nope("mask"); }
+	@Override public void mask(int alpha[]) { nope("mask"); }
+	@Override public void mask(PImage alpha) { nope("mask"); }
 	//
-	public void filter(int kind) { nope("filter"); }
-	public void filter(int kind, float param) { nope("filter"); }
+	@Override public void filter(int kind) { nope("filter"); }
+	@Override public void filter(int kind, float param) { nope("filter"); }
 	//
-	public void copy(int sx1, int sy1, int sx2, int sy2, int dx1, int dy1, int dx2, int dy2) { nope("copy"); }
-	public void copy(PImage src, int sx1, int sy1, int sx2, int sy2, int dx1, int dy1, int dx2, int dy2) { nope("copy"); }
-	//
+	// Defined in PImage
 	public void blend(int sx, int sy, int dx, int dy, int mode) { nope("blend"); }
 	public void blend(PImage src, int sx, int sy, int dx, int dy, int mode) { nope("blend"); }
-	public void blend(int sx1, int sy1, int sx2, int sy2, int dx1, int dy1, int dx2, int dy2, int mode) { nope("blend"); }
-	public void blend(PImage src, int sx1, int sy1, int sx2, int sy2, int dx1, int dy1, int dx2, int dy2, int mode) { nope("blend"); }
+	@Override public void blend(int sx1, int sy1, int sx2, int sy2, int dx1, int dy1, int dx2, int dy2, int mode) { nope("blend"); }
+	@Override public void blend(PImage src, int sx1, int sy1, int sx2, int sy2, int dx1, int dy1, int dx2, int dy2, int mode) { nope("blend"); }
+	//
+	@Override public void copy(int sx1, int sy1, int sx2, int sy2, int dx1, int dy1, int dx2, int dy2) { nope("copy"); }
+	@Override public void copy(PImage src, int sx1, int sy1, int sx2, int sy2, int dx1, int dy1, int dx2, int dy2) { nope("copy"); }
 
 	//
 

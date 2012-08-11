@@ -1,18 +1,8 @@
-// Growing balls
+// Growing balls with collision checking
 
 final int BALL_NB = 1000;
 final int MARGIN = 50;
 Ball[] balls = new Ball[BALL_NB];
-
-// Failed experiment?
-//java.awt.Image back;
-
-//public void paint(java.awt.Graphics g)
-//{
-//  java.awt.Graphics fg = frame.getGraphics();
-//  fg.drawImage(back, 0, 0, null);
-//  super.paint(g);
-//}
 
 void setup()
 {
@@ -21,25 +11,24 @@ void setup()
 
   for (int i = 0; i < BALL_NB; i++)
   {
-    float x = random(MARGIN, width - MARGIN);
-    float y = random(MARGIN, height - MARGIN);
-    color c = color(random(50, 150), random(100, 200), random(150, 255));
-    balls[i] = new Ball(x, y, c);
+    balls[i] = new Ball();
   }
-  
-//  PImage backImg = loadImage("G:/Images/foret_0003_1024.jpg");
-//  back = backImg.getImage();
 }
 
 void draw()
 {
   boolean bOneCanGrow = false;
+  // Check ball collisions
   for (int i = 0; i < BALL_NB; i++)
   {
     for (int j = 0; j < BALL_NB; j++)
     {
-      if (i != j)
+      if (i != j && // Not the same ball!
+          // If none of the ball can grow (is already static), no check to do.
+          // Avoids a costly dist() calculation
+          (balls[i].bCanGrow || balls[j].bCanGrow))
       {
+        // If the distance between the two balls is below the summed up radii, must stop growing
         if (dist(balls[i].posX, balls[i].posY, balls[j].posX, balls[j].posY) <=
             balls[i].radius + balls[j].radius)
         {
@@ -58,8 +47,13 @@ void draw()
   }
   else
   {
+    // Show this is the end, no more move
     background(#EEFFEE);
+    noLoop(); // No more updated needed
+    println("Done at frame " + frameCount);
   }
+
+  // Grow the balls that can still grow, and display all the balls
   for (int i = 0; i < BALL_NB; i++)
   {
     balls[i].grow();
@@ -71,13 +65,23 @@ class Ball
 {
   float posX, posY; // Position
   float radius = 1;
-  color ballColor;
+  color fillColor;
   boolean bCanGrow = true;
 
-  Ball(float px, float py, color c)
+  // Base constructor just take care of randomness itself...
+  Ball()
+  {
+    this(
+        random(MARGIN, width - MARGIN),
+        random(MARGIN, height - MARGIN),
+        color(random(50, 150), random(100, 200), random(150, 255))
+    );
+  }
+  // In case I need a finer, external control of parameters
+  Ball(float px, float py, color pc)
   {
     posX = px; posY = py;
-    ballColor = c;
+    fillColor = pc;
   }
 
   void grow()
@@ -91,7 +95,8 @@ class Ball
   void display()
   {
     noStroke();
-    fill(ballColor);
+    fill(fillColor);
     ellipse(posX, posY, radius * 2, radius * 2);
   }
 }
+

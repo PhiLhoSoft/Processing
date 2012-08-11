@@ -17,44 +17,45 @@ void setup()
   // Half size
   hw = width / 2;
   hh = height / 2;
-  
+
   font = createFont("Times New Roman", 32);
 
-  PGraphicsSVG svg = (PGraphicsSVG) createGraphics(width, height, "org.philhosoft.processing.svg.PGraphicsSVG");
+  // File name is provided later
+  PGraphicsSVG svg = (PGraphicsSVG) createGraphics(width, height, PGraphicsSVG.SVG);
   beginRecord(svg);
-  
+
   drawImage();
-  
+
   // Same as endRecord() but saves to given path
   svg.endRecord(sketchPath("Settings-1"));
-  
+
 
   // A new one
-  svg = (PGraphicsSVG) createGraphics(width, height, "org.philhosoft.processing.svg.PGraphicsSVG");
+  svg = (PGraphicsSVG) createGraphics(width, height, PGraphicsSVG.SVG);
   // Uses attributes instead of CSS
-  svg.setUseInlineCSS(false); 
+  svg.setUseInlineCSS(false);
   // Save the image(s) in Base64 directly in the file
-  svg.setImageFileFormat(PGraphicsSVG.FileFormat.INTERNAL);
+  svg.setImageFileFormat(PGraphicsSVG.ImageFileFormat.INTERNAL);
   beginRecord(svg);
-  
+
   drawImage();
-  
+
   svg.endRecord(sketchPath("Settings-2"));
-  
+
 
   // A last one
-  svg = (PGraphicsSVG) createGraphics(width, height, "org.philhosoft.processing.svg.PGraphicsSVG");
+  svg = (PGraphicsSVG) createGraphics(width, height, PGraphicsSVG.SVG);
   // Save the image(s) as Jpeg file. Bad here as transparency is lost, OK for photos, for example.
-  svg.setImageFileFormat(PGraphicsSVG.FileFormat.EXTERNAL_JPEG);
+  svg.setImageFileFormat(PGraphicsSVG.ImageFileFormat.EXTERNAL_JPEG);
   // Store the letter shapes in the SVG file
   svg.textMode(SHAPE);
   beginRecord(svg);
-  
+
   drawImage();
-  
+
   svg.endRecord(sketchPath("Settings-3"));
-  
-  
+
+
   println("Done");
 }
 
@@ -125,7 +126,7 @@ PGraphics getImage()
   subG.endShape(CLOSE);
 
   subG.endDraw();
-  
+
   return subG;
 }
 

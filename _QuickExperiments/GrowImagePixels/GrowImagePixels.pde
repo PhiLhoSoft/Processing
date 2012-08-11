@@ -11,7 +11,7 @@ boolean bRandom = false;
 void setup()
 {
   size(400, 400);
-  img = loadImage("E:/Dev/PhiLhoSoft/Processing/SqMe.png");
+  img = loadImage("SqMe.png");
   noStroke();
   smooth();
   background(255);
