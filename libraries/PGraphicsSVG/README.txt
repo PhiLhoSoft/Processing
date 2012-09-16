@@ -1,4 +1,4 @@
-PGraphicsSVG 1.1
+PGraphicsSVG 1.2 - 2012-08-14
 
 PGraphicsSVG is to SVG what PGraphicsPDF is to PDF: a vector renderer for Processing sketches,
 allowing to save the drawings of a sketch to a SVG file,  via the Apache Batik library (included).
@@ -13,7 +13,8 @@ cannot be done with PGraphicsSVG because of a different way of handling recordin
 But see the SavingChoice sketch in the example for a way to save an image out of animation.
 
 The documentation (beside this README) is currently lacking, but the provided examples
-should guide you how to use the library.
+should guide you how to use the library. And you can take a look at the source's JavaDoc
+(the parts between /** and */ marks) for a bit more information.
 
 Limitations: the pixel manipulations are not allowed (but can be done on a classical PGraphics,
 they will be saved as image by the library).
@@ -33,9 +34,11 @@ copy
 By Philippe Lhoste <PhiLho(a)GMX.net> http://Phi.Lho.free.fr & http://PhiLho.deviantART.com
 
 Home page of the library:
+http://Phi.Lho.free.fr/Programming/Processing/PGraphicsSVG/
+Source code:
 http://bazaar.launchpad.net/~philho/+junk/Processing/files/head:/libraries/PGraphicsSVG/
 The binary distribution of the library is currently located at:
-
+http://Phi.Lho.free.fr/Programming/Processing/PGraphicsSVG/PGraphicsSVG.zip
 
 Copyright notice: For details, see the following file:
 http://Phi.Lho.free.fr/softwares/PhiLhoSoft/PhiLhoSoftLicence.txt
@@ -45,7 +48,7 @@ Copyright (c) 2012 Philippe Lhoste / PhiLhoSoft
 Scalable Vector Graphics (SVG)
 http://www.w3.org/Graphics/SVG/
 
-This version of PGraphicsSVG uses Apache Batik 1.7.
+This version of PGraphicsSVG uses Apache Batik 1.8pre compiled by myself (see below).
 http://xmlgraphics.apache.org/batik/
 
 It is to be used with Processing 1.5+
@@ -53,7 +56,7 @@ http://Processing.org
 
 --
 
-Note: there is a bug* in Batik 1.7, binary dated 2008-01-09.
+Note: there is a bug* in Batik 1.7, binary distribution dated 2008-01-09.
 It has been fixed in the SVN trunk but not released in the binary version yet.
 Text size defined in inline CSS is written without unit,
 making its size to be ignored by some renderers (Firefox and Opera).
@@ -63,8 +66,26 @@ A regular expression like: /font-size:(\d+);/ -> /font-size:\1px;/ can do the jo
 
 * https://issues.apache.org/bugzilla/show_bug.cgi?id=50100
 
-If Apache ever release a new binary, or if you manage to compile a SVN snapshot yourself
-(I will try it someday...), you can just replace the jars provided with this library by the new ones.
+
+So I downloaded the SVN trunk (at 2012-08-14, revision 1372840) and compiled it
+with Java 1.6.0_30 using Ant 1.7,
+with a tweak of the Ant file because the codec.imageio package is missing from the codec jar.
+
+  <target name="codec-jar" depends="init, compile, prepare-build">
+    <jar jarfile="${build}/lib/${project}-codec.jar">
+[...]
+      <fileset dir="${dest}">
+[...]
+        <include name="${package-prefix}/ext/awt/image/codec/jpeg/*.class"
+                 if="sun-codecs.present"/>
+        <!-- PhiLho: Missing imageio package in generated jars -->
+        <include name="${package-prefix}/ext/awt/image/codec/imageio/*.class"/>
+      </fileset>
+
+Also removed some System.err from
+sources\org\apache\batik\ext\awt\image\codec\imageio\ImageIOImageWriter.java
+
+The jars distributed with this version are those hand-made 1.8pre jars, fixing the bug mentioned above.
 
 
 In some sketches (calling endRecord()) in Processing 1.5.1, you can see the message:

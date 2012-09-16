@@ -8,6 +8,11 @@ void setup()
   background(100);
   frame.pack();  // Get insets. Get more!
   insets = frame.getInsets();
+  // On Windows 7, the displayed frame is 3 pixels wider/taller (on each border)
+  // than the actual frame (as reported here, or by other native Windows softwares)
+  println(insets);
+  // The frame here is smaller than the final one and still hidden
+  println(frame);
   
   PGraphics icon = createGraphics(16, 16, JAVA2D);
   icon.beginDraw();
@@ -37,11 +42,13 @@ void draw()
 
 void mousePressed()
 {
+  // Real size frame, before resizing
+  println(frame);
   w += INCR;
   // Change internal canvas size
   setSize(w, height);
   // width variable isn't updated yet, will be on draw()
-  println("Press: " + w + " => " + width);
+  println("Press: " + width + " => " + w);
 
   int windowW = Math.max(w, MIN_WINDOW_WIDTH) +
       insets.left + insets.right;
@@ -49,6 +56,9 @@ void mousePressed()
       insets.top + insets.bottom;
 
   // Change frame size, taking in account the insets (borders, title bar)
+  frame.setResizable(true); // Not necessary in Windows, solves an issue on Mac
   frame.setSize(windowW, windowH);
+  frame.setResizable(false);
+  // https://forum.processing.org/topic/using-frame-setresizable-true-set-the-wrong-height-13-8-2012-1
 }
 

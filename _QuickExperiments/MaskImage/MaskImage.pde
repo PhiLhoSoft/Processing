@@ -7,7 +7,7 @@ int dw, dh;
 void setup()
 {
   size(500, 500);
-  niceImage = loadImage("D:/_PhiLhoSoft/Processing/me.png");
+  niceImage = loadImage("H:/PhiLhoSoft/images/me.png");
   iw = niceImage.width;
   ih = niceImage.height;
   dw = width - iw;

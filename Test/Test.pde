@@ -10,7 +10,7 @@ void init()
 {
   Dimension size = getSize();
   rawSize = "Raw size: " + size.width + "x" + size.height;
-  super.init();
+  super.init(); //<>//
 }
 
 void setup()
@@ -72,4 +72,3 @@ void draw()
   println("Done");
 //  exit();
 }
-
