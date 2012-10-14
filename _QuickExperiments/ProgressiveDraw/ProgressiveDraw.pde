@@ -13,11 +13,11 @@ class ProgressiveLine
     endY = ey; evolY = evy;
   }
 
-  void DrawFull()
+  void drawFull()
   {
-    Draw(1.0);
+    draw(1.0);
   }
-  void Draw(float linePercent)
+  void draw(float linePercent)
   {
     line(anchorX, anchorY,
         endX + evolX * linePercent,
@@ -87,7 +87,9 @@ boolean bFinished;
 
 void draw()
 {
-  background(128);
+  background(255);
+  translate(-100, -200);
+  scale(3);
   if (!bFinished)
   {
     linePercent += 0.1;
@@ -100,6 +102,7 @@ void draw()
         lineNb = lines.length - 1;
         linePercent = 1.0;  // Fully draw last line
         bFinished = true;
+        println("Done!");
       }
     }
   }
@@ -107,9 +110,9 @@ void draw()
   // Fully draw all the previous lines
   for (int i = 0; i < lineNb; i++)
   {
-    lines[i].DrawFull();
+    lines[i].drawFull();
   }
   // Partially draw the current line
-  lines[lineNb].Draw(linePercent);
+  lines[lineNb].draw(linePercent);
 }
 

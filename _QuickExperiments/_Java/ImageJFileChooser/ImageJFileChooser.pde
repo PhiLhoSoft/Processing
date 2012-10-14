@@ -1,3 +1,6 @@
+// Browse -- http://processing.org/discourse/beta/num_1269983154.html
+// Swing version, updated for 2.0
+
 import javax.swing.JFileChooser;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import javax.swing.SwingUtilities;
@@ -18,10 +21,9 @@ void setup()
   }
 }
 
+File selectedFile;
 protected String selectImage(final String prompt)
 {
-  checkParentFrame();
-
   try
   {
     SwingUtilities.invokeAndWait(new Runnable()
@@ -30,19 +32,20 @@ protected String selectImage(final String prompt)
       {
         JFileChooser fileDialog = new JFileChooser();
         fileDialog.setDialogTitle(prompt);
-        FileNameExtensionFilter filter = new FileNameExtensionFilter(
-            "JPG & PNG Images", "jpg", "png");
-        fileDialog.setFileFilter(filter);
-        int returnVal = fileDialog.showOpenDialog(parentFrame);
-        if (returnVal == JFileChooser.APPROVE_OPTION) 
+        FileNameExtensionFilter fileFlter = new FileNameExtensionFilter(
+            "JPG & PNG Images", "jpg", "png"
+        );
+        fileDialog.setFileFilter(fileFlter);
+        int userAnswer = fileDialog.showOpenDialog(ImageJFileChooser.this); // Or just null
+        if (userAnswer == JFileChooser.APPROVE_OPTION)
         {
           selectedFile = fileDialog.getSelectedFile();
         }
       }
     });
-    return (selectedFile == null) ? null : selectedFile.getAbsolutePath();
+    return selectedFile == null ? null : selectedFile.getAbsolutePath();
   }
-  catch (Exception e) 
+  catch (Exception e)
   {
     e.printStackTrace();
     return null;

@@ -1,3 +1,6 @@
+// Browse -- http://processing.org/discourse/beta/num_1269983154.html
+// AWT version, filtering doesn't work
+
 import java.awt.FileDialog;
 import javax.swing.SwingUtilities;
 
@@ -26,9 +29,9 @@ protected String selectImage(final String prompt)
         selectedFile = (filename == null) ? null : new File(directory, filename);
       }
     });
-    return (selectedFile == null) ? null : selectedFile.getAbsolutePath();
+    return selectedFile == null ? null : selectedFile.getAbsolutePath();
   }
-  catch (Exception e) 
+  catch (Exception e)
   {
     e.printStackTrace();
     return null;
@@ -43,4 +46,3 @@ class FilterImages implements FilenameFilter
     return name.endsWith(".jpg") || name.endsWith(".png");
   }
 }
-
