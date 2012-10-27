@@ -33,6 +33,4 @@ void draw()
   h1.draw();
   h2.draw();
   h3.draw();
-  
-  noLoop();
 }

@@ -1,15 +1,14 @@
-PGraphicsSVG 1.2 - 2012-08-14
+P8gGraphicsSVG 2.0 - 2012-10-14
 
-PGraphicsSVG is to SVG what PGraphicsPDF is to PDF: a vector renderer for Processing sketches,
+P8gGraphicsSVG is to SVG what PGraphicsPDF is to PDF: a vector renderer for Processing sketches,
 allowing to save the drawings of a sketch to a SVG file,  via the Apache Batik library (included).
 
 This renderer extends the PGraphicsJava2D renderer, so (almost) any sketch using this (default) renderer
 can render to SVG, with some limitations.
 It doesn't handle animations, rendering only a static image.
-But saveFrame() can be used to generate several SVG files.
 Unlike PGraphicsPDF, it doesn't handle multiple pages.
 And the Pausing While Recording (pause-resume) sketch of the PDF library
-cannot be done with PGraphicsSVG because of a different way of handling recording events.
+cannot be done with P8gGraphicsSVG because of a different way of handling recording events.
 But see the SavingChoice sketch in the example for a way to save an image out of animation.
 
 The documentation (beside this README) is currently lacking, but the provided examples
@@ -17,8 +16,8 @@ should guide you how to use the library. And you can take a look at the source's
 (the parts between /** and */ marks) for a bit more information.
 
 Limitations: the pixel manipulations are not allowed (but can be done on a classical PGraphics,
-they will be saved as image by the library).
-The following functions cannot be used with PGraphicsSVG:
+they will be saved as an image by the library).
+The following functions cannot be used with P8gGraphicsSVG:
 loadPixels
 updatePixels
 get
@@ -34,11 +33,11 @@ copy
 By Philippe Lhoste <PhiLho(a)GMX.net> http://Phi.Lho.free.fr & http://PhiLho.deviantART.com
 
 Home page of the library:
-http://Phi.Lho.free.fr/Programming/Processing/PGraphicsSVG/
+http://Phi.Lho.free.fr/Programming/Processing/P8gGraphicsSVG/
 Source code:
-http://bazaar.launchpad.net/~philho/+junk/Processing/files/head:/libraries/PGraphicsSVG/
+http://bazaar.launchpad.net/~philho/+junk/Processing/files/head:/libraries/P8gGraphicsSVG/
 The binary distribution of the library is currently located at:
-http://Phi.Lho.free.fr/Programming/Processing/PGraphicsSVG/PGraphicsSVG.zip
+http://Phi.Lho.free.fr/Programming/Processing/P8gGraphicsSVG/P8gGraphicsSVG.zip
 
 Copyright notice: For details, see the following file:
 http://Phi.Lho.free.fr/softwares/PhiLhoSoft/PhiLhoSoftLicence.txt
@@ -48,7 +47,7 @@ Copyright (c) 2012 Philippe Lhoste / PhiLhoSoft
 Scalable Vector Graphics (SVG)
 http://www.w3.org/Graphics/SVG/
 
-This version of PGraphicsSVG uses Apache Batik 1.8pre compiled by myself (see below).
+This version of P8gGraphicsSVG uses Apache Batik 1.8pre compiled by myself (see below).
 http://xmlgraphics.apache.org/batik/
 
 It is to be used with Processing 1.5+
@@ -56,10 +55,15 @@ http://Processing.org
 
 --
 
+This is a 2.0 version because I renamed the library and changed the package name (see the history notes at the end).
+I also removed the saveFrame() support, as Ben Fry estimated this should be restricted to saving to a binary image format.
+
+--
+
 Note: there is a bug* in Batik 1.7, binary distribution dated 2008-01-09.
 It has been fixed in the SVN trunk but not released in the binary version yet.
 Text size defined in inline CSS is written without unit,
-making its size to be ignored by some renderers (Firefox and Opera).
+making its size to be ignored by some SVG renderers (Firefox and Opera).
 A suggested workaround is to disable inline CSS (setUseInlineCSS(false)).
 Another one is to hand-edit (or use automated replace in) the generated SVG to add the missing unit.
 A regular expression like: /font-size:(\d+);/ -> /font-size:\1px;/ can do the job.
@@ -98,7 +102,7 @@ It is just a harmless warning that can be ignored.
 The examples
 
 Hearts illustrates that we can make a sketch dedicated to exporting a SVG file: its primary drawing surface
-is a PGraphicsSVG and calling exit() saves the drawing.
+is a P8gGraphicsSVG and calling exit() saves the drawing.
 
 AutoCrop shows how to draw on screen as well as recording the drawing. Here, endRecord() is used
 to save the file, as exit() would hide the result.
@@ -143,6 +147,21 @@ Java2D drawing commands.
 
 So I created a new library, modeled after the PGraphicsPDF one, allowing more options,
 correctly handling images, and working with Processing 1.5.1 and 2.0a (and hopefully later versions!).
-Like PGraphicsPDF, they rely on a library (iText for PDF, Batik for SVG) that reuse the Java2D API,
+Like PGraphicsPDF, they rely on a library (iText for PDF, Batik for SVG) that reuses the Java2D API,
 allowing to write vector files from regular Java programs with little changes.
 This leads to a simple and short implementation, allowing lot of flexibility.
+
+
+Why the P8gGraphicsSVG name? I initially named it PGraphicsSVG, for consistency with PGraphicsPDF
+and others, thinking that someday it might be the base for an official PGraphics for Processing.
+But Ben Fry wasn't pleased with the P prefix hijack, as it "pollutes" the namespace.
+He also asked the .processing. part in the package name to be changed, even though it is more harmless
+(no confusion possible).
+Understanding the need for respecting the rules set for library writing, I chose the P8g prefix.
+I dislike the P5 prefix, derived from the PROCE55ING naming that was used in the past to avoid confusion
+with the more generic 'processing' name, too common in the computing world.
+I don't like either the Pro prefix, legit but sounding a bit pretentious as one can confuse with 'Professional',
+and I don't see my library as a professional one... :-)
+So I used the same trick than in i18n and l10n (internationalization and localization),
+ie. replacing the letters between the first and last letter by their number of occurrences.
+There are 8 letters in 'rocessin', so that's P8g...

@@ -1,0 +1,203 @@
+Processing is based on the Java language, but makes efforts to insulate beginners for some of the difficulties to code in this language.
+
+Thus, it doesn't require to declare a class and a main() method, and it avoids as much as possible to throw exceptions. But what are these?
+
+==== Have you said exceptions? ====
+
+Exceptions in Java are a flow control facility, a way to handle exceptional situations, errors in general.
+Some runtime errors, or some methods, can throw an exception. These are actually objects, and when they are ''thrown'', they interrupt the normal sequence of instructions to go at a point where they are ''handled''. If there is no place where they are handled, they just stop the program.
+
+This is not a formal course about exceptions, I prefer to send you to the Oracle tutorials (or others) for something more complete.
+
+Just a word about handling exceptions: to get them, you have to surround the part that can throw them between a <code>try</code> statement and a <code>catch</code> one, like this:
+<source lang="processing">
+try
+{
+  doStuffThatCanThrowAnException();
+}
+catch (SomeException e)
+{
+  // Handle the error, or just print it, like:
+  println("Error: " + e.getMessage());
+}
+</source>
+
+==== Exceptions in Processing ====
+
+As said, Processing generally don't throw exceptions on users, to simplify the usage of its functions.
+In regular Java, opening a file throws an IOException, while Processing silently catches this exception and just return <code>null</code> as result.
+
+But it is still quite easy to get them, when doing some programming errors. Two of the most common errors are [[Why do I get a NullPointerException?|NullPointerException]] (NPE) and ArrayIndexOutOfBoundsException (AIOOBE).
+
+You get the first one when you try to use an object that isn't initialized.
+For example:
+<source lang="processing">
+int[] foo; // Missing a foo = new int[10]; for example
+foo[0] = 5;
+// Or
+PGraphics img; // Forgot to call createGraphics()
+img.beginDraw();
+</source>
+
+You get the second one when you use an index in an array beyond its bounds (size), like:
+<source lang="processing">
+int[] foo = new int[10];
+foo[10] = 5; // Indexes are limited between 0 and 9, inclusive
+</source>
+
+Some people have heard of the try / catch construct and try to use them on such errors. But that's an overkill: exception handling is verbose, it is rather slow (compared to normal flow control) and should be done only when not avoidable.
+
+It is easy to avoid a NPE:
+<source lang="processing">
+if (img == null)
+  return; // Don't process a null image (can be because a loaded image isn't found)
+</source>
+Or do some other process, like loading the image or an alternative one.
+
+And to avoid an AIOOBE:
+<source lang="processing">
+if (idx >= 0 && idx < foo.length)
+{
+  // use foo[idx]
+}
+</source>
+Or just avoid going beyond the bounds...
+
+==== Unhandled exception type XxxException ====
+
+Sometime, when using a Java library not designed for Processing, or even just some parts of the Java API, coders see a message like "Unhandled exception type XxxException". They are confused and believe it is an error like the NPE one, but that's actually a compilation error, not a runtime error.
+
+The confusion is understandable because Processing does the compilation and the run in one go, so the frontier is blurry...
+
+The compilation error means that Java / Processing cannot even run your program, because it isn't legal. Like when you put an extra closing brace (or missing one), or forgetting a semi-colon.
+
+Why is that? You need to know there are two kinds of exceptions in Java. Well, the taxonomy is more complex than that, but for the discussion here it is enough.
+There are "regular exceptions", like NPE or AIOOBE, called <code>RuntimeException</code>, that can be optionally caught, and "checked exceptions" (all the non-runtime exceptions), for which the language enforces the need to rethrow them (by a declaration in the method) or to catch them.
+
+This is a highly controversial feature, and no other language (to my knowledge) has such checked exceptions. We won't argue here of the usefulness or harm this concept can have or do...
+
+Anyway, checked exceptions are generally exceptions that are likely to happen, and which are generally not avoidable by simple checks (unlike NPE for example). Good examples are IOException (a file might be absent or restricted in access) and network error (no network, no access, etc.). Another example, from a library, is JSONException, thrown if the syntax of the data being parsed isn't correct.
+
+The above message (unhandled exception) is displayed when the compiler notices that you use a method that declared it can throw such exception. Thus, it requires you to handle the exception.
+
+Two solutions:
+
+- Catch the exception:
+<source lang="processing">
+void writeToFile(String path, String data)
+{
+  // The writer declaration must be external to the try clause,
+  // to be able to close it properly.
+  // The assignment to null is necessary, otherwise Java complains that the variable
+  // might be not initialized.
+  Writer writer = null;
+  try
+  {
+    // The 'true' parameter allows to append at the end of the file
+    writer = new FileWriter(path, true); // Can throw IOException
+    writer.append(data).append("\n"); // Can also throw IOException
+  }
+  catch (IOException e)
+  {
+    // Handle the error, or just print it, like:
+    println("Error when writing file: " + e.getMessage());
+    // Alternatively (show where the error happened
+    e.printStackTrace();
+  }
+  // This part is executed in all cases, with or without exception.
+  // It allows to avoid resource leaks (not closing the file if there is an exception) found if writer is closed in the try part.
+  finally
+  {
+    if (writer != null) // Can be null if the constructor thrown an exception
+    {
+      try
+      {
+        writer.close();
+      }
+      catch (IOException e) // Yes, even close() can throw an exception!
+      {
+        println("Error when closing file: " + e.getMessage());
+      }
+    }
+  }
+}
+</source>
+This shows how I/O are traditionally (and correctly) handled in Java. The treatment of the exception can be more complex, logging the error with the logging framework, rethrowing the exception, perhaps wrapped in another, to be handled at another level, etc.
+
+- Just declare the exception, so it is handled at a higher level (whoever calls it) or just let it stop the program. Acceptable in small programs, but cannot work in Processing because a method is necessary called from <code>setup()</code> or <code>draw()</code> or other event handling function which doesn't declare throwing exceptions.
+<source lang="processing">
+void writeToFile(String path, String data)
+    throws IOException
+{
+  // The 'true' parameter allows to append at the end of the file
+  Writer writer = new FileWriter(path, true); // Can throw IOException
+  writer.append(data).append("\n"); // Can also throw IOException
+  writer.close(); // Bad code: the writer isn't closed if exception is thrown in the second line
+}
+</source>
+A solution to the resource leak is to return the writer so that the caller can close it... or reuse it if it is also provided as parameter.
+<source lang="processing">
+Writer appendToFile(Writer writer, String path, String data)
+    throws IOException
+{
+  if (writer == null)
+  {
+    if (path == null)
+    {
+      // A classical way to handle bad input to a method.
+      // Note that you need to create the exception (new) before throwing it.
+      throw new IllegalArgumentException("Either writer or path must be non-null");
+    }
+    // The 'true' parameter allows to append at the end of the file
+    writer = new FileWriter(path, true); // Can throw IOException
+  }
+  writer.append(data).append("\n"); // Can also throw IOException
+  return writer;
+}
+</source>
+It can be used as such:
+<source lang="processing">
+void setup()
+{
+  String path = "G:/Tmp/Foo.txt"; // Use a path adapted to your system. Try a non-existing folder to see exceptions...
+  writeToFile(path, "Foo");
+  // Not efficient as we have to open and close the file on each string to write
+  writeToFile(path, "Bar");
+
+  Writer writer = null;
+  try
+  {
+    writer = appendToFile(null, path, "aFoo");
+    // We can chain the writing
+    appendToFile(writer, null, "aBar");
+    // Test the IAE...
+    appendToFile(null, null, "Gasp!");
+  }
+  catch (IOException e)
+  {
+    println("Error when writing file: " + e.getMessage());
+  }
+  catch (IllegalArgumentException e) // Optional, show we can handle several exceptions
+  {
+    println("Oops!\n" + e.getMessage());
+  }
+  finally // This part is executed in all cases, with or without exception
+  {
+    if (writer != null) // Can be null if the constructor thrown an exception
+    {
+      try
+      {
+        writer.close();
+      }
+      catch (IOException e) // Yes, even close() can throw an exception!
+      {
+        println("Error when closing file: " + e.getMessage());
+      }
+    }
+  }
+  exit();
+}
+</source>
+
+Yes, proper exception handling in Java is verbose and quite complex, that's why Processing avoids to expose the user from most of them...
+But when you start to do advanced things (like appending to a file, as above), you need to know how to properly handle them.
