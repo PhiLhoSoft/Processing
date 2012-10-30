@@ -4,8 +4,9 @@
 // Took ideas and formulae...
 
 final int NB_OF_POINTS = 50;
-final int STEP_TIME = 2000; // Nb of milliseconds per step
+int stepTime = 2000; // Nb of milliseconds per step
 int lastTime;
+int stepCounter;
 
 Ransac ransac;
 Drawer drawer = new Drawer();
@@ -20,6 +21,7 @@ Line line2;
 void setup()
 {
   size(800, 800);
+  smooth();
 
   initPoints();
 
@@ -43,21 +45,29 @@ void setup()
 
 void draw()
 {
-  background(255);
-  if (ransac != null && // Algorithm in progress
-      millis() - lastTime > STEP_TIME)
+  if (ransac != null) // Algorithm in progress
   {
-    ransac.computeNextStep();
     if (ransac.isFinished())
-    { 
-      println("Done");
+    {
+      background(255);
+//~       println("Done");
     }
-//    else
-//    {
+    else
+    {
+      background(240);
+      if (millis() - lastTime > stepTime)
+      {
+        ransac.computeNextStep();  
+        stepCounter++;
 //      println("Next step " + ransac);
 //      println(ransac.getSample());
-//    }
-    lastTime = millis();
+        lastTime = millis();
+      }
+    }
+  }
+  else
+  {
+    background(240);
   }
 
   for (Point p : points)
@@ -92,11 +102,15 @@ void draw()
   {
     Line line = ransac.getBestModel();
     drawer.drawLine(line, #EE88CC);
-    line = ransac.getCurrentModel();
-    if (line != null)
+    if (!ransac.isFinished())
     {
+      line = ransac.getCurrentModel();
       drawer.drawLine(line, #DDAADD);
     }
+
+    fill(#225577);
+    text("Step: " + stepCounter + " / " + ransac.getIterationNb(), 10, 20);
+    text("Score: " + nf(ransac.getCurrentScore(), 1, 2) + " / " + nf(ransac.getBestScore(), 1, 2), 10, 35);
   }
 }
 
@@ -109,9 +123,10 @@ void mousePressed()
   else if (mouseButton == RIGHT)
   {
     println(points.size());
-    ransac = new Ransac(new SimpleFitting(), points, 10.0);
+    ransac = new Ransac(new SimpleFitting(), points, 15.0);
     ransac.computeNextStep();
-    lastTime = millis();
+    stepCounter++;
+    lastTime = millis() + stepTime + 1;
   }
 }
 
@@ -119,9 +134,18 @@ void keyPressed()
 {
   if (key == 'c') // Clear
   {
+    stepCounter = 0;
     ransac = null;
     points.clear();
     initPoints();
+  }
+  else if (key == '+') // Accelerate
+  {
+    stepTime /= 1.25;
+  }
+  else if (key == '-') // Slow down
+  {
+    stepTime *= 1.25;
   }
 }
 

@@ -28,6 +28,7 @@ public class Ransac
   private List<Point> m_currentSample;
   private List<Point> m_currentInliers = new ArrayList<Point>();
   private int m_currentIterationNb;
+  private float m_currentScore;
 
   private Fitting m_fitting;
 
@@ -40,23 +41,15 @@ public class Ransac
     m_iterationNb = getIterationNb(0.99, 0.5, m_fitting.getNeededPointNb());
   }
 
-  public List<Point> getInliers()
-  {
-    return m_bestInliers;
-  }
-  public List<Point> getSample()
-  {
-    return m_currentSample;
-  }
-  public Line getCurrentModel()
-  {
-    return m_currentModel;
-  }
-  public Line getBestModel()
-  {
-    return m_bestModel;
-  }
+  public Line getCurrentModel() { return m_currentModel; }
+  public List<Point> getSample() { return m_currentSample; }
+  public float getCurrentScore() { return m_currentScore; }
+  public int getIterationNb() { return m_iterationNb; }
+  public List<Point> getInliers() { return m_bestInliers; }
+  public Line getBestModel() { return m_bestModel; }
+  public float getBestScore() { return m_bestScore; }
 
+  // "When the number of iterations computed is limited the solution obtained may not be optimal, and it may not even be one that fits the data in a good way."
   private int getIterationNb(float ransacProbability, float outlierRatio, int sampleSize)
   {
     return ceil(log(1 - ransacProbability) /
@@ -68,9 +61,13 @@ public class Ransac
     return min + int(random((max - min + 1)));
   }
 
+  /** Takes pointNb distinct random points from the data. */
   private List<Point> takeRandomSample(int pointNb)
   {
     int totalPointNb = m_points.size();
+    // Base assertion. Actually, totalPointNb should be much greater than pointNb,
+    // otherwise the algorithm can take some time rejecting the already taken points.
+    // Should that be the case, it would be more efficient to shuffle a copy of the data... But unlikely, anyway.
     assert totalPointNb > pointNb : "Not enough points to work! Need " + pointNb + " got " + totalPointNb;
     List<Point> points = new ArrayList<Point>();
     for (int i = 0; i < pointNb; )
@@ -91,14 +88,19 @@ public class Ransac
     return m_currentIterationNb >= m_iterationNb;
   }
 
-  public void computeNextStep()
+  /**
+   * Computes the next step of the algorimth.
+   *
+   * @return the score for the current (last tried) model
+   */
+  public float computeNextStep()
   {
     if (isFinished())
     {
       m_currentSample.clear();
       m_currentInliers.clear();
       m_currentModel = null;
-      return;
+      return 0;
     }
 
     m_currentInliers.clear();
@@ -129,7 +131,7 @@ public class Ransac
     }
 //    if (m_currentInliers.size() > m_minNbOfCloseData &&
 //        score < m_bestScore)
-    println("Score: " + score + "/" + m_bestScore);
+//~     println("Score: " + score + "/" + m_bestScore);
     if (score < m_bestScore)
     {
       m_bestModel = m_currentModel;
@@ -137,6 +139,9 @@ public class Ransac
       m_bestScore = score;
     }
     m_currentIterationNb++;
+
+    m_currentScore = score;
+    return score;
   }
 
   public String toString()
