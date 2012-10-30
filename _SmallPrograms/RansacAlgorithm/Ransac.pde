@@ -44,10 +44,18 @@ public class Ransac
   public Line getCurrentModel() { return m_currentModel; }
   public List<Point> getSample() { return m_currentSample; }
   public float getCurrentScore() { return m_currentScore; }
+  public int getCurrentIterationNb() { return m_currentIterationNb; }
   public int getIterationNb() { return m_iterationNb; }
   public List<Point> getInliers() { return m_bestInliers; }
   public Line getBestModel() { return m_bestModel; }
   public float getBestScore() { return m_bestScore; }
+  
+  public void tryMore(int nb) { m_iterationNb += nb; m_currentIterationNb--; }
+
+  public boolean isFinished()
+  {
+    return m_currentIterationNb > m_iterationNb;
+  }
 
   // "When the number of iterations computed is limited the solution obtained may not be optimal, and it may not even be one that fits the data in a good way."
   private int getIterationNb(float ransacProbability, float outlierRatio, int sampleSize)
@@ -83,11 +91,6 @@ public class Ransac
     return points;
   }
 
-  public boolean isFinished()
-  {
-    return m_currentIterationNb >= m_iterationNb;
-  }
-
   /**
    * Computes the next step of the algorimth.
    *
@@ -103,12 +106,18 @@ public class Ransac
       return 0;
     }
 
-    m_currentInliers.clear();
-    m_currentSample = takeRandomSample(m_fitting.getNeededPointNb());
-    m_currentModel = m_fitting.estimateModel(m_currentSample);
-//    println(m_currentModel);
+    checkSample(takeRandomSample(m_fitting.getNeededPointNb()));
+    m_currentIterationNb++;
 
-    float score = 0;
+    return m_currentScore;
+  }
+
+  public void checkSample(List<Point> points)
+  {
+    m_currentSample = points;
+    m_currentModel = m_fitting.estimateModel(m_currentSample);
+    m_currentInliers.clear();
+    m_currentScore = 0;
     // For each point in the data
     for (Point point : m_points)
     {
@@ -120,28 +129,23 @@ public class Ransac
       float error = m_fitting.estimateError(point, m_currentModel);
       if (error > m_threshold) // Big error
       {
-        score += m_threshold; // Cap the error at the threshold
+        m_currentScore += m_threshold; // Cap the error at the threshold
       }
       else // Error below threshold
       {
-        score += error; // Score it
+        m_currentScore += error; // Score it
         // This close point becomes an inlier
         m_currentInliers.add(point);
       }
     }
 //    if (m_currentInliers.size() > m_minNbOfCloseData &&
 //        score < m_bestScore)
-//~     println("Score: " + score + "/" + m_bestScore);
-    if (score < m_bestScore)
+    if (m_currentScore < m_bestScore)
     {
       m_bestModel = m_currentModel;
       m_bestInliers = m_currentInliers;
-      m_bestScore = score;
+      m_bestScore = m_currentScore;
     }
-    m_currentIterationNb++;
-
-    m_currentScore = score;
-    return score;
   }
 
   public String toString()

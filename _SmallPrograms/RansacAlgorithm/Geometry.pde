@@ -10,6 +10,11 @@ public class Point
     x = px;
     y = py;
   }
+  
+  public float dist(float ptX, float ptY)
+  {
+    return PApplet.dist(x, y, ptX, ptY);
+  }
 
   public String toString()
   {

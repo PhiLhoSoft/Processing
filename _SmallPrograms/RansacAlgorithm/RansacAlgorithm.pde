@@ -1,22 +1,32 @@
-// RANSAC algorithm, see Wikipedia: http://en.wikipedia.org/wiki/RANSAC
-// This implementation was helped by the JavaScript implementation at
-// http://www.visual-experiments.com/demo/ransac.js/
-// Took ideas and formulae...
+/**
+RANSAC algorithm, see Wikipedia: http://en.wikipedia.org/wiki/RANSAC
+This implementation was helped by the JavaScript implementation at
+http://www.visual-experiments.com/demo/ransac.js/
+Took ideas and formulae...
 
+by Philippe Lhoste <PhiLho(a)GMX.net> http://Phi.Lho.free.fr & http://PhiLho.deviantART.com
+*/
+/* File/Project history:
+ 1.01.000 -- 2012/10/30 (PL) -- Final touch, with adding more iterations, user mode, etc.
+ 1.00.000 -- 2012/10/24 (PL) -- Creation.
+*/
+/* Copyright notice: For details, see the following file:
+http://Phi.Lho.free.fr/softwares/PhiLhoSoft/PhiLhoSoftLicence.txt
+This program is distributed under the zlib/libpng license.
+Copyright (c) 2012 Philippe Lhoste / PhiLhoSoft
+*/
+
+final int LINE_HEIGHT = 15;
+int textPos;
 final int NB_OF_POINTS = 50;
 int stepTime = 2000; // Nb of milliseconds per step
 int lastTime;
-int stepCounter;
+float threshold = 15.0;
 
 Ransac ransac;
 Drawer drawer = new Drawer();
 ArrayList<Point> points = new ArrayList<Point>();
-
-// Test
-boolean bTestLines;
-Line line01, line02;
-Line line1;
-Line line2;
+List<Point> userSample;
 
 void setup()
 {
@@ -24,23 +34,6 @@ void setup()
   smooth();
 
   initPoints();
-
-  // Test
-  if (bTestLines)
-  {
-    Point p1 = new Point(10, height / 2);
-    Point p2 = new Point(width - 10, height / 2);
-    Point p3 = new Point(width / 2, 10);
-    Point p4 = new Point(width / 2, height - 10);
-    points.add(p1);
-    points.add(p2);
-    points.add(p3);
-    points.add(p4);
-    line01 = new Line(1, 0);
-    line02 = new Line(-1, height);
-    line1 = new Line(p1, p2);
-    line2 = new Line(p3, p4);
-  }
 }
 
 void draw()
@@ -57,10 +50,7 @@ void draw()
       background(240);
       if (millis() - lastTime > stepTime)
       {
-        ransac.computeNextStep();  
-        stepCounter++;
-//      println("Next step " + ransac);
-//      println(ransac.getSample());
+        ransac.computeNextStep();
         lastTime = millis();
       }
     }
@@ -73,11 +63,11 @@ void draw()
   for (Point p : points)
   {
     color ptColor = #88AAFF;
-    if (ransac != null)
+    if (ransac != null && !ransac.isFinished() ||
+        userSample != null && userSample.size() == 2)
     {
       List<Point> sample = ransac.getSample();
       List<Point> inliers = ransac.getInliers();
-//      println(inliers);
       if (sample.contains(p))
       {
         ptColor = #FFAA88;
@@ -87,45 +77,89 @@ void draw()
         ptColor = #EECCFF;
       }
     }
+    if (userSample != null && userSample.contains(p))
+    {
+      ptColor = #FFCCEE;
+    }
     drawer.drawPoint(p, ptColor);
-  }
-  if (bTestLines)
-  {
-    drawer.drawLine(line01, #FFAA88);
-    drawer.drawLine(line02, #FFAA88);
-    drawer.drawLine(line1, #FFAA88);
-    drawer.drawLine(line2, #FFAA88);
-    noLoop();
   }
 
   if (ransac != null)
   {
     Line line = ransac.getBestModel();
     drawer.drawLine(line, #EE88CC);
-    if (!ransac.isFinished())
+    if (!ransac.isFinished() || userSample != null && userSample.size() == 2)
     {
       line = ransac.getCurrentModel();
       drawer.drawLine(line, #DDAADD);
     }
-
-    fill(#225577);
-    text("Step: " + stepCounter + " / " + ransac.getIterationNb(), 10, 20);
-    text("Score: " + nf(ransac.getCurrentScore(), 1, 2) + " / " + nf(ransac.getBestScore(), 1, 2), 10, 35);
   }
+
+  fill(#225577);
+  textPos = 20;
+  show("Point nb: " + points.size());
+  if (ransac != null)
+  {
+    if (ransac.isFinished())
+    {
+      show("Step: End");
+    }
+    else
+    {
+      text("Speed: " + nf(1000.0 / stepTime, 1, 2), 150, textPos);
+      show("Step: " + ransac.getCurrentIterationNb() + " / " + ransac.getIterationNb());
+    }
+    show("Score: " + nf(ransac.getCurrentScore(), 1, 2) + " / " + nf(ransac.getBestScore(), 1, 2));
+    if (userSample != null)
+    {
+      show("User sample mode");
+    }
+  }
+}
+
+void show(String msg)
+{
+  text(msg, 10, textPos);
+  textPos += LINE_HEIGHT;
 }
 
 void mousePressed()
 {
-  if (mouseButton == LEFT)
+  if (mouseButton == LEFT) // Add another point
   {
-    points.add(new Point(mouseX, mouseY));
+    if (userSample == null)
+    {
+      // Before running, just add a new point
+      points.add(new Point(mouseX, mouseY));
+    }
+    else
+    {
+      if (userSample.size() == 2)
+      {
+        userSample.clear(); // New sample
+      }
+      // The user wants to test one line
+      for (Point p : points)
+      {
+        if (p.dist(mouseX, mouseY) < threshold / 2)
+        {
+          userSample.add(p);
+          println(p);
+          break;
+        }
+      }
+      if (userSample.size() == 2)
+      {
+        // Test the user sample
+        ransac.checkSample(userSample);
+      }
+    }
   }
-  else if (mouseButton == RIGHT)
+  else if (mouseButton == RIGHT) // Start the demo / computing
   {
     println(points.size());
-    ransac = new Ransac(new SimpleFitting(), points, 15.0);
+    ransac = new Ransac(new SimpleFitting(), points, threshold);
     ransac.computeNextStep();
-    stepCounter++;
     lastTime = millis() + stepTime + 1;
   }
 }
@@ -134,8 +168,8 @@ void keyPressed()
 {
   if (key == 'c') // Clear
   {
-    stepCounter = 0;
     ransac = null;
+    userSample = null;
     points.clear();
     initPoints();
   }
@@ -146,6 +180,18 @@ void keyPressed()
   else if (key == '-') // Slow down
   {
     stepTime *= 1.25;
+  }
+  if (ransac != null && ransac.isFinished())
+  {
+    if (key == '/') // Test user sample
+    {
+      userSample = new ArrayList<Point>();
+    }
+    else if (key == '*') // Try more
+    {
+      userSample = null;
+      ransac.tryMore(5);
+    }
   }
 }
 
