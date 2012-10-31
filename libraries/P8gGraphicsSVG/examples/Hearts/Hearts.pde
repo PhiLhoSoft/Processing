@@ -1,4 +1,4 @@
-import org.philhosoft.processing.svg.PGraphicsSVG;
+import org.philhosoft.p8g.svg.P8gGraphicsSVG;
 
 /*
 Simple test, exercing Bézier curves and simple geometry
@@ -10,7 +10,7 @@ Heart h1, h2, h3;
 void setup()
 {
   // Renders only on the SVG surface, no display
-  size(400, 400, PGraphicsSVG.SVG, "Hearts.svg");
+  size(400, 400, P8gGraphicsSVG.SVG, "Hearts.svg");
   smooth();
   background(#88AAFF);
 

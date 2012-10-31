@@ -1,4 +1,4 @@
-import org.philhosoft.processing.svg.PGraphicsSVG;
+import org.philhosoft.p8g.svg.P8gGraphicsSVG;
 
 /*
 Growing balls with collision checking.
@@ -8,10 +8,13 @@ Illustrates the usage of saveFrame().
 final int BALL_NB = 1000;
 final int MARGIN = 50;
 Ball[] balls = new Ball[BALL_NB];
+P8gGraphicsSVG svg;
 
 void setup()
 {
-  size(800, 800, PGraphicsSVG.SVG);
+  size(800, 800, P8gGraphicsSVG.SVG);
+  // Cast the sketch's PGraphics to our type
+  svg = (P8gGraphicsSVG) g;
   smooth();
 
   for (int i = 0; i < BALL_NB; i++)
@@ -54,7 +57,7 @@ void draw()
   {
     // Show this is the end, no more move
     background(#EEFFEE);
-    noLoop(); // No more updated needed
+    noLoop(); // No more update needed
     println("Done at frame " + frameCount);
   }
 
@@ -65,7 +68,7 @@ void draw()
     balls[i].display();
   }
 
-  saveFrame("Sequence-###.svg");
+  svg.recordFrame("Sequence-###.svg");
 }
 
 class Ball

@@ -1,11 +1,11 @@
-import org.philhosoft.processing.svg.PGraphicsSVG;
+import org.philhosoft.p8g.svg.P8gGraphicsSVG;
 
 /*
 Allows the user to choose to save a particular frame of an animation.
 */
 
 float level = 0.1;
-PGraphicsSVG svg;
+P8gGraphicsSVG svg;
 
 void setup()
 {
@@ -13,7 +13,7 @@ void setup()
   smooth();
   frameRate(10);
 
-  svg = (PGraphicsSVG) createGraphics(width, height, PGraphicsSVG.SVG, "SineOnBezier.svg");
+  svg = (P8gGraphicsSVG) createGraphics(width, height, P8gGraphicsSVG.SVG, "SineOnBezier.svg");
   beginRecord(svg);
 
   println("Use s to save the current frame,\nr to save the current frame in a numbered file.\nUse q to end the sketch.");
@@ -56,12 +56,12 @@ void keyPressed()
 {
   if (key == 's') // Save the current image (and overwrite the previous one)
   {
-    svg.save();
+    svg.endRecord();
     println("Saved.");
   }
   else if (key == 'r') // Record the current image to a new numbered file
   {
-    svg.saveFrame("SineOnBezier-###.svg");
+    svg.recordFrame("SineOnBezier-###.svg");
     println("Saved #" + svg.savedFrameCount);
   }
   else if (key == 'q')
