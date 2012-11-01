@@ -1,12 +1,12 @@
 int queueSize = -1;
 
-ArrayDeque lines;
+ArrayDeque<PVector> shapes;
 
 void setup()
 {
   size(700, 700);
   frameRate(40);
-  lines = new ArrayDeque();
+  shapes = new ArrayDeque<PVector>();
   noFill();
   ellipseMode(CENTER);
   
@@ -27,18 +27,16 @@ void draw()
   if (mouseX != pmouseX || mouseY != pmouseY)
   {
     PVector p = new PVector(mouseX, mouseY);
-    lines.addFirst(p);
+    shapes.addFirst(p);
   }
-  if (lines.size() > queueSize)
+  if (shapes.size() > queueSize)
   {
-    lines.removeLast();
+    shapes.removeLast();
   }
 
-  Iterator it = lines.iterator();
   PVector pp = null;
-  while (it.hasNext())
+  for (PVector cp : shapes)
   {
-    PVector cp = (PVector) it.next();
     if (pp != null)
     {
       stroke(14, 7, 42);

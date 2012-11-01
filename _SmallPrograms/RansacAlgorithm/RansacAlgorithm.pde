@@ -1,8 +1,18 @@
 /**
+https://forum.processing.org/topic/ransac-algorithm
+
 RANSAC algorithm, see Wikipedia: http://en.wikipedia.org/wiki/RANSAC
 This implementation was helped by the JavaScript implementation at
 http://www.visual-experiments.com/demo/ransac.js/
 Took ideas and formulae...
+
+- Left click add a point to those already generated;
+- Right click launches the algorithm;
+- + increase the speed;
+- - decreases it;
+- * adds 5 iterations after the algorithm has ended (more tries);
+- / enters the user mode: the user can click on two points to see if the lines between them has a better score. If so, the best score is updated. User can choose another pair for another try.
+- c clears the current set of points and start over.
 
 by Philippe Lhoste <PhiLho(a)GMX.net> http://Phi.Lho.free.fr & http://PhiLho.deviantART.com
 */
