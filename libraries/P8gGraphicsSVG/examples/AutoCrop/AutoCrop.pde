@@ -1,4 +1,4 @@
-import org.philhosoft.processing.svg.PGraphicsSVG;
+import org.philhosoft.p8g.svg.P8gGraphicsSVG;
 
 /*
 Show simultaneous on-screen display and SVG export, and how the viewport clips the graphics.
@@ -18,7 +18,7 @@ void setup()
   hh = height / 2;
 
   // Start the recording
-  beginRecord(PGraphicsSVG.SVG, "AutoCrop.svg");
+  beginRecord(P8gGraphicsSVG.SVG, "AutoCrop.svg");
 }
 
 void draw()
@@ -43,7 +43,7 @@ void draw()
   // Show some text too
   fill(#000055);
   textSize(24);
-  text("PGraphicsSVG\nBy PhiLhoSoft", width / 7, height / 2.2);
+  text("P8gGraphicsSVG\nBy PhiLhoSoft", width / 7, height / 2.2);
 
   // End the recording, mandatory to save the file
   endRecord();

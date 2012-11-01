@@ -1,4 +1,4 @@
-import org.philhosoft.processing.svg.PGraphicsSVG;
+import org.philhosoft.p8g.svg.P8gGraphicsSVG;
 
 /*
 PImage testing, using various transformations.
@@ -17,7 +17,7 @@ void setup()
   noLoop();
 
   // Start the recording
-  beginRecord(PGraphicsSVG.SVG, "ImageTransform.svg");
+  beginRecord(P8gGraphicsSVG.SVG, "ImageTransform.svg");
   smooth();
   background(bgColor);
 

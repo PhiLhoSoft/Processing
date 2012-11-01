@@ -2,7 +2,7 @@
 P8gGraphicsSVG is to SVG what PGraphicsPDF is to PDF: a vector renderer for sketches,
 with output to the SVG format, via the Apache Batik library.
 
-Uses Batik 1.7 jars, experimentally defining the minimal subset needed to generate static SVG files.
+Uses Batik 1.8 jars, experimentally defining the minimal subset needed to generate static SVG files.
 
 by Philippe Lhoste <PhiLho(a)GMX.net> http://Phi.Lho.free.fr & http://PhiLho.deviantART.com
 */
@@ -12,7 +12,7 @@ by Philippe Lhoste <PhiLho(a)GMX.net> http://Phi.Lho.free.fr & http://PhiLho.dev
  1.00.000 -- 2012/08/04 (PL) -- Creation.
 */
 /* Copyright notice: For details, see the following file:
-http://Phi.Lho.free.fr/softwares/PhiLhoSoft/PhiLhoSoftLicence.txt
+http://Phi.Lho.free.fr/softwares/PhiLhoSoft/PhiLhoSoftLicense.txt
 This program is distributed under the zlib/libpng license.
 Copyright (c) 2012 Philippe Lhoste / PhiLhoSoft
 */
@@ -51,7 +51,7 @@ import processing.core.PGraphicsJava2D;
 public class P8gGraphicsSVG extends PGraphicsJava2D
 {
 	/** Shortcut to the fully qualified class name.	*/
-	// The name is a bit rendundant, I fear, but consistent with the PDF name (I cannot change PConstants!)
+	// The name is a bit rendundant (P8gGraphicsSVG.SVG), I fear, but consistent with the PDF name (I cannot change PConstants! to add this one...)
 	public static final String SVG = "org.philhosoft.p8g.svg.P8gGraphicsSVG";
 
 	public enum ImageFileFormat
@@ -69,16 +69,22 @@ public class P8gGraphicsSVG extends PGraphicsJava2D
 	 * or with a provided OutputStream, eg. in save to Web. */
 	protected OutputStream output;
 
+  private static final String EXTENSION = ".svg";
+  private static final String LIB_NAME = "P8gGraphicsSVG";
+
   /** Alllows to see some details on inner workings. */
 	private static boolean bDebug;
 
 	/** Avoid dispose() to write empty files. */
 	private boolean bHasDrawn;
 
+  /** The Batik graphics context. */
 	private SVGGraphics2D svgG2D;
 
-	private boolean bUseInlineCSS = true; // We want to use CSS style attributes
+  /** true (default) if we want to use CSS style attributes. */
+	private boolean bUseInlineCSS = true;
 
+  /** The format used to save bitmap images. Default to external PNG. */
 	private ImageFileFormat imageFileFormat = ImageFileFormat.EXTERNAL_PNG;
 
 	/**
@@ -87,7 +93,7 @@ public class P8gGraphicsSVG extends PGraphicsJava2D
 	 */
 	public P8gGraphicsSVG()
 	{
-		debugPrint("P8gGraphicsSVG");
+		debugPrint(LIB_NAME);
 
 		// SVG always likes native fonts. Always.
 		hint(ENABLE_NATIVE_FONTS);
@@ -98,13 +104,13 @@ public class P8gGraphicsSVG extends PGraphicsJava2D
 	/**
 	 * Sets the way attributes are generated in the SVG file.
 	 *
-	 * @param b  if true (default), the generated CSS will use CSS to define properties,
+	 * @param b  if true (default), the generated SVG will use CSS to define properties,
 	 *        otherwise, the properties will be defined by XML attributes.
 	 */
 	public void setUseInlineCSS(boolean b)
 	{
 		if (bUseInlineCSS == b)
-			return;
+			return; // No change, skip
 
 		bUseInlineCSS = b;
 
@@ -119,8 +125,8 @@ public class P8gGraphicsSVG extends PGraphicsJava2D
 	 *
 	 * @param iff  one of the P8gGraphicsSVG.ImageFileFormat:<ul>
 	 *        <li>P8gGraphicsSVG.ImageFileFormat.INTERNAL to embed the image in Base64 format in the SVG file (can make a big file!)
-	 *        <li>P8gGraphicsSVG.ImageFileFormat.EXTERNAL_PNG to save them as PNG external file
-	 *        <li>P8gGraphicsSVG.ImageFileFormat.EXTERNAL_JPEG to save them as Jpeg external file.</ul>
+	 *        <li>P8gGraphicsSVG.ImageFileFormat.EXTERNAL_PNG to save them as a PNG external file
+	 *        <li>P8gGraphicsSVG.ImageFileFormat.EXTERNAL_JPEG to save them as a Jpeg external file.</ul>
 	 */
 	public void setImageFileFormat(ImageFileFormat iff)
 	{
@@ -138,7 +144,7 @@ public class P8gGraphicsSVG extends PGraphicsJava2D
 	 * Since JAVA2D renderer wants only SCREEN or MODEL, use SCREEN as synonym of SHAPE...
 	 * <p>
 	 * This resets all renderer settings, and therefore must
-	 * be called <em>before</em> any other commands that set the fill()
+	 * be called <em>before</em> any other command that sets the fill()
 	 * or the textFont() or anything. Unlike other renderers,
 	 * use textMode() directly after the size() command.
 	 *
@@ -163,7 +169,7 @@ public class P8gGraphicsSVG extends PGraphicsJava2D
 		allocate();
 	}
 
-	/** Throw away the current drawing, clear the document, ready for new content. */
+	/** Throws away the current drawing, clear the document, ready for new content. */
 	public void clear()
 	{
 		debugPrint("clear");
@@ -172,7 +178,7 @@ public class P8gGraphicsSVG extends PGraphicsJava2D
 
 		// Erase the current content of the document
 		Element root = svgG2D.getRoot();
-        NodeList children = root.getChildNodes();
+    NodeList children = root.getChildNodes();
 //~ 		debugPrint(children);
 		if (children != null)
 		{
@@ -188,29 +194,43 @@ public class P8gGraphicsSVG extends PGraphicsJava2D
 	/**
 	 * Sets the library to write to an output stream instead of a file.
 	 */
-	public void setOutput(OutputStream output)
+	public void setOutput(OutputStream os)
 	{
-		this.output = output;
+		output = os;
 	}
 
 	/**
-	 * Same as endRecord() (save the file) but first, set the path as given.
+	 * Saves the current SVG image to the existing path.
+	 */
+	public void endRecord()
+	{
+		debugPrint("endRecord");
+
+		endDraw();
+		dispose(); // Save if has drawn
+	}
+
+	/**
+	 * Saves the current SVG image to the given path.
 	 */
 	public void endRecord(String filePath)
 	{
 		// Mostly there for symmetry with beginRecord()
-		save(filePath);
+		debugPrint("endRecord " + filePath);
+
+		setPath(filePath);
+		endRecord();
 	}
 
 	/**
-	 * Saves the current image to the existing path.
+	 * Grab an image of what's currently in the drawing area and save it as a .svg file,
+	 * replacing a ### sequence (minimum 2 #) with the number of saved images.
+	 * <p>
+	 * Best used just before endDraw() at the end of your draw().
 	 */
-	public void save()
+	public void recordFrame(String filePath)
 	{
-		debugPrint("save");
-
-		endDraw();
-		dispose(); // Save if has drawn
+		endRecord(insertFrameNumber(filePath));
 	}
 
 	/**
@@ -226,10 +246,10 @@ public class P8gGraphicsSVG extends PGraphicsJava2D
 		this.path = path;
 		if (path != null)
 		{
-			if (!path.toLowerCase().endsWith(".svg"))
+			if (!path.toLowerCase().endsWith(EXTENSION))
 			{
 				// if no .svg extension, add it..
-				path += ".svg";
+				path += EXTENSION;
 			}
 			file = new File(path);
 			if (!file.isAbsolute())
@@ -238,29 +258,6 @@ public class P8gGraphicsSVG extends PGraphicsJava2D
 				file = new File(path);
 			}
 		}
-	}
-
-	/**
-	 * Saves the current image to the given path.
-	 */
-	@Override // PImage
-	public void save(String filePath)
-	{
-		debugPrint("save " + filePath);
-
-		setPath(filePath);
-		save();
-	}
-
-	/**
-	 * Grab an image of what's currently in the drawing area and save it as a .svg file,
-	 * replacing a ### sequence (minimum 2 #) with the number of saved images.
-	 * <p>
-	 * Best used just before endDraw() at the end of your draw().
-	 */
-	public void saveFrame(String filePath)
-	{
-		save(insertFrameNumber(filePath));
 	}
 
 	@Override // PGraphics
@@ -349,7 +346,7 @@ public class P8gGraphicsSVG extends PGraphicsJava2D
 		SVGGeneratorContext ctx = SVGGeneratorContext.createDefault(document);
 
 		// General file comment
-		ctx.setComment(" Generated by Processing with the P8gGraphicsSVG library ");
+		ctx.setComment(" Generated by Processing with the " + LIB_NAME + " library ");
 
 		// Text options
 		if (textMode == SHAPE)
@@ -401,7 +398,7 @@ public class P8gGraphicsSVG extends PGraphicsJava2D
 		}
 		catch (org.apache.batik.svggen.SVGGraphics2DIOException e) // For EXTERNAL_XXX options
 		{
-			System.err.println("P8gGraphicsSVG error: Cannot create image handler: " + e.getMessage());
+			System.err.println(LIB_NAME + " error: Cannot create image handler: " + e.getMessage());
 //			e.printStackTrace();
 			// Fall back to internal case
 			GenericImageHandler ihandler = new CachedImageHandlerBase64Encoder();
@@ -433,7 +430,7 @@ public class P8gGraphicsSVG extends PGraphicsJava2D
 			}
 			else if (output == null)
 			{
-				throw new RuntimeException("P8gGraphicsSVG requires a path " +
+				throw new RuntimeException(LIB_NAME + " requires a path " +
 						"for the location of the output file.");
 			}
 			out = new OutputStreamWriter(output, "UTF-8");
@@ -461,14 +458,14 @@ public class P8gGraphicsSVG extends PGraphicsJava2D
 				}
 				catch (IOException e)
 				{
-					System.err.println("P8gGraphicsSVG error: Cannot close output: " + e.getMessage());
+					System.err.println(LIB_NAME + " error: Cannot close output: " + e.getMessage());
 //					e.printStackTrace();
 					success = false;
 				}
 			}
 			if (!success)
 			{
-				throw new RuntimeException("P8gGraphicsSVG error: Cannot save SVG image.");
+				throw new RuntimeException(LIB_NAME + " error: Cannot save SVG image.");
 			}
 			bHasDrawn = false;
 		}
@@ -491,12 +488,12 @@ public class P8gGraphicsSVG extends PGraphicsJava2D
 	{
 		if (file != null)
 		{
-			System.err.println("P8gGraphicsSVG error: Cannot write to file '" +
+			System.err.println(LIB_NAME + " error: Cannot write to file '" +
 					file.getAbsolutePath() + "': " + e.getMessage());
 		}
 		else
 		{
-			System.err.println("P8gGraphicsSVG error: Cannot write to output: " + e.getMessage());
+			System.err.println(LIB_NAME + " error: Cannot write to output: " + e.getMessage());
 		}
 	}
 
@@ -568,7 +565,7 @@ debugPrint("image " + image);
 
 	protected void nope(String function)
 	{
-		throw new RuntimeException("No " + function + "() for P8gGraphicsSVG");
+		throw new RuntimeException("No " + function + "() for " + LIB_NAME);
 	}
 
 	public static void setDebug(boolean b) { bDebug = b; }
@@ -576,7 +573,7 @@ debugPrint("image " + image);
 	{
 		if (bDebug)
 		{
-			PApplet.println("P8gGraphicsSVG - " + msg);
+			PApplet.println(LIB_NAME + " - " + msg);
 		}
 	}
 }

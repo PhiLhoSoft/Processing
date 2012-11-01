@@ -1,7 +1,7 @@
-import org.philhosoft.processing.svg.PGraphicsSVG;
+import org.philhosoft.p8g.svg.P8gGraphicsSVG;
 
 /*
-Try the various settings that can be used with PGraphicsSVG.
+Try the various settings that can be used with P8gGraphicsSVG.
 */
 
 int hw, hh;
@@ -21,7 +21,7 @@ void setup()
   font = createFont("Times New Roman", 32);
 
   // File name is provided later
-  PGraphicsSVG svg = (PGraphicsSVG) createGraphics(width, height, PGraphicsSVG.SVG);
+  P8gGraphicsSVG svg = (P8gGraphicsSVG) createGraphics(width, height, P8gGraphicsSVG.SVG);
   beginRecord(svg);
 
   drawImage();
@@ -31,11 +31,11 @@ void setup()
 
 
   // A new one
-  svg = (PGraphicsSVG) createGraphics(width, height, PGraphicsSVG.SVG);
+  svg = (P8gGraphicsSVG) createGraphics(width, height, P8gGraphicsSVG.SVG);
   // Uses attributes instead of CSS
   svg.setUseInlineCSS(false);
   // Save the image(s) in Base64 directly in the file
-  svg.setImageFileFormat(PGraphicsSVG.ImageFileFormat.INTERNAL);
+  svg.setImageFileFormat(P8gGraphicsSVG.ImageFileFormat.INTERNAL);
   beginRecord(svg);
 
   drawImage();
@@ -44,9 +44,9 @@ void setup()
 
 
   // A last one
-  svg = (PGraphicsSVG) createGraphics(width, height, PGraphicsSVG.SVG);
+  svg = (P8gGraphicsSVG) createGraphics(width, height, P8gGraphicsSVG.SVG);
   // Save the image(s) as Jpeg file. Bad here as transparency is lost, OK for photos, for example.
-  svg.setImageFileFormat(PGraphicsSVG.ImageFileFormat.EXTERNAL_JPEG);
+  svg.setImageFileFormat(P8gGraphicsSVG.ImageFileFormat.EXTERNAL_JPEG);
   // Store the letter shapes in the SVG file
   svg.textMode(SHAPE);
   beginRecord(svg);
@@ -96,7 +96,7 @@ void drawImage()
   text("PhiLhoSoft presents:", 0.333 * width, 3 * height / 5);
   fill(#000088);
   textSize(48);
-  text("PGraphicsSVG", 0.31 * width, 4 * height / 5);
+  text("P8gGraphicsSVG", 0.31 * width, 4 * height / 5);
 }
 
 PGraphics getImage()
