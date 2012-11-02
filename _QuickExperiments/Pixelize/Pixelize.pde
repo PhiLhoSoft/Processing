@@ -7,7 +7,7 @@ int level = 1;
 void setup()
 {
   size(400, 400);
-  original = loadImage("G:/Images/Hugh-Lauries.jpg");
+  original = loadImage("Hugh-Lauries.jpg");
   pixelized = createGraphics(original.width, original.height, JAVA2D);
 }
  
@@ -17,7 +17,7 @@ void draw()
   {
     lastTime = millis();
     level *= 2;
-    background(255);
+    background(#FAFDFF);
     pixelize();
     image(pixelized, 20, 20);
   }
@@ -25,36 +25,62 @@ void draw()
  
 void pixelize()
 {
+  // Width and height of a cell for this level
   int w = original.width / level;
   int h = original.height / level;
   if (w < 1 || h < 1)
   {
     noLoop();
+    println("Done");
     return;
   }
-  color[] colors = new color[w * h];
-  println(level + " " + w + "x" + h);
+  println(level + " -> " + w + "x" + h);
+  // We have some extra pixels to distribute
+  int excessW = original.width - w * level;
+  int excessH = original.height - h * level;
+  // We will distribute them in the middle
+  int excPosX = (level - excessW) / 2;
+  int excPosY = (level - excessH) / 2;
+//  println(excessW + "x" + excessH + " - " + excPosX + "x" + excPosY);
   
   pixelized.beginDraw();
   pixelized.noStroke();
+  // Position of each cell
+  int posX = 0;
   for (int i = 0; i < level; i++)
   {
+    int cw = w;
+    if (i >= excPosX && excessW > 0)
+    {
+      cw++; excessW--;
+    }
+    int rowExcessH = excessH;
+    int posY = 0;
     for (int j = 0; j < level; j++)
     {
-      int cellPos = i * w + j * h;
-      for (int x = 0; x < w; x++)
+      int ch = h;
+      if (j >= excPosY && rowExcessH > 0)
       {
-        for (int y = 0; y < h; y++)
+        ch++; rowExcessH--;
+      }
+      color[] colors = new color[cw * ch];
+      for (int x = 0; x < cw; x++)
+      {
+        for (int y = 0; y < ch; y++)
         {
-          int pixelPos = x + w * y;
-          int pos = (i * w + x) + (j * h + y) * original.width;
+          int pixelPos = x + cw * y;
+          int pos = (posX + x) + (posY + y) * original.width;
+//println(posX + " " + posY + " - " + x + " " + y + " - " + cw + " " + ch);
           colors[pixelPos] = original.pixels[pos];
         } 
       }
       color c = averageColors(colors);
       pixelized.fill(c);
-      pixelized.rect(i * w, j * h, w, h);
+      pixelized.rect(posX, posY, cw, ch);
+      
+      posY += ch;
     }
+    posX += cw;
   }
   pixelized.endDraw();
 }
@@ -71,9 +97,9 @@ color averageColors(color[] colors)
     b += c & 0xFF;
   }
   int len = colors.length;
-  int ar = (int) (r / len);
-  int ag = (int) (g / len);
-  int ab = (int) (b / len);
+  int ar = int(r / len);
+  int ag = int(g / len);
+  int ab = int(b / len);
   return 0xFF000000 | (ar << 16) | (ag << 8) | ab;
 }
 
