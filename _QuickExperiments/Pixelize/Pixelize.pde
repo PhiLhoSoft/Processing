@@ -1,9 +1,12 @@
+// https://forum.processing.org/topic/change-pixel
+
 PImage original;
 PGraphics pixelized;
-final int TIME = 2000;
+final int TIME = 500;
 int lastTime = -TIME;
-int level = 1;
- 
+float levelFactor = 1.1;
+float level = 1.9 / levelFactor;
+
 void setup()
 {
   size(400, 400);
@@ -16,7 +19,7 @@ void draw()
   if (millis() - lastTime > TIME)
   {
     lastTime = millis();
-    level *= 2;
+    level *= levelFactor;
     background(#FAFDFF);
     pixelize();
     image(pixelized, 20, 20);
@@ -25,9 +28,10 @@ void draw()
  
 void pixelize()
 {
+  int iLevel = int(level);
   // Width and height of a cell for this level
-  int w = original.width / level;
-  int h = original.height / level;
+  int w = original.width / iLevel;
+  int h = original.height / iLevel;
   if (w < 1 || h < 1)
   {
     noLoop();
@@ -36,18 +40,18 @@ void pixelize()
   }
   println(level + " -> " + w + "x" + h);
   // We have some extra pixels to distribute
-  int excessW = original.width - w * level;
-  int excessH = original.height - h * level;
+  int excessW = original.width - w * iLevel;
+  int excessH = original.height - h * iLevel;
   // We will distribute them in the middle
-  int excPosX = (level - excessW) / 2;
-  int excPosY = (level - excessH) / 2;
+  int excPosX = (iLevel - excessW) / 2;
+  int excPosY = (iLevel - excessH) / 2;
 //  println(excessW + "x" + excessH + " - " + excPosX + "x" + excPosY);
   
   pixelized.beginDraw();
   pixelized.noStroke();
   // Position of each cell
   int posX = 0;
-  for (int i = 0; i < level; i++)
+  for (int i = 0; i < iLevel; i++)
   {
     int cw = w;
     if (i >= excPosX && excessW > 0)
@@ -56,7 +60,7 @@ void pixelize()
     }
     int rowExcessH = excessH;
     int posY = 0;
-    for (int j = 0; j < level; j++)
+    for (int j = 0; j < iLevel; j++)
     {
       int ch = h;
       if (j >= excPosY && rowExcessH > 0)
