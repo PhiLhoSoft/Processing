@@ -1,6 +1,6 @@
 PGraphics pgGradient;
 PGraphics pgMask;
-PGraphics pgShape;
+PImage masked;
 
 PVector v1, v2, v3;
 PFont font;
@@ -15,12 +15,10 @@ void setup()
   size(800, 500);
 
   pgMask = createGraphics(width, height, JAVA2D);
-  // We cannot use mask() with a JAVA2D graphics...
-  pgShape = createGraphics(width, height, P2D);
   font = loadFont("AmericanTypewriter-24.vlw");
 
   // Make gradient
-  pgGradient = CreateGradient(width / 3, height / 3, 200, #00FF00, #0088FF);
+  pgGradient = createGradient(width / 3, height / 3, 200, #00FF00, #0088FF);
 
   // Define a triangle
   v1 = new PVector(50, 50);
@@ -47,9 +45,9 @@ void draw()
   }
 
   // Draw textured shapes
-  DrawTextured(D_TRIANGLE);
-  DrawTextured(D_TEXT);
-  
+  drawTextured(D_TRIANGLE);
+  drawTextured(D_TEXT);
+
   // Update the triangle
   v1.x += m1; if (v1.x > width || v1.x < 0) m1 = -m1;
   v2.x -= m2; if (v2.x > width || v2.x < 0) m2 = -m2;
@@ -59,7 +57,7 @@ void draw()
 
 // I would pass an interface and a make drawing class instead
 // but I wanted to make it simple here
-void DrawTextured(int drawing)
+void drawTextured(int drawing)
 {
   pgMask.beginDraw();
   pgMask.background(0);
@@ -75,19 +73,17 @@ void DrawTextured(int drawing)
     pgMask.text("Processing", 50, 2*height/3);
   }
   pgMask.endDraw();
-  PImage piMask = pgMask.get(0, 0, width, height);
 
-  pgShape.beginDraw();
-  // Draw the gradient on the whole graphics (erase it)
-  pgShape.image(pgGradient, 0, 0);
-  // And mask it with the mask image
-  pgShape.mask(piMask);
-  pgShape.endDraw();
+  // Copy the image in pgGradient to the masked image
+  masked = createImage(width, height, RGB);
+  arrayCopy(pgGradient.pixels, masked.pixels);
+  
+  masked.mask(pgMask);
 
-  image(pgShape, 0, 0);
+  image(masked, 0, 0);
 }
 
-PGraphics CreateGradient(int centerX, int centerY, int radius, color startColor, color endColor)
+PGraphics createGradient(int centerX, int centerY, int radius, color startColor, color endColor)
 {
   PGraphics pgGradient = createGraphics(width, height, JAVA2D);
 //  pgGradient.beginDraw();
