@@ -1,7 +1,10 @@
   public PShape loadPLShape(String filename) {
     if (filename.toLowerCase().endsWith(".svg")) {
 println("\n=== SVG File: " + filename + "\n");
-      PShape shape = new PLShapeSVG(this, filename);
+// For some reason, it no longer works in 1.5.1? Not important as most changes of PLShapeSVG
+// are now in the core of Processing...
+//      PShape shape = new processing.core.PLShapeSVG(this, filename);
+      PShape shape = new PShapeSVG(this, filename);
       return shape;
     }
     return null;

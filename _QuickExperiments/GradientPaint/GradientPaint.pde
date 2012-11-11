@@ -19,6 +19,8 @@ void setup()
 
   // Make gradient
   pgGradient = createGradient(width / 3, height / 3, 200, #00FF00, #0088FF);
+  // Create once the image
+  masked = createImage(width, height, RGB);
 
   // Define a triangle
   v1 = new PVector(50, 50);
@@ -75,7 +77,6 @@ void drawTextured(int drawing)
   pgMask.endDraw();
 
   // Copy the image in pgGradient to the masked image
-  masked = createImage(width, height, RGB);
   arrayCopy(pgGradient.pixels, masked.pixels);
   
   masked.mask(pgMask);
