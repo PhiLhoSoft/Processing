@@ -2,6 +2,9 @@ import org.philhosoft.p8g.svg.P8gGraphicsSVG;
 
 /*
 Allows the user to choose to save a particular frame of an animation.
+Key 's' saves the currently displayed image to a SVG file (always overwriting the previous one);
+key 'r' records this image to a numbered file;
+key 'q' quits the sketch without saving a file.
 */
 
 float level = 0.1;

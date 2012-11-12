@@ -43,7 +43,7 @@ void draw()
   // Show some text too
   fill(#000055);
   textSize(24);
-  text("P8gGraphicsSVG\nBy PhiLhoSoft", width / 7, height / 2.2);
+  text("P8gGraphicsSVG\nBy PhiLhoSoft", 4, height / 2.2);
 
   // End the recording, mandatory to save the file
   endRecord();

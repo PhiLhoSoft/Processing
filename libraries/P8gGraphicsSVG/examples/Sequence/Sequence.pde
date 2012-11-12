@@ -2,7 +2,7 @@ import org.philhosoft.p8g.svg.P8gGraphicsSVG;
 
 /*
 Growing balls with collision checking.
-Illustrates the usage of saveFrame().
+Illustrates the usage of recordFrame().
 */
 
 final int BALL_NB = 1000;

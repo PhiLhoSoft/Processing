@@ -1,6 +1,6 @@
 /*
 P8gGraphicsSVG is to SVG what PGraphicsPDF is to PDF: a vector renderer for sketches,
-with output to the SVG format, via the Apache Batik library.
+with outputs to the SVG format, via the Apache Batik library.
 
 Uses Batik 1.8 jars, experimentally defining the minimal subset needed to generate static SVG files.
 
@@ -200,7 +200,7 @@ public class P8gGraphicsSVG extends PGraphicsJava2D
 	}
 
 	/**
-	 * Saves the current SVG image to the existing path.
+	 * Saves the current SVG image to the existing path (given with the renderer).
 	 */
 	public void endRecord()
 	{
@@ -212,6 +212,8 @@ public class P8gGraphicsSVG extends PGraphicsJava2D
 
 	/**
 	 * Saves the current SVG image to the given path.
+   *
+   * @param filePath  the path of the file (absolute, or relative to the sketch path)
 	 */
 	public void endRecord(String filePath)
 	{
@@ -223,27 +225,34 @@ public class P8gGraphicsSVG extends PGraphicsJava2D
 	}
 
 	/**
-	 * Grab an image of what's currently in the drawing area and save it as a .svg file,
-	 * replacing a ### sequence (minimum 2 #) with the number of saved images.
+   * On a P8gGraphicsSVG renderer, saves to a .svg file what havee been drawn so far
+   * on the current frame.
 	 * <p>
-	 * Best used just before endDraw() at the end of your draw().
+	 * Similar to endRecord(), with a path. Best used just at the end of your draw().
+   *
+   * @param filePath  the path of the file (absolute, or relative to the sketch path),
+	 *        replacing a ### sequence (minimum 2 #) with the number of images saved so far (starting at 1).
 	 */
 	public void recordFrame(String filePath)
 	{
+		debugPrint("recordFrame " + filePath);
+
 		endRecord(insertFrameNumber(filePath));
 	}
 
 	/**
-	 * Sets the save path to the given absolute file path.
+	 * Sets the save path to the given file path.
 	 * The .svg extension is added if not present.
+   *
+   * @param filePath  the path of the file (absolute, or relative to the sketch path)
 	 */
 	@Override // PGraphics
-	public void setPath(String path)
+	public void setPath(String filePath)
 	{
-		debugPrint("setPath " + path);
+		debugPrint("setPath " + filePath);
 
 		// From PGraphics
-		this.path = path;
+		path = filePath;
 		if (path != null)
 		{
 			if (!path.toLowerCase().endsWith(EXTENSION))
@@ -514,24 +523,6 @@ public class P8gGraphicsSVG extends PGraphicsJava2D
 		return before + PApplet.nf(++savedFrameCount, sharpNb) + after;
 	}
 
-/*
-	public void image(PImage image, float x, float y)
-	{
-debugPrint("image " + image);
-		if (image instanceof P8gGraphicsSVG)
-		{
-			debugPrint("Drawing image " + image);
-			// Perhaps someday we will insert the Dom of the image into the current Dom...
-		}
-		else
-		{
-			super.image(image, x, y);
-		}
-	}
-	public void image(PImage image, float x, float y, float c, float d) { nope("image"); }
-	public void image(PImage image, float a, float b, float c, float d,
-			int u1, int v1, int u2, int v2) { nope("image"); }
-*/
 
 	//////////////////////////////////////////////////////////////
 

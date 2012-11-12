@@ -96,7 +96,7 @@ void drawImage()
   text("PhiLhoSoft presents:", 0.333 * width, 3 * height / 5);
   fill(#000088);
   textSize(48);
-  text("P8gGraphicsSVG", 0.31 * width, 4 * height / 5);
+  text("P8gGraphicsSVG", 0.28 * width, 4 * height / 5);
 }
 
 PGraphics getImage()
