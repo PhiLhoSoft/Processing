@@ -7,10 +7,10 @@ final float AXIS_LENGTH = 500;
 float middleX, middleY;
 PLSVector middle;
 
-PLSVector[] axes = new PLSVector[3];
+DispVector[] axes = new DispVector[3];
 color[] axisColors = { #0000FF, #00FF00, #FFAA00 };
 
-ArrayList<PLSVector> vectors = new ArrayList<PLSVector>();
+ArrayList<DispVector> vectors = new ArrayList<DispVector>();
 
 void setup()
 {
@@ -21,13 +21,19 @@ void setup()
   middleY = height / 2.0;
   middle = new PLSVector(middleX, middleY);
 
-  axes[0] = PLSVector.X_AXIS.copy().multiply(AXIS_LENGTH);
-  axes[1] = PLSVector.Y_AXIS.copy().multiply(AXIS_LENGTH);
-  axes[2] = PLSVector.Z_AXIS.copy().multiply(AXIS_LENGTH);
+  axes[0] = new DispVector(PLSVector.X_AXIS.copy().multiply(AXIS_LENGTH), 5, #0000FF);
+  axes[1] = new DispVector(PLSVector.Y_AXIS.copy().multiply(AXIS_LENGTH), 5, #00FF00);
+  axes[2] = new DispVector(PLSVector.Z_AXIS.copy().multiply(AXIS_LENGTH), 5, #FF8800);
 
-  vectors.add(PLSVector.X_AXIS.copy().rotate(PI / 4).multiply(AXIS_LENGTH * 2));
-  vectors.add(PLSVector.X_AXIS.copy().rotateXZ(PI / 4).multiply(AXIS_LENGTH * 3 / 2));
-  vectors.add(PLSVector.Y_AXIS.copy().rotateYZ(PI / 4).multiply(AXIS_LENGTH));
+  vectors.add(new DispVector(
+      PLSVector.X_AXIS.copy().rotate(PI / 4).multiply(AXIS_LENGTH * 1.5),
+      1, #00FFFF));
+  vectors.add(new DispVector(
+      PLSVector.X_AXIS.copy().rotateXZ(PI / 4).multiply(AXIS_LENGTH * 1.5),
+      1, #FF00FF));
+  vectors.add(new DispVector(
+      PLSVector.Y_AXIS.copy().rotateYZ(PI / 4).multiply(AXIS_LENGTH * 1.5),
+      1, #FFFF00));
 }
 
 void draw()
@@ -54,21 +60,38 @@ void draw()
   strokeWeight(1);
   sphere(10);
 
-  strokeWeight(5);
   int cc = 0;
-  for (PLSVector axis : axes)
+  for (DispVector axis : axes)
   {
-    stroke(axisColors[cc++]);
-    line(0, 0, 0, axis.getX(), axis.getY(), axis.getZ());
+    axis.display();
     pushMatrix();
-    translate(axis.getX(), axis.getY(), axis.getZ());
+    translate(axis.vector.getX(), axis.vector.getY(), axis.vector.getZ());
     box(7);
     popMatrix();
   }
-  strokeWeight(1);
-  stroke(#556677);
-  for (PLSVector v : vectors)
+  for (DispVector dv : vectors)
   {
-    line(0, 0, 0, v.getX(), v.getY(), v.getZ());
+    dv.display();
+  }
+}
+
+class DispVector
+{
+  PLSVector vector;
+  int weight; // stroke weight
+  color sc; // Stroke color
+
+  DispVector(PLSVector v, int w, color c)
+  {
+    vector = v;
+    weight = w;
+    sc = c;
+  }
+
+  void display()
+  {
+    strokeWeight(weight);
+    stroke(sc);
+    line(0, 0, 0, vector.getX(), vector.getY(), vector.getZ());
   }
 }
