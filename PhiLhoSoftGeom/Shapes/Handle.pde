@@ -1,28 +1,9 @@
-/*
-PhiLhoSoft's Processing sketches.
-http://processing.org/
-
-by Philippe Lhoste <PhiLho(a)GMX.net> http://Phi.Lho.free.fr & http://PhiLho.deviantART.com
-*/
-/* File/Project history:
- 2.00.000 -- 2012/11/13 (PL) -- Separate Handle and HandleList, standard method names.
- 1.01.000 -- 2010/01/29 (PL) -- Update to better code, added HandleList.
- 1.00.000 -- 2008/04/29 (PL) -- Creation.
-*/
-/* Copyright notice: For details, see the following file:
-http://Phi.Lho.free.fr/softwares/PhiLhoSoft/PhiLhoSoftLicense.txt
-This program is distributed under the zlib/libpng license.
-Copyright (c) 2008-2012 Philippe Lhoste / PhiLhoSoft
-*/
-
 /**
  * A circle that can be dragged with the mouse.
  */
 class Handle
 {
-  // Lazy (Processing) class: leave direct access to parameters... Avoids having lot of accessors.
-  float m_x, m_y; // Position of handle
-  int m_size; // Diameter of handle
+  ClosedShape m_shape;
   int m_lineWidth;
   color m_colorLine;
   color m_colorFill;
@@ -30,7 +11,7 @@ class Handle
   color m_colorDrag;
 
   private boolean m_bIsHovered, m_bDragged;
-  private float m_clickDX, m_clickDY;
+  private PLSVector m_clickPosition = new PLSVector();
 
   /**
    * Simple constructor with hopefully sensible defaults.
@@ -47,8 +28,7 @@ class Handle
       color colorLine, color colorFill, color colorHover, color colorDrag
   )
   {
-    m_x = x; m_y = y;
-    m_size = size;
+    m_shape = new Circle(x, y, size / 2.0);
     m_lineWidth = lineWidth;
     m_colorLine = colorLine;
     m_colorFill = colorFill;
@@ -64,15 +44,14 @@ class Handle
   void update(boolean bAlreadyDragging)
   {
     // Check if mouse is over the handle
-    m_bIsHovered = dist(mouseX, mouseY, m_x, m_y) <= m_size / 2;
+    m_bIsHovered = m_shape.contains(mouseX, mouseY);
     // If we are not already dragging and left mouse is pressed over the handle
     if (!bAlreadyDragging && mousePressed && mouseButton == LEFT && m_bIsHovered)
     {
       // We record the state
       m_bDragged = true;
       // And memorize the offset of the mouse position from the center of the handle
-      m_clickDX = mouseX - m_x;
-      m_clickDY = mouseY - m_y;
+      m_clickPosition.add(mouseX, mouseY).add(-m_x, -m_y);
     }
     // If mouse isn't pressed
     if (!mousePressed)
@@ -95,8 +74,7 @@ class Handle
   {
     if (m_bDragged)
     {
-      m_x = mouseX - m_clickDX;
-      m_y = mouseY - m_clickDY;
+      m_shape.setPosition(mouseX - m_clickDX, mouseY - m_clickDY);
     }
   }
 
