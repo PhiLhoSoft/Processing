@@ -21,9 +21,9 @@ void setup()
   middleY = height / 2.0;
   middle = new PLSVector(middleX, middleY);
 
-  axes[0] = new DispVector(PLSVector.X_AXIS.copy().multiply(AXIS_LENGTH), 5, #0000FF);
-  axes[1] = new DispVector(PLSVector.Y_AXIS.copy().multiply(AXIS_LENGTH), 5, #00FF00);
-  axes[2] = new DispVector(PLSVector.Z_AXIS.copy().multiply(AXIS_LENGTH), 5, #FF8800);
+  axes[0] = new Axis(PLSVector.X_AXIS, #0000FF);
+  axes[1] = new Axis(PLSVector.Y_AXIS, #00FF00);
+  axes[2] = new Axis(PLSVector.Z_AXIS, #FF8800);
 
   vectors.add(new DispVector(
       PLSVector.X_AXIS.copy().rotate(PI / 4).multiply(AXIS_LENGTH * 1.5),
@@ -60,14 +60,9 @@ void draw()
   strokeWeight(1);
   sphere(10);
 
-  int cc = 0;
   for (DispVector axis : axes)
   {
     axis.display();
-    pushMatrix();
-    translate(axis.vector.getX(), axis.vector.getY(), axis.vector.getZ());
-    box(7);
-    popMatrix();
   }
   for (DispVector dv : vectors)
   {
@@ -79,19 +74,39 @@ class DispVector
 {
   PLSVector vector;
   int weight; // stroke weight
-  color sc; // Stroke color
+  color vc; // vector color
 
   DispVector(PLSVector v, int w, color c)
   {
     vector = v;
     weight = w;
-    sc = c;
+    vc = c;
   }
 
   void display()
   {
     strokeWeight(weight);
-    stroke(sc);
+    stroke(vc);
     line(0, 0, 0, vector.getX(), vector.getY(), vector.getZ());
   }
 }
+
+class Axis extends DispVector
+{
+  Axis(PLSVector v, color c)
+  {
+    super(v.copy().multiply(AXIS_LENGTH), 5, c);
+  }
+
+  void display()
+  {
+    super.display();
+    pushMatrix();
+    translate(vector.getX(), vector.getY(), vector.getZ());
+    fill(vc);
+    noStroke();
+    box(7);
+    popMatrix();
+  }
+}
+
