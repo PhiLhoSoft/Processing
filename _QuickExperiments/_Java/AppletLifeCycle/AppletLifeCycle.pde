@@ -2,13 +2,15 @@
 
 StringBuilder buffer;
 
-public void init() {
+public void init() 
+{
   buffer = new StringBuilder();
   addItem("Initializing...");
   super.init();
 }
 
-public void start() {
+public void start() 
+{
   addItem("Starting...");
   super.start();
 }
@@ -31,17 +33,20 @@ void draw()
   text(buffer.toString(), 10, 20);
 }
 
-public void stop() {
+public void stop() 
+{
   addItem("Stopping...");
   super.stop();
 }
 
-public void destroy() {
+public void destroy() 
+{
   addItem("Preparing for unloading...");
   super.destroy();
 }
 
-private void addItem(String newWord) {
+private void addItem(String newWord) 
+{
   println(newWord);
   buffer.append(newWord).append("\n");
 }

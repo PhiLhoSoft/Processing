@@ -313,15 +313,6 @@ public class P8gGraphicsSVG extends PGraphicsJava2D
 		return false;
 	}
 
-	/**
-	 * Doen't record shapes.
-	 */
-	@Override // PGraphics
-	public boolean isRecording()
-	{
-		return false;
-	}
-
 	//===== ProtectedAPI (and private methods) =====
 
 	// Called by PGraphics.setSize()

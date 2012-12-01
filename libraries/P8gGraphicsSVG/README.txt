@@ -1,4 +1,4 @@
-P8gGraphicsSVG 2.0 - 2012-10-14
+P8gGraphicsSVG 2.0 - 2012-11-14
 
 P8gGraphicsSVG is to SVG what PGraphicsPDF is to PDF: a vector renderer for Processing sketches,
 allowing to save the drawings of a sketch to a SVG file, via the Apache Batik library (included).
@@ -89,12 +89,6 @@ Also removed some System.err from
 sources\org\apache\batik\ext\awt\image\codec\imageio\ImageIOImageWriter.java
 
 The jars distributed with this version are those hand-made 1.8pre jars, fixing the bug mentioned above.
-
-
-In some sketches (calling endRecord()) in Processing 1.5.1, you can see the message:
-"isRecording(), or this particular variation of it, is not available with this renderer."
-It is because Processing calls endRecord() on the main renderer as well as our recorder.
-It is just a harmless warning that can be ignored.
 
 --
 

@@ -3,7 +3,7 @@
 import processing.core.PApplet;
 import processing.core.PImage;
 
-import processing.opengl.*;
+//import processing.opengl.*;
 
 // Here, import processing.pdf.*; isn't needed
 
@@ -17,12 +17,19 @@ public class SimpleProject extends PApplet
 	{
 		// Better give full path, or use selectOutput()
 //		size(400, 400, PDF, sketchPath + "/../output/filename.pdf");
-//		size(1366, 768);
-		size(350, 403, OPENGL);
+		size(800, 800);
+//		size(350, 400, OPENGL);
 
 		println(sketchPath);
 //		bg = loadImage("../data/smileBkg.png");
 		bg = loadImage("../data/DarthVaderHelmet.jpg");
+
+		registerMethod("pre", this);
+	}
+
+	public void pre()
+	{
+		println(millis() % 1000);
 	}
 
 	@Override // Good to use: if you make a typo, you will get an error!

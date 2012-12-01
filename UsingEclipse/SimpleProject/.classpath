@@ -2,15 +2,12 @@
 <classpath>
 	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.6"/>
-	<classpathentry kind="lib" path="C:/Java/processing-1.5.1/modes/java/libraries/pdf/library/itext.jar"/>
-	<classpathentry kind="lib" path="C:/Java/processing-1.5.1/modes/java/libraries/pdf/library/pdf.jar"/>
-	<classpathentry kind="lib" path="C:/Java/processing-1.5.1/lib/core.jar"/>
-	<classpathentry kind="lib" path="C:/Java/processing-1.5.1/modes/java/libraries/opengl/library/gluegen-rt.jar"/>
-	<classpathentry kind="lib" path="C:/Java/processing-1.5.1/modes/java/libraries/opengl/library/jogl.jar">
-		<attributes>
-			<attribute name="org.eclipse.jdt.launching.CLASSPATH_ATTR_LIBRARY_PATH_ENTRY" value="C:/Java/processing-1.5.1/modes/java/libraries/opengl/library/windows32"/>
-		</attributes>
-	</classpathentry>
-	<classpathentry kind="lib" path="C:/Java/processing-1.5.1/modes/java/libraries/opengl/library/opengl.jar"/>
+	<classpathentry kind="lib" path="C:/Java/processing-2.0b6/core/library/core.jar"/>
+	<classpathentry kind="lib" path="C:/Java/processing-2.0b6/core/library/gluegen-rt.jar"/>
+	<classpathentry kind="lib" path="C:/Java/processing-2.0b6/core/library/gluegen-rt-natives-windows-i586.jar"/>
+	<classpathentry kind="lib" path="C:/Java/processing-2.0b6/core/library/jogl-all.jar"/>
+	<classpathentry kind="lib" path="C:/Java/processing-2.0b6/core/library/jogl-all-natives-windows-i586.jar"/>
+	<classpathentry kind="lib" path="C:/Java/processing-2.0b6/modes/java/libraries/pdf/library/itext.jar"/>
+	<classpathentry kind="lib" path="C:/Java/processing-2.0b6/modes/java/libraries/pdf/library/pdf.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
