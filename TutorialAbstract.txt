@@ -1,0 +1,22 @@
+https://forum.processing.org/topic/what-s-the-difference-in-class-and-abstract-class
+
+No, by default, all classes are concrete, ie. non-abstract. You have to use the abstract keyword to make a class abstract (sounds logical...).
+
+The main difference of the two kinds of classes is that you cannot instantiate abstract classes, ie. you cannot make objects out of them: you cannot do AbstractClass ac = new AbstractClass(); even if the abstract class can have constructors: in this case, they are there only to be called from a sub-class via super().
+
+So, what is the purpose of having such kind of class if we cannot create objects out of it? Like interfaces, they are a kind of blueprint, or here, a prototype.
+
+Interfaces define a family of classes, by requesting them to have mandatory methods with a given name and signature.
+This allows to define a type that is common to all these classes: you can pass a parameter of the type of the interface, and pass any class implementing the interface: the function knows it can call the methods defined in the interface on any object respecting this contract. Idem for collections: an ArrayList of the type of the interface can have heterogeneous objects, as long as they all implement the interface.
+
+An abstract class is similar, with more capabilities: it can define fields (class variables), unlike the interface. And unlike it, abstract classes can have concrete methods, doing real stuff.
+It can be seen as a partial implementation, leaving holes to be filled by the sub-classes, and providing a default behavior for the common case, that can be used as is or can be overridden by the sub-classes.
+To this end, an abstract class can have abstract methods: functions without body, that acts like interface's methods: they must be defined by the sub-classes.
+
+An often used example is a Shape abstract class: it can have a position, perhaps a color and a stroke, etc.
+It can define an abstract method: draw() (or display()), that cannot be implemented: a shape is a generic entity, without real form. Thus the purpose of the abstract: you can't make an instance of such generic concept. Yet, it can have concrete methods, like moving the shape (changing the location), or computing the distance with another shape.
+A Rectangle, an Ellipse can implement the Shape and reuse the underlying implementation, and must override the abstract method draw(), to materialize it on screen.
+
+Note that abstract classes are often used as base implementation of an interface. They keep the generic character of the interface while providing a useful default behavior, while leaving the possibility to have a very different implementation.
+They can also implement empty methods, to avoid implementing all the interface's method.
+This trick is often used in AWT / Swing: for example, MouseListener defines 5 methods to receive mouse events (moves, clicks, etc.), but often concrete classes (frequently anonymous) need only one or two. To avoid to define each time the requested but not needed methods as empty ones, the MouseAdapter just implements the interface with empty methods: thus, if you extends this abstract class instead of implementing the interface, you can just define the methods that interest you.
