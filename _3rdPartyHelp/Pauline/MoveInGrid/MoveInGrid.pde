@@ -26,16 +26,16 @@ Sectors (direction of movement):
 */
 final int[] sectorToGridIndex = { 13, 8, 7, 6, 11, 16, 17, 18 };
 final int centerIndex = 12;
-final int[][] sectorToImagesToUpdate =
+final int[][] sectorToIndexesToUpdate =
 {
-  { 4, 9, 14, 19, 24 },
+              { 4, 9, 14, 19, 24 },
   { 0, 1, 2, 3, 4, 9, 14, 19, 24 },
   { 0, 1, 2, 3, 4 },
   { 0, 1, 2, 3, 4, 5, 10, 15, 20  },
-  { 0, 5, 10, 15, 20 },
-  { 0, 5, 10, 15, 20, 21, 22, 23, 24 },
-  { 20, 21, 22, 23, 24 },
-  { 4, 9, 14, 19, 20, 21, 22, 23, 24,  },
+              { 0, 5, 10, 15, 20 },
+              { 0, 5, 10, 15, 20, 21, 22, 23, 24 },
+                            { 20, 21, 22, 23, 24 },
+              { 4, 9, 14, 19, 20, 21, 22, 23, 24 },
 };
 final Offset[] gridIndexToOffset =
 {
@@ -58,7 +58,7 @@ final Offset[] sectorToOffset =
   new Offset(+1, +1),
 };
 
-Position currentPosition = new VirtualPosition(ROWS / 2, COLS / 2);
+Position currentPosition = new VirtualPosition(COLS / 2, ROWS / 2);
 
 void setup()
 {
@@ -66,18 +66,22 @@ void setup()
   textSize(24);
 
 println("Load images");
-  for (int i = 0; i < sectorToGridIndex.length; i++)
+  for (int i = 0; i < images.length; i++)
   {
-    int idx = currentPosition.moveTo(sectorToOffset[i]).getArrayPosition();
-    images[sectorToGridIndex[i]] = getImage(idx);
+    Position pos = currentPosition.moveTo(gridIndexToOffset[i]); 
+    int idx = pos.getArrayIndex();
+    images[i] = getImage(idx);
+    
+    debugInfo[i] = new Info();
+    debugInfo[i].previous = debugInfo[i].current = pos;
+    debugInfo[i].index = idx;
   }
-  images[centerIndex] = getImage(currentPosition.getArrayPosition());
-println("Images loaded. Last = " + currentPosition.getArrayPosition());  
+println("Images loaded.");
 }
 
 void draw()
 {
-  float angle = normalizeAngle(PI - atan2(height / 2 - mouseY, width / 2 - mouseX));
+  float angle = getAngle();
   int sector = findSector(angle);
 
   PImage image1 = images[centerIndex], image2 = images[sectorToGridIndex[sector]];
@@ -87,31 +91,44 @@ void draw()
   tint(255, alpha);
   image(image2, 0, 0);
 
-  pushMatrix();
-  strokeWeight(4);
-  translate(width / 2, height / 2);
-  rotate(PI / 8);
-  for (int i = 0; i < 8; i++)
+  if (keyPressed && key == 'i')
   {
-    line(0, 0, 800, 0);
-    rotate(PI / 4);
+    drawInfo();
   }
-  popMatrix();
-  int moveDist = width / 4;
-  noFill();
-  ellipse(width / 2, height / 2, moveDist * 2, moveDist * 2);
-
-  text(degrees(angle), 10, 30);
-  text(sector, 10, 60);
-  text(alpha, 10, 90);
-
+  else
+  {
+    drawDebug(angle, sector, alpha);
+  }
+/*
   if (dist(width / 2, height / 2, mouseX, mouseY) >= moveDist)
   {
     shiftImages(sector);
     updateImages(sector);
   }
+*/
 }
 
+void keyPressed()
+{
+  if (key == ' ')
+  {
+    int sector = findSector(getAngle());
+    Offset move = sectorToOffset[sector];
+    println("Move by " + move);
+    
+    currentPosition = currentPosition.moveTo(move);
+    shiftImages(move);
+    shiftInfo(move);
+    updateImages(sector);
+  }
+}
+
+
+
+float getAngle()
+{
+  return normalizeAngle(PI - atan2(height / 2 - mouseY, width / 2 - mouseX));
+}
 
 // Get any angle, between -infinite and +infinite, and clamp it between 0 and 2*PI
 float normalizeAngle(float angle)
@@ -137,13 +154,14 @@ int findSector(float angle)
 
 PImage getImage(int i)
 {
-  println("load " + nf(i, 4));
-  return loadImage("H:/Temp/Pauline/" + nf(i, 4) + ".jpg");
+  PImage img = loadImage("H:/Temp/Pauline/" + nf(i, 4) + ".jpg");
+//   println("load " + nf(i, 4) + " " + img);
+  return img;
 }
 
-void shiftImages(int sector)
+
+void shiftImages(Offset move)
 {
-  Offset move = sectorToOffset[sector];
   Offset shift = move.getOpposite();
 
   // Make a new array, it avoids to think about copy order...
@@ -152,8 +170,8 @@ void shiftImages(int sector)
   {
     for (int x = 0; x < IMAGE_GRID_SIZE; x++)
     {
-      Position pos = new ImagePosition(x, y).moveTo(shift);
-      shiftedImages[x + y * IMAGE_GRID_SIZE] = images[pos.getArrayPosition()];
+      Position pos = new ImagePosition(x, y).moveTo(move);
+      shiftedImages[x + y * IMAGE_GRID_SIZE] = images[pos.getArrayIndex()];
     }
   }
   images = shiftedImages;
@@ -161,11 +179,15 @@ void shiftImages(int sector)
 
 void updateImages(int sector)
 {
-  int[] updates = sectorToImagesToUpdate[sector];
+  int[] updates = sectorToIndexesToUpdate[sector];
   for (int toUpdate : updates)
   {
     Offset updateOffset = gridIndexToOffset[toUpdate];
     Position positionToUpdate = currentPosition.moveTo(updateOffset);
-    images[toUpdate] = getImage(positionToUpdate.getArrayPosition());
+    images[toUpdate] = getImage(positionToUpdate.getArrayIndex());
+    println("updateImages: " + toUpdate + " <- " + positionToUpdate + " (" + positionToUpdate.getArrayIndex() + ")");
+    debugInfo[toUpdate].current = positionToUpdate;
+    debugInfo[toUpdate].index = positionToUpdate.getArrayIndex();
   }
 }
+

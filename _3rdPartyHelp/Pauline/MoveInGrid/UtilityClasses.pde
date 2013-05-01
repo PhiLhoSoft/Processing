@@ -17,9 +17,14 @@ class Offset
     return new Offset(-ox, -oy);
   }
 
-  int getArrayPosition(int gridWidth)
+  int getArrayIndex(int gridWidth)
   {
     return ox + oy * gridWidth;
+  }
+
+  public String toString()
+  {
+    return "Offset: " + ox + ", " + oy;
   }
 }
 
@@ -46,7 +51,7 @@ abstract class Position
   abstract Position getPosition(int x, int y);
   abstract void fixPosition(); // Depends on wrapping / truncating strategy
 
-  int getArrayPosition()
+  int getArrayIndex()
   {
     return x + y * width;
   }
@@ -54,6 +59,12 @@ abstract class Position
   Position moveTo(Offset o)
   {
     return getPosition(x + o.ox, y + o.oy);
+  }
+
+  public String toString()
+  {
+//    return "Position: " + x + ", " + y + " / " + width + "x" + height;
+    return "Position: " + x + ", " + y;
   }
 }
 
@@ -67,7 +78,7 @@ class VirtualPosition extends Position
   {
     super(px, py);
   }
-  
+
   void setDimensions()
   {
     width = COLS;
@@ -100,7 +111,7 @@ class ImagePosition extends Position
   {
     super(px, py);
   }
-  
+
   void setDimensions()
   {
     width = IMAGE_GRID_SIZE;
