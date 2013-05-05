@@ -21,6 +21,8 @@ void drawDebug(float angle, int sector, int alpha)
   int moveDist = width / 4;
   noFill();
   ellipse(width / 2, height / 2, moveDist * 2, moveDist * 2);
+  
+  showGrid();
 
   fill(#00FF00);
   textSize(20);
@@ -72,3 +74,35 @@ void shiftInfo(Offset move)
   }
   debugInfo = shiftedInfo;
 }
+
+void showGrid()
+{
+  stroke(#55AA55);
+  strokeWeight(2);
+  for (int x = 1; x < IMAGE_GRID_SIZE; x++)
+  {
+    int pos = x * (width / IMAGE_GRID_SIZE);
+    line(pos, 0, pos, height);
+  }
+  for (int y = 1; y < IMAGE_GRID_SIZE; y++)
+  {
+    int pos = y * (height / IMAGE_GRID_SIZE);
+    line(0, pos, width, pos);
+  }
+  for (int sector = 0; sector < sectorToGridIndex.length; sector++)
+  {
+    int alpha = computeAlpha(sector);
+    
+    // Yeah, same computing than in the above! That's debug
+    Offset offset = sectorToOffset[sector];
+    Position pos = centerPosition.moveTo(offset);
+    // Divide screen in IMAGE_GRID_SIZE cells, compute the center of the cell at pos
+    int cellWidth = width / IMAGE_GRID_SIZE;
+    int cellWHeight = height / IMAGE_GRID_SIZE;
+    int posX = pos.x * cellWidth - cellWidth / 2;
+    int posY = pos.y * cellWHeight - cellWHeight / 2;
+
+    text(alpha, posX, posY);
+  }
+}
+

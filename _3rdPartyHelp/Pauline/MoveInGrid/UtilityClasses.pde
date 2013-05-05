@@ -12,12 +12,12 @@ class Offset
     oy = dy;
   }
 
-  Offset getOpposite()
+  public Offset getOpposite()
   {
     return new Offset(-ox, -oy);
   }
 
-  int getArrayIndex(int gridWidth)
+  public int getArrayIndex(int gridWidth)
   {
     return ox + oy * gridWidth;
   }
@@ -47,16 +47,16 @@ abstract class Position
     fixPosition();
   }
 
-  abstract void setDimensions();
-  abstract Position getPosition(int x, int y);
-  abstract void fixPosition(); // Depends on wrapping / truncating strategy
+  protected abstract void setDimensions();
+  protected abstract void fixPosition(); // Depends on wrapping / truncating strategy
+  public abstract Position getPosition(int x, int y);
 
-  int getArrayIndex()
+  public int getArrayIndex()
   {
     return x + y * width;
   }
 
-  Position moveTo(Offset o)
+  public Position moveTo(Offset o)
   {
     return getPosition(x + o.ox, y + o.oy);
   }
@@ -79,13 +79,13 @@ class VirtualPosition extends Position
     super(px, py);
   }
 
-  void setDimensions()
+  protected void setDimensions()
   {
     width = COLS;
     height = ROWS;
   }
 
-  void fixPosition()
+  protected void fixPosition()
   {
     // Wrapping
     if (x < 0) x += width;
@@ -95,7 +95,7 @@ class VirtualPosition extends Position
     if (y >= height) y = height - 1;
   }
 
-  Position getPosition(int x, int y)
+  public Position getPosition(int x, int y)
   {
     return new VirtualPosition(x, y);
   }
@@ -112,13 +112,13 @@ class ImagePosition extends Position
     super(px, py);
   }
 
-  void setDimensions()
+  protected void setDimensions()
   {
     width = IMAGE_GRID_SIZE;
     height = IMAGE_GRID_SIZE;
   }
 
-  void fixPosition()
+  protected void fixPosition()
   {
     // Wrapping for both
     if (x < 0) x += width;
@@ -127,7 +127,7 @@ class ImagePosition extends Position
     if (y >= height) y %= height;
   }
 
-  Position getPosition(int x, int y)
+  public Position getPosition(int x, int y)
   {
     return new ImagePosition(x, y);
   }

@@ -24,8 +24,9 @@ Sectors (direction of movement):
   5     7
      6
 */
-final int[] sectorToGridIndex = { 13, 8, 7, 6, 11, 16, 17, 18 };
+final int[] sectorToGridIndex = { 13, 8, 7, 6, 11, 16, 17, 18, 12 };
 final int centerIndex = 12;
+final ImagePosition centerPosition = new ImagePosition((IMAGE_GRID_SIZE + 1) / 2, (IMAGE_GRID_SIZE + 1) / 2);
 final int[][] sectorToIndexesToUpdate =
 {
               { 4, 9, 14, 19, 24 },
@@ -56,6 +57,8 @@ final Offset[] sectorToOffset =
   new Offset(-1, +1),
   new Offset( 0, +1),
   new Offset(+1, +1),
+  
+  new Offset( 0,  0),
 };
 
 Position currentPosition = new VirtualPosition(COLS / 2, ROWS / 2);
@@ -68,10 +71,10 @@ void setup()
 println("Load images");
   for (int i = 0; i < images.length; i++)
   {
-    Position pos = currentPosition.moveTo(gridIndexToOffset[i]); 
+    Position pos = currentPosition.moveTo(gridIndexToOffset[i]);
     int idx = pos.getArrayIndex();
     images[i] = getImage(idx);
-    
+
     debugInfo[i] = new Info();
     debugInfo[i].previous = debugInfo[i].current = pos;
     debugInfo[i].index = idx;
@@ -82,14 +85,14 @@ println("Images loaded.");
 void draw()
 {
   float angle = getAngle();
-  int sector = findSector(angle);
+  int sectorD = findSector(angle);
 
-  PImage image1 = images[centerIndex], image2 = images[sectorToGridIndex[sector]];
-  int alpha = int(200 * dist(width / 2, height / 2, mouseX, mouseY) / (width / 2));
-  tint(255, 255 - alpha);
-  image(image1, 0, 0);
-  tint(255, alpha);
-  image(image2, 0, 0);
+  for (int sector = 0; sector < sectorToGridIndex.length; sector++)
+  {
+    int alpha = computeAlpha(sector);
+    tint(255, alpha);
+    image(images[sectorToGridIndex[sector]], 0, 0);
+  }
 
   if (keyPressed && key == 'i')
   {
@@ -97,7 +100,7 @@ void draw()
   }
   else
   {
-    drawDebug(angle, sector, alpha);
+    drawDebug(angle, sectorD, 0);
   }
 /*
   if (dist(width / 2, height / 2, mouseX, mouseY) >= moveDist)
@@ -115,7 +118,7 @@ void keyPressed()
     int sector = findSector(getAngle());
     Offset move = sectorToOffset[sector];
     println("Move by " + move);
-    
+
     currentPosition = currentPosition.moveTo(move);
     shiftImages(move);
     shiftInfo(move);
@@ -160,9 +163,13 @@ PImage getImage(int i)
 }
 
 
+/**
+ * Given the movement of the user (as offset toward this direction),
+ * shift the images in the grid in the opposite direction.
+ */
 void shiftImages(Offset move)
 {
-  Offset shift = move.getOpposite();
+//  Offset shift = move.getOpposite();
 
   // Make a new array, it avoids to think about copy order...
   PImage[] shiftedImages = new PImage[IMAGE_GRID_SIZE * IMAGE_GRID_SIZE];
@@ -177,6 +184,10 @@ void shiftImages(Offset move)
   images = shiftedImages;
 }
 
+/**
+ * Depending on the given sector (direction taken by user), loads the new images in the grid,
+ * those left empty after the shift corresponding to the movement.
+ */
 void updateImages(int sector)
 {
   int[] updates = sectorToIndexesToUpdate[sector];
@@ -185,9 +196,33 @@ void updateImages(int sector)
     Offset updateOffset = gridIndexToOffset[toUpdate];
     Position positionToUpdate = currentPosition.moveTo(updateOffset);
     images[toUpdate] = getImage(positionToUpdate.getArrayIndex());
+
     println("updateImages: " + toUpdate + " <- " + positionToUpdate + " (" + positionToUpdate.getArrayIndex() + ")");
     debugInfo[toUpdate].current = positionToUpdate;
     debugInfo[toUpdate].index = positionToUpdate.getArrayIndex();
   }
 }
+
+/**
+ * For the given sector (as a grid index around the current position), and the distance of the mouse
+ * cursor (to adapt to tablet movement?) to the center of this grid cell, compute the alpha
+ * giving the contribution of the image of this grid position to the final image.
+ */
+int computeAlpha(int sector)
+{
+  Offset offset = sectorToOffset[sector];
+  Position pos = centerPosition.moveTo(offset);
+  // Divide screen in IMAGE_GRID_SIZE cells, compute the center of the cell at pos
+  int cellWidth = width / IMAGE_GRID_SIZE;
+  int cellWHeight = height / IMAGE_GRID_SIZE;
+  int posX = pos.x * cellWidth - cellWidth / 2;
+  int posY = pos.y * cellWHeight - cellWHeight / 2;
+  // Compute the distance between this center and the mouse cursor position
+  float dist = dist(posX, posY, mouseX, mouseY);
+  // Relative amount (arbitrary! to adjust...)
+  float amount = 2 * dist / dist(0, 0, width, height);
+  int alpha = 255 - int(255 * amount);
+  return constrain(alpha, 0, 255);
+}
+
 
