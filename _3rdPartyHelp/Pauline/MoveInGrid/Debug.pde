@@ -6,7 +6,7 @@ class Info
 }
 Info[] debugInfo = new Info[IMAGE_GRID_SIZE * IMAGE_GRID_SIZE];
 
-void drawDebug(float angle, int sector, int alpha)
+void drawDebug(float angle, int direction, int alpha)
 {
   pushMatrix();
   strokeWeight(4);
@@ -21,13 +21,13 @@ void drawDebug(float angle, int sector, int alpha)
   int moveDist = width / 4;
   noFill();
   ellipse(width / 2, height / 2, moveDist * 2, moveDist * 2);
-  
+
   showGrid();
 
   fill(#00FF00);
   textSize(20);
   text("Angle: " + degrees(angle), 10, 30);
-  text("Sector: " + sector, 10, 60);
+  text("Sector: " + direction, 10, 60);
   text("Alpha: " + alpha, 10, 90);
   text("Position: " + currentPosition.x + ", " + currentPosition.y + " - " + currentPosition.getArrayIndex(), 10, 120);
 }
@@ -89,12 +89,12 @@ void showGrid()
     int pos = y * (height / IMAGE_GRID_SIZE);
     line(0, pos, width, pos);
   }
-  for (int sector = 0; sector < sectorToGridIndex.length; sector++)
+  for (int direction = 0; direction < directionToGridIndex.length; direction++)
   {
-    int alpha = computeAlpha(sector);
-    
+    int alpha = computeAlpha(direction);
+
     // Yeah, same computing than in the above! That's debug
-    Offset offset = sectorToOffset[sector];
+    Offset offset = directionToOffset[direction];
     Position pos = centerPosition.moveTo(offset);
     // Divide screen in IMAGE_GRID_SIZE cells, compute the center of the cell at pos
     int cellWidth = width / IMAGE_GRID_SIZE;
