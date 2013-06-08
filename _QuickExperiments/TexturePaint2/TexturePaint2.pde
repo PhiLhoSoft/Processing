@@ -1,8 +1,7 @@
 // [url=http://processing.org/discourse/yabb2/YaBB.pl?num=1229687224/5#5]Re: fill shape with pattern[/url]
 // See also [url=http://processing.org/reference/texture_.html]texture()[/url] (P2D, P3D, OPENGL)
-PGraphics pgTexture;
-PGraphics pgMask;
-PGraphics pgShape;
+PGraphics texture;
+PGraphics mask;
 
 PVector v1, v2, v3;
 PVector s1, s2, s3;
@@ -19,20 +18,19 @@ void setup()
   PImage smallImage = loadImage("greenfoil.png");
   font = loadFont("AmericanTypewriter-24.vlw");
 
-  pgMask = createGraphics(width, height, JAVA2D);
-  pgShape = createGraphics(width, height, P2D);
+  mask = createGraphics(width, height, JAVA2D);
 
   // Make tiled texture
-  pgTexture = createGraphics(width, height, JAVA2D);
-  pgTexture.beginDraw();
+  texture = createGraphics(width, height, JAVA2D);
+  texture.beginDraw();
   for (int x = 0; x < width; x += smallImage.width)
   {
     for (int y = 0; y < height; y += smallImage.height)
     {
-      pgTexture.image(smallImage, x, y);
+      texture.image(smallImage, x, y);
     }
   }
-  pgTexture.endDraw();
+  texture.endDraw();
 
   // Define a triangle
   v1 = new PVector(50, 50);
@@ -45,8 +43,8 @@ void draw()
 {
   background(230);
 
-  DrawTextured(D_TRIANGLE);
-  DrawTextured(D_TEXT);
+  drawTextured(D_TRIANGLE);
+  drawTextured(D_TEXT);
   v1.x += m1; if (v1.x > width || v1.x < 0) m1 = -m1;
   v2.x -= m2; if (v2.x > width || v2.x < 0) m2 = -m2;
   v1.y += 6*sin(v1.x/36);
@@ -55,39 +53,25 @@ void draw()
 
 // I would pass an interface and a make drawing class instead
 // but I wanted to make it simple here
-void DrawTextured(int drawing)
+void drawTextured(int drawing)
 {
-  pgMask.background(0);
-  pgMask.fill(255);
-  pgMask.noStroke();
+  mask.beginDraw();
+  mask.background(0);
+  mask.fill(255);
+  mask.noStroke();
   if (drawing == D_TRIANGLE)
   {
-    DrawTriangle(pgMask);
+    mask.triangle(v1.x, v1.y, v2.x, v2.y, v3.x, v3.y);
   }
   else if (drawing == D_TEXT)
   {
-    DrawText(pgMask);
+    mask.textFont(font, 120);
+    mask.text("Processing", 50, 2*height/3);
   }
-  PImage piMask = pgMask.get(0, 0, width, height);
+  mask.endDraw();
 
-  pgShape.image(pgTexture, 0, 0);
-  pgShape.mask(piMask);
-
-  image(pgShape, 0, 0);
-}
-
-void DrawTriangle(PGraphics g)
-{
-  g.beginDraw();
-  g.triangle(v1.x, v1.y, v2.x, v2.y, v3.x, v3.y);
-  g.endDraw();
-}
-
-void DrawText(PGraphics g)
-{
-  g.beginDraw();
-  g.textFont(font, 120);
-  g.text("Processing", 50, 2*height/3);
-  g.endDraw();
+  PImage maskedResult = texture.get();
+  maskedResult.mask(mask);
+  image(maskedResult, 0, 0);
 }
 

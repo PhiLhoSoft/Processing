@@ -19,7 +19,7 @@ void setup()
   if (bUseBlend)
   {
     maskArray = new int[width * height];
-    Arrays.fill(maskArray, blendFactor);
+    java.util.Arrays.fill(maskArray, blendFactor);
   }
 }
 
@@ -32,7 +32,7 @@ void draw()
   }
 
   background(#AAEEFF);
-  DrawCircles();
+  drawCircles();
 
   if (bUseBlend)
   {
@@ -40,7 +40,7 @@ void draw()
   }
 }
 
-void DrawCircles()
+void drawCircles()
 {
   float step = (PI / (bUseBlend ? 30 : 180)) * frameCount;
   float radius = (MAX_RADIUS - MIN_RADIUS) * (1.0 + sin(step)) + MIN_RADIUS;

@@ -10,6 +10,10 @@ final int ROWS = 16;
 final int COLS = 144;
 // Dimension (one, it is a square) of the image grid
 final int IMAGE_GRID_SIZE = 5;
+
+final int IMAGE_WIDTH = 768;
+final int IMAGE_HEIGHT = 768;
+
 // The image grid
 PImage[] images = new PImage[IMAGE_GRID_SIZE * IMAGE_GRID_SIZE];
 
@@ -81,6 +85,10 @@ void setup()
 println("Load images");
   for (int i = 0; i < images.length; i++)
   {
+    images[i] = new PImage(IMAGE_WIDTH, IMAGE_HEIGHT, RGB);
+  }
+  for (int i = 0; i < images.length; i++)
+  {
     Position pos = currentPosition.moveTo(gridIndexToOffset[i]);
     int idx = pos.getArrayIndex();
     getImage(idx, i);
@@ -94,6 +102,7 @@ println("Images loaded.");
 
 void draw()
 {
+  background(0);
   for (int direction = 0; direction < directionToGridIndex.length; direction++)
   {
     PImage img = images[directionToGridIndex[direction]];
@@ -101,7 +110,7 @@ void draw()
     {
       int alpha = computeAlpha(direction);
       tint(255, alpha);
-      image(images[directionToGridIndex[direction]], 0, 0);
+      image(images[directionToGridIndex[direction]], (width - IMAGE_WIDTH) / 2, 0);
     }
   }
 
