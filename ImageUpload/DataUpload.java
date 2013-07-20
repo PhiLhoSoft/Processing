@@ -198,7 +198,7 @@ class DataUpload
       return null;
     }
     BufferedReader input = null;
-    StringBuffer answer = new StringBuffer();
+    StringBuilder answer = new StringBuilder();
     try
     {
       input = new BufferedReader(new InputStreamReader(connection.getInputStream()));
@@ -208,7 +208,7 @@ class DataUpload
         answerLine = input.readLine();
         if (answerLine != null)
         {
-          answer.append(answerLine + "\n");
+          answer.append(answerLine).append('\n');
         }
       } while (answerLine != null);
     }

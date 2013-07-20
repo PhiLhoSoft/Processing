@@ -2,9 +2,9 @@ import gifAnimation.Gif;
 
 String[] animations =
 {
-  "H:/PhiLhoSoft/Processing/libraries/gifAnimation/examples/gifDisplay/data/lavalamp.gif",
-  "G:/Images/Animations/aniswirl.gif",
-  "G:/Images/Animations/copcar.gif"
+  "lavalamp.gif",
+  "aniswirl.gif",
+  "copcar.gif"
 };
 
 Gif loopingGif;
@@ -14,6 +14,7 @@ public void setup()
 {
   size(600, 200);
   smooth();
+  Test test = new Test(this, "aniswirl.gif");
 }
 
 public void draw()
