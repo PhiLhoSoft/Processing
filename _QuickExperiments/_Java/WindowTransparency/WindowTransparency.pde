@@ -1,6 +1,9 @@
 // http://java.sun.com/developer/technicalArticles/GUI/translucent_shaped_windows/
 // now
 // http://www.oracle.com/technetwork/articles/javase/translucent-shaped-windows-139324.html
+// or
+// https://blogs.oracle.com/thejavatutorials/entry/translucent_and_shaped_windows_in
+// for Java 7
 
 /* For Java 7
 // Generates a warning because Processing doesn't understand import static... But works anyway.
@@ -46,13 +49,15 @@ void setup()
       "\nisShapedWindowSupported: " + isShapedWindowSupported 
   );
 //*/
-/*
+//*
   com.sun.awt.AWTUtilities.setWindowOpaque(frame, false);
   // Works well in Windows 7, less in Windows XP
   com.sun.awt.AWTUtilities.setWindowOpacity(frame, 0.8);
 //*/
+/* Java 7
   // Now, it is just simpler!
   frame.setOpacity(0.8);
+*/  
 }
 
 void draw()

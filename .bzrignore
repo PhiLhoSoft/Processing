@@ -25,12 +25,14 @@
 
 libraries/*
 tools/
+modes/
 
 applet*/
 data/
 
 ConnectionInformation.properties
 Processing-revisions-0135-20080208.txt
+Processing-revisions-1.0.5.txt
 application.*
 plKeyStore
 Tablet/code+
@@ -38,11 +40,11 @@ _SmallPrograms/DelaunayTriangles/co-de
 _3rdPartyHelp/_WithData/proto_type
 _3rdPartyHelp/_WithData/TextInput
 _3rdPartyHelp/_WithData/HeroDesignVoronoiGenerator
-Processing-revisions-1.0.5.txt
+_3rdPartyHelp/Pauline/FromPauline
 UsingEclipse/.metadata
+java.policy.applet
 output*.txt
-modes
-libraries/P8gGraphicsSVG/library/1.7
 Baj
 Bah
+libraries/P8gGraphicsSVG/library/1.7
 libraries/P8gGraphicsSVG/bin

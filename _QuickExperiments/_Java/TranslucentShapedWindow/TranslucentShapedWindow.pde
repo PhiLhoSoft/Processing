@@ -4,6 +4,8 @@
 // https://forum.processing.org/topic/translucen-window-in-processing
 // to apply to Processing (gave the trick to use a secondary frame)
 
+import java.util.Arrays;
+import java.awt.Frame;
 import javax.swing.JFrame;
 
 final java.awt.Color fullyTransparent = new java.awt.Color(0, 0, 0, 0);
