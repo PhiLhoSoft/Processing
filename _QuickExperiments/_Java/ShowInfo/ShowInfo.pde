@@ -28,7 +28,7 @@ try
 {
   logger.log(java.net.URLEncoder.encode("http://stackoverflow.com/questions/292362/url ⌘⍺ decoding#293028", "UTF-8"));
 }
-catch (UnsupportedEncodingException e)
+catch (java.io.UnsupportedEncodingException e)
 {
   logger.log("Bad encoding!", e);
 }
@@ -37,7 +37,7 @@ try
   // Voluntary stupid encoding value... :)
   logger.log(java.net.URLEncoder.encode("http://stackoverflow.com", "UTF-128"));
 }
-catch (UnsupportedEncodingException e)
+catch (java.io.UnsupportedEncodingException e)
 {
   logger.log("Bad encoding!", e);
 }

@@ -22,9 +22,11 @@ String[] props =
 };
 logger.log(props);
 String cp = System.getProperty("java.class.path");
-logger.log(cp);
+logger.log("Java classpath: " + cp);
 String ed = System.getProperty("java.ext.dirs");
-logger.log(ed);
+logger.log("Java ext dirs" + ed);
+logger.log("sketchPath: " + sketchPath);
+logger.log("user.dir: " + System.getProperty("user.dir"));
 logger.setDateFormat("yyyy-MM-dd HH:mm:ss");
 logger.log(System.getProperty("user.dir"));
 try

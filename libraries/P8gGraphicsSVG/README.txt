@@ -32,11 +32,11 @@ copy
 By Philippe Lhoste <PhiLho(a)GMX.net> http://Phi.Lho.free.fr & http://PhiLho.deviantART.com
 
 Home page of the library:
-http://Phi.Lho.free.fr/Programming/Processing/P8gGraphicsSVG/
+http://Phi.Lho.free.fr/programming/Processing/P8gGraphicsSVG/
 Source code:
 http://bazaar.launchpad.net/~philho/+junk/Processing/files/head:/libraries/P8gGraphicsSVG/
 The binary distribution of the library is currently located at:
-http://Phi.Lho.free.fr/Programming/Processing/P8gGraphicsSVG/P8gGraphicsSVG.zip
+http://Phi.Lho.free.fr/programming/Processing/P8gGraphicsSVG/P8gGraphicsSVG.zip
 
 Copyright notice: For details, see the following file:
 http://Phi.Lho.free.fr/softwares/PhiLhoSoft/PhiLhoSoftLicense.txt
