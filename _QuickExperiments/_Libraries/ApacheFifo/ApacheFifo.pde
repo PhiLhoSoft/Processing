@@ -1,3 +1,4 @@
+import java.util.*;
 import org.apache.commons.collections.buffer.*;
 
 boolean bUseFifo = true;
@@ -8,7 +9,7 @@ Ball[] balls;
 
 void setup()
 {
-  size(800, 800, P2D);
+  size(800, 800);
   if (bUseFifo)
   {
     buffer = new CircularFifoBuffer(SIZE);

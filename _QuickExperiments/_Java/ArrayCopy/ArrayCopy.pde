@@ -1,3 +1,5 @@
+import java.util.Arrays;
+
 void setup()
 {
   // Declare
@@ -41,7 +43,7 @@ void setup()
   TestEnum ev = TestEnum.valueOf("Number1");
   System.out.printf("Enumeration: %s (%s) = %d -- %s (%b) = %d\n",
       ev, ev.name(), ev.ordinal(), ev.GetNameList(), ev.IsEven(), ev.GetValue());
-  
+
   TestEnum[] enums = TestEnum.values();
   for (int i = 0; i < enums.length; i++)
   {

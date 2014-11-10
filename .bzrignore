@@ -30,9 +30,10 @@ modes/
 applet*/
 data/
 
+sketch.properties
+
 ConnectionInformation.properties
-Processing-revisions-0135-20080208.txt
-Processing-revisions-1.0.5.txt
+Processing-revisions*
 application.*
 plKeyStore
 Tablet/code+
@@ -48,3 +49,8 @@ Baj
 Bah
 libraries/P8gGraphicsSVG/library/1.7
 libraries/P8gGraphicsSVG/bin
+
+VanillaForum.txt
+ForumCategories.txt
+Processing 3.0a issues.txt
+

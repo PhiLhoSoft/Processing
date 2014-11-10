@@ -22,7 +22,7 @@ public enum TestEnum
     return m_names;
   }
 
-  public static String GetNameList()
+  public String GetNameList()
   {
     if (m_names == null || m_names.length == 0)
       return "";
