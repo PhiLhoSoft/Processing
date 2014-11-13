@@ -13,8 +13,13 @@
 *.ini
 *.csv
 *.xml
+*.lnk
 *.ses
 *.session
+
+*.jar
+*.zip
+*.class
 
 *.pde+
 *.pde-[0-9]
@@ -23,7 +28,7 @@
 *.java+
 *.java-
 
-libraries/*
+libraries/
 tools/
 modes/
 
