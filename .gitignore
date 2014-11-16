@@ -10,6 +10,7 @@
 *.gpx
 *.vfb
 
+*.log
 *.ini
 *.csv
 *.xml
@@ -19,6 +20,7 @@
 
 *.jar
 *.zip
+*.7z
 *.class
 
 *.pde+
@@ -28,12 +30,11 @@
 *.java+
 *.java-
 
-libraries/
-tools/
-modes/
+/libraries/
+/tools/
+/modes/
 
 applet*/
-data/
 
 sketch.properties
 

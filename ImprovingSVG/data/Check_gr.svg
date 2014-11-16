@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:xlink="http://www.w3.org/1999/xlink"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   width="210mm"
+   height="297mm"
+   id="svg2"
+   version="1.1"
+   inkscape:version="0.47 r22583"
+   sodipodi:docname="Check_gr.svg">
+  <defs
+     id="defs4">
+    <linearGradient
+       id="GR1">
+      <stop
+         style="stop-color:#0000FF;"
+         offset="0"
+         id="stop3601" />
+      <stop
+         style="stop-color:#00FF00;"
+         offset="1"
+         id="stop3603" />
+    </linearGradient>
+    <linearGradient
+       inkscape:collect="always"
+       xlink:href="#GR1"
+       id="GR2"
+       x1="55.214287"
+       y1="516.73529"
+       x2="724.78571"
+       y2="516.73529"
+       gradientUnits="userSpaceOnUse" />
+  </defs>
+  <sodipodi:namedview
+     id="base"
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1.0"
+     inkscape:pageopacity="0.0"
+     inkscape:pageshadow="2"
+     inkscape:zoom="0.35"
+     inkscape:cx="-539.28571"
+     inkscape:cy="520"
+     inkscape:document-units="px"
+     inkscape:current-layer="layer1"
+     showgrid="false"
+     inkscape:window-width="1280"
+     inkscape:window-height="968"
+     inkscape:window-x="-4"
+     inkscape:window-y="-4"
+     inkscape:window-maximized="1" />
+  <metadata
+     id="metadata7">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+        <dc:title />
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <g
+     inkscape:label="Calque 1"
+     inkscape:groupmode="layer"
+     id="layer1">
+    <g
+       id="layer1-9"
+       inkscape:label="Layer 1"
+       transform="translate(-41.428577,-221.51599)">
+      <path
+         sodipodi:nodetypes="ccsscccsc"
+         id="path2164"
+         d="M 55.714286,449.50504 C 121.87694,427.56401 160.42636,419.76111 240,409.50504 265.64519,520.97876 284.42117,580.24907 302.85714,612.36219 364.13347,719.09782 373.28215,670.86156 400,608.07647 456.73134,474.76177 475.78826,370.88196 502.85714,236.6479 579.14229,242.75224 648.236,251.50568 724.28572,265.21932 592.35862,517.20996 542.69453,598.04901 410,766.6479 374.66055,814.628 332.29046,802.79288 281.42858,749.50504 188.87401,652.5359 159.71981,619.51194 55.714286,449.50504 z"
+         style="fill:url(#GR1);stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;fill-opacity:1.0" />
+    </g>
+  </g>
+</svg>

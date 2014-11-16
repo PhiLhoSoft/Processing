@@ -1,0 +1,10 @@
+1) Laser
+2) Purple
+3) Shuriken
+4) Lightning
+5) Machine
+6) Plasma
+7) Sniper
+8) Grenade
+9) BFL
+10) Bolt
