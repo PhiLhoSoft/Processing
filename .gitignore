@@ -7,8 +7,13 @@
 *.avi
 *.pdf
 *.html
-*.gpx
 *.vfb
+
+# Doesn't work...
+!data/*.gif
+!data/*.png
+!data/*.jpg
+!data/*.jpeg
 
 *.log
 *.ini
@@ -43,6 +48,7 @@ Processing-revisions*
 application.*
 plKeyStore
 Tablet/code+
+_Common Questions/
 _SmallPrograms/DelaunayTriangles/co-de
 _3rdPartyHelp/_WithData/proto_type
 _3rdPartyHelp/_WithData/TextInput
