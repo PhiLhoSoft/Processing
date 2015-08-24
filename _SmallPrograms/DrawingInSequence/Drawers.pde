@@ -4,17 +4,17 @@ class FillWithCircles extends DefaultDrawer
 {
   int MIN_RAD = 10;
   int MAX_RAD = 100;
-  int m_circleNb;
-  int m_radius;
+  int circleNb;
+  int radius;
 
   FillWithCircles(int radius, int circleNb)
   {
-    m_radius = radius;
-    m_circleNb = circleNb;
+    this.radius = radius;
+    this.circleNb = circleNb;
   }
 
-  //@Override
-  void Draw()
+  @Override
+  public void draw()
   {
     background(255);
     noStroke();
@@ -22,13 +22,13 @@ class FillWithCircles extends DefaultDrawer
     int centerX = width / 2;
     int centerY = height / 2;
 
-    for (int i = 0; i < m_circleNb; i++)
+    for (int i = 0; i < circleNb; i++)
     {
-      float d = random(0, m_radius - MIN_RAD);
+      float d = random(0, radius - MIN_RAD);
       float a = random(0, TWO_PI);
       float x = centerX + d * cos(a);
       float y = centerY + d * sin(a);
-      float r = random(MIN_RAD, min(MAX_RAD, m_radius - d));
+      float r = random(MIN_RAD, min(MAX_RAD, radius - d));
       color c = lerpColor(#00FF00, #0000FF, (1 + cos(a))/2);
 
       fill(c);
@@ -49,8 +49,8 @@ class PulsatingCircles extends DefaultDrawer
 
   PulsatingCircles() {}
 
-  //@Override
-  void Draw()
+  @Override
+  public void draw()
   {
     background(240);
     fill(lerpColor(c1, c2, (float) radius / (float) maxRadius));

@@ -25,30 +25,22 @@ void draw()
 
 void drawBezier(PVector a1, PVector a2)
 {
-  float w = a2.x - a1.x;
-  float h = a2.y - a1.y;
+  PVector delta = PVector.sub(a2, a1);
+  float w = delta.x;
+  float h = delta.y;
 
-  if (abs(w) < 4 || abs(h) < 4)
-  {
-    line(a1.x, a1.y, a2.x, a2.y);
-    return;
-  }
-  
-  PVector c1 = new PVector();
-  PVector c2 = new PVector();
+  PVector c1 = a1.copy();
+  PVector c2 = a2.copy();
   if (abs(w) > abs(h))
   {
-    c1.x = a1.x + FACTOR * w;
-    c1.y = a1.y;
-    c2.x = a2.x - FACTOR * w;
-    c2.y = a2.y;
+    c1.add(FACTOR * w, 0, 0);
+    c2.add(-FACTOR * w, 0, 0);
   }
   else
   {
-    c1.x = a1.x;
-    c1.y = a1.y + FACTOR * h;
-    c2.x = a2.x;
-    c2.y = a2.y - FACTOR * h;
+    
+    c1.add(0, FACTOR * h, 0);
+    c2.add(0, -FACTOR * h, 0);
   }
   
   bezier(

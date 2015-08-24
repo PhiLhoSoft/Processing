@@ -14,22 +14,22 @@ public abstract class UTF8ResourceBundle
   public static final ResourceBundle getBundle(String baseName)
   {
     ResourceBundle bundle = ResourceBundle.getBundle(baseName);
-    return CreateUTF8ResourceBundle(bundle);
+    return createUTF8ResourceBundle(bundle);
   }
 
   public static final ResourceBundle getBundle(String baseName, Locale locale)
   {
     ResourceBundle bundle = ResourceBundle.getBundle(baseName, locale);
-    return CreateUTF8ResourceBundle(bundle);
+    return createUTF8ResourceBundle(bundle);
   }
 
   public static final ResourceBundle getBundle(String baseName, Locale locale, ClassLoader loader)
   {
     ResourceBundle bundle = ResourceBundle.getBundle(baseName, locale, loader);
-    return CreateUTF8ResourceBundle(bundle);
+    return createUTF8ResourceBundle(bundle);
   }
 
-  private static ResourceBundle CreateUTF8ResourceBundle(ResourceBundle bundle)
+  private static ResourceBundle createUTF8ResourceBundle(ResourceBundle bundle)
   {
     // Trick is used only for property resource bundles, not for class resource bundles!
     if (!(bundle instanceof PropertyResourceBundle))

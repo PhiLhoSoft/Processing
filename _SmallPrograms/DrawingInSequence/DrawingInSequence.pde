@@ -1,54 +1,53 @@
-//ArrayList<Drawer> drawers = new ArrayList<Drawer>();
-ArrayList drawers = new ArrayList();
+ArrayList<Drawer> drawers = new ArrayList<Drawer>();
 Drawer currentDrawer;
 int currentDrawerIdx;
 int currentDuration;
 
 interface Drawer
 {
-  public void Draw();
-  public int GetDuration();
-  public void SetDuration(int d);
+  public void draw();
+  public int getDuration();
+  public void setDuration(int d);
 }
 
 abstract class DefaultDrawer implements Drawer
 {
-  protected int m_duration = 10;
+  protected int duration = 10;
 
-  public abstract void Draw();
-  //@Override
-  public int GetDuration()
+  public abstract void draw();
+  @Override
+  public int getDuration()
   {
-    return m_duration;
+    return duration;
   }
-  //@Override
-  public void SetDuration(int d)
+  @Override
+  public void setDuration(int d)
   {
-    m_duration = d;
+    duration = d;
   }
 }
 
 class Texter extends DefaultDrawer
 {
-  private String m_message;
-  private int m_color;
+  private String message;
+  private int textColor;
 
   public Texter(int d, String m, int c)
   {
-    m_duration = d;
-    m_message = m;
-    m_color = c;
+    duration = d;
+    message = m;
+    textColor = c;
   }
 
   //@Override
-  public void Draw()
+  public void draw()
   {
     background(0);
     textAlign(CENTER);
-    fill(m_color);
+    fill(textColor);
     noStroke();
     // Suppose textFont() have been called
-    text(m_message, width / 2, height / 2);
+    text(message, width / 2, height / 2);
   }
 }
 
@@ -64,7 +63,7 @@ void setup()
   drawers.add(new FillWithCircles(250, 222));
   drawers.add(new Texter(5, "Pulsating Circles", #BB7700));
   Drawer dr = new PulsatingCircles();
-  dr.SetDuration(30);
+  dr.setDuration(30);
   drawers.add(dr);
   drawers.add(new Texter(5, "Fill With Circles 2", #CC6600));
   drawers.add(new FillWithCircles(350, 333));
@@ -73,10 +72,10 @@ void setup()
 
 void draw()
 {
-  currentDrawer = (Drawer) drawers.get(currentDrawerIdx);
-  currentDrawer.Draw();
+  currentDrawer = drawers.get(currentDrawerIdx);
+  currentDrawer.draw();
   int time = millis() / 1000;
-  if (time - currentDuration > currentDrawer.GetDuration())
+  if (time - currentDuration > currentDrawer.getDuration())
   {
     currentDrawerIdx++;
     currentDuration = time;
@@ -86,4 +85,3 @@ void draw()
     }
   }
 }
-

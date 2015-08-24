@@ -1,3 +1,6 @@
+import java.util.*;
+import java.text.*;
+
 String textToDisplay =
 "Basic examples introduce the primary elements of computer programming and the fundamental elements of drawing with Processing. If you are new to programming, these examples can be a part of the learning process, but they are not detailed or descriptive enough to be used alone. If you have prior experience, they will show you how to apply what you know to using Processing.\n" +
 "Topic examples build on the basics; they demonstate code for animation, drawing, interaction, interface, motion, simulation, file i/o, cellular automata, fractals, and l-systems.\n" +
@@ -24,7 +27,7 @@ void setup()
   background(#AAFFEE);
 
   // Get the strings corresponding to YOUR locale
-  GetStrings(Locale.getDefault());
+  getStrings(Locale.getDefault());
   frameRate(5);
 
 //  fDisplay = loadFont("Silkscreen-8.vlw");
@@ -107,31 +110,31 @@ void mouseReleased()
     {
       if (bAlt)
       {
-        GetStrings(Locale.US); // Locale("en", "US")
+        getStrings(Locale.US); // Locale("en", "US")
       }
       else
       {
-        GetStrings(Locale.ENGLISH); // Locale("en")
+        getStrings(Locale.ENGLISH); // Locale("en")
       }
     }
     else if (mouseX > 160 && mouseX < 240)
     {
-      GetStrings(esLocale);
+      getStrings(esLocale);
     }
     else if (mouseX > 260 && mouseX < 340)
     {
       if (bAlt)
       {
-        GetStrings(Locale.CANADA_FRENCH); // Locale("fr", "CA")
+        getStrings(Locale.CANADA_FRENCH); // Locale("fr", "CA")
       }
       else
       {
-        GetStrings(Locale.FRENCH); // Locale("fr")
+        getStrings(Locale.FRENCH); // Locale("fr")
       }
     }
     else
     {
-      GetStrings(Locale.getDefault());
+      getStrings(Locale.getDefault());
     }
   }
 //  println(mouseX + " " + mouseY);
@@ -143,7 +146,7 @@ String en, es, fr, enC, esC, frC;
 String titleValue = "Here Comes the Sun", artistValue = "The Beatles",
     albumValue = "Abbey Road", genreValue = "Pop";
 String releaseInfo;
-void GetStrings(Locale locale)
+void getStrings(Locale locale)
 {
   println(locale.getLanguage() + " / " + locale.getCountry());
   res = UTF8ResourceBundle.getBundle(bundleName, locale,
@@ -155,16 +158,16 @@ void GetStrings(Locale locale)
   double[] pluralLimits = { 0, 1, 2 };
 
   // Simple translations, no parameters
-  appName = GetString("APP_NAME");
-  appAuth = GetString("APP_AUTH");
-  slogan = GetString("slogan");
-  title = GetString("Title");
-  artist = GetString("Artist");
-  album = GetString("Album");
-  genre = GetString("Genre");
-  en = GetString("en");
-  es = GetString("es");
-  fr = GetString("fr");
+  appName = getString("APP_NAME");
+  appAuth = getString("APP_AUTH");
+  slogan = getString("slogan");
+  title = getString("Title");
+  artist = getString("Artist");
+  album = getString("Album");
+  genre = getString("Genre");
+  en = getString("en");
+  es = getString("es");
+  fr = getString("fr");
 
   // Translations including parameters: the value order might depend on language
   // So we use MessageFormat to handle this order, and formatting information (date, decimal/thousand separators...)
@@ -175,12 +178,12 @@ void GetStrings(Locale locale)
 
   // Disk number, I have to use a choice format
   // to select the correct the plural form depending on the quantity.
-  String diskNbMsgPat = GetString("disk number");
+  String diskNbMsgPat = getString("disk number");
   String [] diskNbPats =
   {
-    GetString("DN.zero"),
-    GetString("DN.one"),
-    GetString("DN.more")
+    getString("DN.zero"),
+    getString("DN.one"),
+    getString("DN.more")
   };
   ChoiceFormat choice = new ChoiceFormat(pluralLimits, diskNbPats);
 
@@ -197,10 +200,10 @@ void GetStrings(Locale locale)
   String diskNbMsg = formatter.format(diskStats);
 
   // Release information
-  String releaseInfoPat = GetString("release");
+  String releaseInfoPat = getString("release");
   formatter.applyPattern(releaseInfoPat);
   // I just want to display data according to the chosen locale...
-  String country = GetString(locale.getLanguage().toUpperCase()); // EN, ES, FR or other
+  String country = getString(locale.getLanguage().toUpperCase()); // EN, ES, FR or other
   Object[] information =
   {
     country,
@@ -212,7 +215,7 @@ void GetStrings(Locale locale)
   releaseInfo = formatter.format(information);
 }
 
-String GetString(String key)
+String getString(String key)
 {
   String value = null;
   try
@@ -252,4 +255,3 @@ These two tricks combined allow to use i18n in Processing. How cool is that? :-)
 I made a demo sketch (reusing some other unrelated sketch), trying to highlight the hierarchical loading of resources.
 
 */
-
